@@ -1,0 +1,33 @@
+Fluids
+Name	Id	Viscosity	Bounded	Change Wettability
+water	0	0.001	0.2	false
+oil	1	0.001	0	false
+
+Surface tension
+Fluid id pair	Value
+(0,1)	0.03
+
+Fluid config
+Name	Unified
+Contained fluid id	0
+Wetting fluid id	0
+
+FlowDirection	Z
+
+One point results
+AbsolutePermeability	644.411
+
+Processes
+Process 0
+Inlet fluid id	1
+Injection side	inlet
+
+One point results
+
+Multi point results
+CapillarPressure(1-0)	RelativePermeability(0)	RelativePermeability(1)	Saturation(0)	Saturation(1)	
+-1e+10               	1                      	0                      	1            	0            	
+-1e+10               	1                      	0                      	1            	0            	
+
+
+
