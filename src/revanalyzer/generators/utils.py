@@ -1,8 +1,23 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import os
 
 
 def make_cuts(datadir, image, outputdir, L, l, total=True):
+    """
+    **Input:**
+     
+     datadir (str): path to the folder containing image.
+     image (str): name of binary ('uint8') file representing the image.
+     L (int): image linear size. Note, that only cubical images can be analyzed. 
+     l (int): linear size of cut subcube.
+     outputdir (str): path to the output folder in which cuts are located.
+     total (bool): If 'True' 9 cuts are generated, 8 - from the corners of initial image, and 1 - from its centre. 
+                   If 'False', only the centre cut is generated.
+    **Output:**
+    names of generated subcubes (list(dtype=str)).
+    """    
     cut_names = []
     A = _read_array(os.path.join(datadir, image), L, 'uint8')
     A0 = A[int((L-l)/2):int((L+l)/2), int((L-l)/2)

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Module for the computation of permeability using MEF."""
+
 import os
 import subprocess
 import json
@@ -10,6 +13,28 @@ mef_output = "mef_output"
 
 
 def generate_permeability_mef(image, directions, size, cut_step, sREV_max_size, exe_path_ccm, exe_path_mef, exe_mef, n_threads=1, resolution=1., length_unit_type='UM', inputdir ='data', outputdir='output', show_time=False):
+    """
+    **Input:**
+
+     image (str): name of binary ('uint8') file representing the image.
+     directions (str): 'x', 'y', 'z' or 'all'. If label of this parameter is 'all', permeability values are generated for all 3 
+                        possible flow directions.
+     size (int): image linear size. Note, that only cubical images can be analyzed. 
+     cut_step (int): increment step of subcube size
+     sREV_max_size (int): maximal subcube size for which sREV analysis is performed.
+     exe_path_ccm (str): path to PNM-extractor
+     exe_path_mef (str): path to the directory of MEF module
+     exe_mef (str): path to exe file of MEF
+     n_threads (int): number of CPU cores used by FDMSS, default: 1.
+     resolution (float): resolution of studied sample (unitless), default: 1.
+     length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'UM'
+     inputdir (str): path to the folder containing image, default: 'data'.
+     outputdir (str): path to the output folder containing generated data, default: 'output'.
+     show_time (bool): Added to monitor time cost for large images,  default: False. 
+     
+     **Output:**
+     path to MEF output folder (str)
+    """
     assert (directions == 'x' or directions == 'y' or directions ==
             'z' or directions == 'all'), "Direction should be 'x', 'y', 'z' or 'all'"
     if directions == 'all':

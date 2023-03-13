@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Module for the generation of persistence diagrams using PD generator."""
+
 import os
 import subprocess
 import shutil
@@ -8,6 +11,20 @@ from .utils import make_cuts
 
 
 def generate_PD(image, size, cut_step, sREV_max_size, exe_path, n_threads=1, p_limit=0, inputdir = 'data', outputdir='output', show_time=False):
+    """
+    **Input:**
+
+     image (str): name of binary ('uint8') file representing the image.
+     size (int): image linear size. Note, that only cubical images can be analyzed. 
+     cut_step (int): increment step of subcube size
+     sREV_max_size (int): maximal subcube size for which sREV analysis is performed.
+     exe_path (str): path to PD generator
+     n_threads (int): number of CPU cores used by FDMSS, default: 1.
+     plimit (float): persistence limit parameter; default: 0, to consider all birth-death pairs.
+     inputdir (str): path to the folder containing image, default: 'data'.
+     outputdir (str): path to the output folder containing generated data, default: 'output'.
+     show_time (bool): Added to monitor time cost for large images,  default: False. 
+    """    
     start_time = time.time()
     glob_path = os.getcwd()
     outputdir = os.path.join(outputdir, image)
