@@ -1,15 +1,43 @@
+# -*- coding: utf-8 -*-
+"""
+Definition of Persistence Image vectorizer, used in PD vectorization. A persistence image is a 2D function computed from a persistence diagram by convolving the diagram points with a weighted Gaussian kernel. The plane is then discretized into an image with pixels, which is flattened and returned as a vector. See Adams H. et al., (2017). Persistence images: A stable vector representation of persistent homology. Journal of Machine Learning Research, 18.
+"""
+
 import numpy as np
 from gudhi.representations.vector_methods import PersistenceImage
 from .basic_vectorizer import BasicVectorizer
 
 
 class PersistenceImageVectorizer(BasicVectorizer):
+    """
+    Class describing persistence image vectorizer.
+    """      
     def __init__(self, resolution, bandwidth=1., norm=2):
+        """
+        **Input:**
+        
+        resolution ([int, int]): number of bins at each axe in XY plane in vectorized persistence image function.
+        bandwidth (float): bandwidth of the Gaussian kernel, default: 1. 
+        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        """  
         super().__init__(norm)
         self.resolution = resolution
         self.bandwidth = bandwidth
 
     def vectorize(self, v1, v2):
+        """
+        Vectorize the vector metric values for a given pair of subcubes. 
+        
+        **Input:**
+        
+        v1 (list(dtype = float)): data for the first cubcube.
+        v2 (list(dtype = float)): data for the second cubcube.
+        
+        **Output:**
+        
+        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
+        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        """    
         n1 = len(v1)
         n2 = len(v2)
         C1 = PersistenceImage(bandwidth=self.bandwidth, weight=lambda x: np.arctan(0.5*(x[1] - x[0])),

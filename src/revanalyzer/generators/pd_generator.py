@@ -24,6 +24,10 @@ def generate_PD(image, size, cut_step, sREV_max_size, exe_path, n_threads=1, p_l
      inputdir (str): path to the folder containing image, default: 'data'.
      outputdir (str): path to the output folder containing generated data, default: 'output'.
      show_time (bool): Added to monitor time cost for large images,  default: False. 
+     
+    **Output:**
+    
+    path to output folder of PD generator (str)
     """    
     start_time = time.time()
     glob_path = os.getcwd()

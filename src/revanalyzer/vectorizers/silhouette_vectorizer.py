@@ -1,15 +1,43 @@
+# -*- coding: utf-8 -*-
+"""
+Definition of Silhouette vectorizer, used in PD vectorization. A persistence silhouette is computed by taking a weighted average of the collection of 1D piecewise-linear functions given by the persistence landscapes, and then by evenly sampling this average on a given range. Finally, the corresponding vector of samples is returned. See Chazal, F., et al. (2014). Stochastic convergence of persistence landscapes and silhouettes. In Proceedings of the thirtieth annual symposium on Computational geometry (pp. 474-483).
+"""
+
 import numpy as np
 from gudhi.representations.vector_methods import Silhouette
 from .basic_vectorizer import BasicVectorizer
 
 
 class SilhouetteVectorizer(BasicVectorizer):
+    """
+    Class describing persistence silhouette vectorizer.
+    """   
     def __init__(self, resolution, n=1, norm=2):
+        """
+        **Input:**
+        
+        resolution (int): number of samples for the weighted average.
+        n (int): power parameter in weighted funtion (d-b)^n, default = 1. 
+        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        """ 
         super().__init__(norm)
         self.resolution = resolution
         self.n = n
 
     def vectorize(self, v1, v2):
+        """
+        Vectorize the vector metric values for a given pair of subcubes. 
+        
+        **Input:**
+        
+        v1 (list(dtype = float)): data for the first cubcube.
+        v2 (list(dtype = float)): data for the second cubcube.
+        
+        **Output:**
+        
+        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
+        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        """ 
         S1 = Silhouette(weight=lambda x: (
             x[1] - x[0])**self.n, resolution=self.resolution)
         S1.fit([v1])

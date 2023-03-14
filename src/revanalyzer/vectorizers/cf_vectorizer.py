@@ -1,13 +1,51 @@
+# -*- coding: utf-8 -*-
+"""Definition of CF vectorizer"""
+
 import numpy as np
 from .basic_vectorizer import BasicVectorizer
 
 
 class CFVectorizer(BasicVectorizer):
+    """
+    Class describing CF vectorizer.
+    """   
     def __init__(self, norm=2, mode='max'):
+        """
+        **Input:**
+        
+        mode (str): can be 'all' or 'max'. If mode = 'all', CF calculated for 'x', 'y' and 'z' directions are concatenate into 
+                    one vector during vectorization. If mode = 'max', CF calculared for different directions are vectorizes 
+                    independently. Then at the analisys step, maximal differences and deviations over 3 directions are taking
+                    for REV sizes calculation. Default: 'max'.
+        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        """      
         super().__init__(norm)
         self.mode = mode
 
     def vectorize(self, v1, v2):
+        """
+        Vectorize the vector metric values for a given pair of subcubes. 
+        
+        **Input:**
+        
+        v1 (list(dtype = float)): data for the first cubcube.
+        v2 (list(dtype = float)): data for the second cubcube.
+        
+        **Output:**
+        
+        Depends on the chosen mode.
+        
+        If mode = 'all':
+        
+        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
+        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        
+        If mode = 'max:
+        
+        (list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are 
+        vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of 
+        normalized distances between these vectors.        
+        """
         assert (self.mode == 'max' or self.mode ==
                 'all'), "Mode should be 'max' or 'all'"
         n = min(len(v1[0]), len(v2[0]))

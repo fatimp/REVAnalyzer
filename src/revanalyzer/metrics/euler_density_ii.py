@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Definition of Euler Density II metric. The Euler density here is extracted from PNM characteristics, it is computed as the difference between pore and throat numbers, normalized over subcube volume.
+"""
+
 import numpy as np
 import os
 from .basic_metric import BasicMetric
@@ -5,11 +10,35 @@ from .basic_pnm_metric import BasicPNMMetric
 
 
 class EulerDensityII(BasicPNMMetric):
+    """
+    Class describing Euler density II metric.
+    """     
     def __init__(self,  statoildir, resolution=1., length_unit_type='M', direction='z'):
+        """
+        **Input:**
+        
+        statoildir (str): path to the folder containing generated data for subcubes in statoil format.
+        resolution (float): resolution of studied sample (unitless), default: 1.
+        length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
+        direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
+        """        
         super().__init__(statoildir, resolution, length_unit_type, direction, vectorizer=None)
         self.metric_type = 's'
 
     def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates Euler density for a specific subcube.
+        
+        **Input:**
+        
+        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
+        cut_name (str): name of subcube.
+        l (int): linear size of subcube.
+        
+        **Output:**
+        
+        name of file (str), in which Euler density is written.
+        """        
         filein = os.path.join(inputdir, cut_name) + "_" + \
             self.direction + '_node1.dat'
         with open(filein, "r") as f:

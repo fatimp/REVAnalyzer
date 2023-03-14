@@ -8,14 +8,14 @@ import shutil
 import matplotlib.pyplot as plt
 import itertools
 from .generators import make_cuts
-from .metrics import BasicMetric, BasicPNMMetric
+from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
 
 class REVAnalyzer:
-"""
-analysis of representativity of a given image for a given scalar or vector metric.
-"""
+    """
+    analysis of representativity of a given image for a given scalar or vector metric.
+    """
     def __init__(self, metric, image, size, cut_step, sREV_max_size, datadir='data', outputdir='output'):
         """
         **Input:**
@@ -61,6 +61,8 @@ analysis of representativity of a given image for a given scalar or vector metri
         """
         Generator of metric values for all selected subcubes.
         """
+        assert not (issubclass(self.metric.__class__, BasicPDMetric) or isinstance(self.metric, Permeability)), 'Use external\
+        generator for this metric'
         if issubclass(self.metric.__class__, BasicPNMMetric):
             for l in self.cut_sizes:
                 if (l <= self.sREV_max_size):
@@ -102,15 +104,16 @@ analysis of representativity of a given image for a given scalar or vector metri
 
     def read(self, cut_size, cut_id=0): 
         """
-        Read the generated metric value for a specific subcube. analyzer.read(0) returns the metric value for the uncut image.
+        Read the generated metric value for a given subcube. analyzer.read(0) returns the metric value for the uncut image.
         
         **Input:**
+        
         cut_size (int): size of subcube
         cut_id (int: 0,..8): cut index    
         
         **Output**
-        metric value (float or np.array(dtype='float'))
         
+        metric value (float or np.array(dtype='float'))       
         """
         return self.metric.read(
             self._outputdir_cut_values, self.image, cut_size, cut_id)
@@ -118,7 +121,9 @@ analysis of representativity of a given image for a given scalar or vector metri
     def show(self, cut_size, cut_id, nbins = None):
         """
         Vizualize the vector metric for a specific subcube.
+        
          **Input:**
+         
         cut_size (int): size of subcube
         cut_id (int: 0,..8): cut index
         nbins (int): number of bins in histogram. For PNM-based metric only.
@@ -134,7 +139,7 @@ analysis of representativity of a given image for a given scalar or vector metri
     def vectorize(self):
         """
         Vectorization of generated metric data using vetorizer. For vector metric only.
-        """"
+        """
         assert self.metric.metric_type == 'v', "Metric type should be vector"
         cut_sizes = [x for x in self.cut_sizes]
         self._outputdir_vectorized_cut_values = os.path.join(
@@ -207,9 +212,10 @@ analysis of representativity of a given image for a given scalar or vector metri
 
     def analyze(self, dREV_threshold, sREV_threshold):
         """
-        perform the analysis of representativity
+        Perform the analysis of representativity.
         
         **Input:**
+        
         dREV_threshold (float, <1): threshold to estimate dREV size
         sREV_threshold (float, <1): threshold to estimate sREV size
         """
@@ -290,7 +296,7 @@ analysis of representativity of a given image for a given scalar or vector metri
 
     def show_results(self, figdir='figs'):
         """
-        Visualization of REV analysis
+        Visualization of REV analysis results.
         """
         figdir = os.path.join(self.outputdir, self.image, figdir)
         os.makedirs(figdir, exist_ok=True)

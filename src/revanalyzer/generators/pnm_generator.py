@@ -13,7 +13,7 @@ statoildir = 'PN_data'
 
 
 def generate_PNM(image, size, cut_step, sREV_max_size, exe_path, n_threads=1, resolution=1., length_unit_type='M', direction='z', inputdir = 'data', outputdir='output', show_time=False):
-      """
+    """
     **Input:**
 
      image (str): name of binary ('uint8') file representing the image.

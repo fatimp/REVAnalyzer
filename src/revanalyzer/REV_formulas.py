@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Forumals for the calculation of dREV and sREV sizes for scalar and vector metrics.
+"""
+
 def _delta(a, b):
     if (a+b != 0):
         return 2*abs((a-b)/((a+b)))
@@ -6,6 +11,19 @@ def _delta(a, b):
 
 
 def get_sREV_size(sigmas_n, threshold):
+    """
+    sREV size calculation (can be applied both for scalar and vector metrics).
+    
+    **Input:**
+         
+    sigmas_n (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a normailzed std for
+                                 this subcube.
+    threshold (float, <1): threshold to estimate sREV size.
+    
+    **Output:**
+    
+    sREV size (int)
+    """
     sigmas_n = {key: val for key, val in sigmas_n.items() if val != 0.0}
     sizes = list(sigmas_n.keys())
     sizes.sort(reverse=True)
@@ -19,6 +37,19 @@ def get_sREV_size(sigmas_n, threshold):
 
 
 def get_dREV_size_1_scalar(values, threshold):
+    """
+    dREV size calculation for scalar metric using formula (dREV_size_1). See documentation.
+    
+    **Input:**
+    
+    values (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a difference of metric values 
+                               this and neighbour subcuces.  
+    threshold (float, <1): threshold to estimate sREV size.
+    
+    **Output:**
+    
+    dREV size (int)
+    """
     sizes = list(values.keys())
     sizes.sort(reverse=True)
     for i in range(len(sizes)-1):
@@ -31,6 +62,20 @@ def get_dREV_size_1_scalar(values, threshold):
 
 
 def get_dREV_size_1_scalar_dimensional(values, threshold):
+    """
+    dREV size calculation for scalar metric defined i 'x', 'y' an 'z' directions using formula (dREV_size_1).
+    Returns maximal sREV size over all the directions.
+    
+    **Input:**
+    
+    values (dict, int[list(dtype=float)]): dictionary, in which a key is a subcube linear size, and a value are the differences
+                                           of metric values for this and neighbour subcuces computed in all directions.  
+    threshold (float, <1): threshold to estimate sREV size.
+    
+    **Output:**
+    
+    dREV size (int)
+    """
     sizes = list(values.keys())
     sizes.sort(reverse=True)
     result = []
@@ -49,6 +94,19 @@ def get_dREV_size_1_scalar_dimensional(values, threshold):
 
 
 def get_dREV_size_2_scalar(values, threshold):
+    """
+    dREV size calculation for scalar metric using formula (dREV_size_2). See documentation.
+    
+    **Input:**
+    
+    values (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a difference of metric values 
+                               this and neighbour subcuces.  
+    threshold (float, <1): threshold to estimate dREV size.
+    
+    **Output:**
+    
+    dREV size (int)
+    """
     sizes = list(values.keys())
     sizes.sort(reverse=True)
     value0 = values[sizes[0]]
@@ -62,6 +120,20 @@ def get_dREV_size_2_scalar(values, threshold):
 
 
 def get_dREV_size_2_scalar_dimensional(values, threshold):
+    """
+    dREV size calculation for scalar metric defined i 'x', 'y' an 'z' directions using formula (dREV_size_2).
+    Returns maximal sREV size over all the directions.
+    
+    **Input:**
+    
+    values (dict, int[list(dtype=float)]): dictionary, in which a key is a subcube linear size, and a value are the differences
+                                           of metric values for this and neighbour subcuces computed in all directions.  
+    threshold (float, <1): threshold to estimate dREV size.
+    
+    **Output:**
+    
+    dREV size (int)
+    """
     sizes = list(values.keys())
     sizes.sort(reverse=True)
     result = []
@@ -81,6 +153,19 @@ def get_dREV_size_2_scalar_dimensional(values, threshold):
 
 
 def get_dREV_size_1_vector(values, threshold):
+    """
+    dREV size calculation for vector metric. 
+    
+    **Input:**
+    
+    values (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a difference distances
+                               between vectors describing this and neighbour subcuces.  
+    threshold (float, <1): threshold to estimate dREV size.
+    
+    **Output:**
+    
+    dREV size (int)
+    """
     sizes = list(values.keys())
     sizes.sort(reverse=True)
     for i in range(len(sizes)):

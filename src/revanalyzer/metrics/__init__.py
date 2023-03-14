@@ -12,5 +12,5 @@ from .pore_radius import PoreRadius
 from .throat_radius import ThroatRadius
 from .connectivity import Connectivity
 from .cf import L2, S2, C2, SS2
-from .pd import PD0, PD1, PD2
+from .pd import BasicPDMetric, PD0, PD1, PD2
 from .permeability import Permeability

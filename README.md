@@ -33,13 +33,20 @@ Permeability generation
 
 FDMSS:
 ------------
-In gitlab:
+In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/fdmss.git Questions how it works to Andrey Zubov, Valiliy Postnikov or Kirill Gerke.
 Built module in dcore-gpu (10.4.128.112): /home/azubov/fdmss/
+
+install & build:
+-------------------
+$git clone https://gce.digital-core.ru/gitlab-instance-4a5c00a2/fdmss.git
+$cmake .
+$make
+
 
 PNM-extractor:
 ---------------------
 In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction, branch develop. Author - Dmitry Murygin.
-
+Built module in dcore-gpu (10.4.128.112):  /home/azubov/pnm_extractor/pore-network-extraction/build/bin/extractor_example
 
 install & build:
 -------------------
@@ -50,12 +57,11 @@ $cmake -B ./build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $cd build/
 $make -j
 
-Built module in dcore-gpu (10.4.128.112):  /home/azubov/pnm_extractor/pore-network-extraction/build/bin/extractor_example
 
 MEF: 
 -------
-In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/fluid-transport-in-pore-networks/-/tree/master, branch refactoring-4
-
+In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/fluid-transport-in-pore-networks/, branch refactoring-4. Author - Dmitry Murygin.
+Built module in dcore-gpu (10.4.128.112): '/home/azubov/mef/fluid-transport-in-pore-networks/build/bin/flow_simulator_example'
 
 install & build:
 ---------------------
@@ -66,15 +72,14 @@ $cmake -B ./build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $cd build/
 $make -j
 
-Built module in dcore-gpu (10.4.128.112): '/home/azubov/mef/fluid-transport-in-pore-networks/build/bin/flow_simulator_example'
-
 PNM characteristics generation
 ----------------------------------------------
 PNM-extractor:
 ---------------------
 In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction, branch develop. Author - Dmitry Murygin.
+Built module in dcore-gpu (10.4.128.112):  (10.4.128.112): /home/azubov/pnm_extractor/pore-network-extraction/build/bin/extractor_example
 
-install & build:
+###install & build:###
 ---------------------
 $git clone https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction.git
 $cd pore-network-extraction/
@@ -83,8 +88,6 @@ $cmake -B ./build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $cd build/
 $make -j
  
-Built module in dcore-gpu (10.4.128.112):  (10.4.128.112): /home/azubov/pnm_extractor/pore-network-extraction/build/bin/extractor_example
-
 
 PD generation
 ---------------------
@@ -93,8 +96,9 @@ PD-generator:
 ----------------------
 (requires C++17!)
 In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction, branch ppairs_new. Author - Andrey Zubov
+Built module in dcore-gpu (10.4.128.112):
 
-install & build:
+###install & build:###
 ---------------------
 $git clone https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction.git
 $cd pore-network-extraction/
@@ -103,9 +107,7 @@ $cmake -B ./build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $cd build/
 $make -j
 
-Built module in dcore-gpu (10.4.128.112): None. No C++17 at dcore. 
-
 
 Authors
 =======
-Andrey Zubov, Joint Institute for Nuclear Research, Dubna, Russia.
+Andrey Zubov, Digital Core group, Moscow and Joint Institute for Nuclear Research, Dubna, Russia.
