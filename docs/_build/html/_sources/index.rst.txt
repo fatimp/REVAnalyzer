@@ -1,0 +1,27 @@
+.. title:: Overview
+
+REVAanalyzer
+=======================================
+
+REVAnalyzer is an open source package for representativity analysis of binary images.
+It aims at representativity analysis for **porosity**, **permeability**, **pore-network** characteristics, **correlation
+functions** and **persistence diagrams**. Both **scalar** and **vector** metrics can be considered.
+Using REVAnalyzer library one can estimate **determenistic** and **statistical** representative elementary volumes (**dREV** and **sREV**).
+for these metrics.
+
+Contents
+
+    * :ref:`install`: How to install REVAnalyzer.
+    * :ref:`theory`: Theoretical background of REV analysis.
+    * :ref:`metrics`: Description of metrics which can be analyzed.
+    * :ref:`code_doc`: The code documentation of REVAnalyzer.
+    
+    
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+
+    install
+    theory
+    metrics
+    REVAnalyzer
