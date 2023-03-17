@@ -42,7 +42,7 @@ class REVAnalyzer:
         self._outputdir_vectorized_cut_values = None
         os.makedirs(self.outputdir, exist_ok=True)
         os.makedirs(self._outputdir_cut_values, exist_ok=True)
-        self.n_steps = int(np.floor(size/cut_step))
+        self.n_steps = int(np.ceil(size/cut_step))
         self.cut_sizes = [cut_step*(i+1) for i in range(self.n_steps-1)]
         self._metric_cut_names = []
         self.metric_mean = {}
@@ -260,7 +260,10 @@ class REVAnalyzer:
                     self.metric_mean, self.dREV_threshold)
         if self.metric.metric_type == 'v':
             for l in self.cut_sizes:
-                l1 = l + self.cut_step
+                if l == self.cut_sizes[-1]:
+                    l1 = self.size
+                else:
+                    l1 = l + self.cut_step
                 jsonname = 'cut_' + str(l)
                 with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'r') as f:
                     d = json.load(f)
