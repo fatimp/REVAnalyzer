@@ -14,6 +14,7 @@ Contents
     * :ref:`install`: How to install REVAnalyzer.
     * :ref:`theory`: Theoretical background of REV analysis.
     * :ref:`metrics`: Description of metrics which can be analyzed.
+    * :ref:`structure`: Structure and pipeline of REVAnalyzer.
     * :ref:`code_doc`: The code documentation of REVAnalyzer.
     
     
@@ -24,4 +25,5 @@ Contents
     install
     theory
     metrics
+    structure
     REVAnalyzer
