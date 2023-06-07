@@ -1,4 +1,5 @@
 using CorrelationFunctions.Directional
+using CorrelationFunctions.Utilities
 using StatsBase
 function vectorize(str_args)
     filename = str_args[1]
@@ -16,38 +17,38 @@ function vectorize(str_args)
         v = c2(data, 0)
         if (normalize == 1)            
             p = n/dim/dim/dim
-            vx1 = [(elem - p*p)/p/(1-p) for elem in v[:x]]
-            vy1 = [(elem - p*p)/p/(1-p) for elem in v[:y]]
-            vz1 = [(elem - p*p)/p/(1-p) for elem in v[:z]]
+            vx1 = [(elem - p*p)/p/(1-p) for elem in v[DirX()]]
+            vy1 = [(elem - p*p)/p/(1-p) for elem in v[DirY()]]
+            vz1 = [(elem - p*p)/p/(1-p) for elem in v[DirZ()]]
             res = [vx1, vy1, vz1]
         else
-            res = [v[:x], v[:y], v[:z]]
+            res = [v[DirX()], v[DirY()], v[DirZ()]]
         end        
     elseif (method == "s2")
         v = s2(data, 0)
         if (normalize == 1)
             n = count(i->(i== 0), data)
             p = n/dim/dim/dim
-            vx1 = [(elem - p*p)/p/(1-p) for elem in v[:x]]
-            vy1 = [(elem - p*p)/p/(1-p) for elem in v[:y]]
-            vz1 = [(elem - p*p)/p/(1-p) for elem in v[:z]]
+            vx1 = [(elem - p*p)/p/(1-p) for elem in v[DirX()]]
+            vy1 = [(elem - p*p)/p/(1-p) for elem in v[DirY()]]
+            vz1 = [(elem - p*p)/p/(1-p) for elem in v[DirZ()]]
             res = [vx1, vy1, vz1]
         else
-            res = [v[:x], v[:y], v[:z]]
+            res = [v[DirX()], v[DirY()], v[DirZ()]]
         end
     elseif (method == "l2")
         v = l2(data, 0)
         if (normalize == 1)
-            res = [v[:x]/v[:x][1], v[:y]/v[:y][1], v[:z]/v[:z][1]]
+            res = [v[DirX()]/v[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
         else
-            res = [v[:x], v[:y], v[:z]]
+            res = [v[DirX()], v[DirY()], v[DirZ()]]
         end
     elseif (method == "ss")
-        v = surfsurf(data, 0)
+        v = surf2(data, 0)
         if (normalize == 1)
-            res = [v[:x]/v[:x][1], v[:y]/v[:y][1], v[:z]/v[:z][1]]
+            res = [v[DirX()]/[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
         else
-            res = [v[:x], v[:y], v[:z]]
+            res = [v[DirX()], v[DirY()], v[DirZ()]]
         end
     else
         throw(DomainError(method, "unknown method"))
