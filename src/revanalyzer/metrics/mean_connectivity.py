@@ -16,10 +16,13 @@ class MeanConnectivity(BasicPNMMetric):
         """
         **Input:**
         
-        statoildir (str): path to the folder containing generated data for subcubes in statoil format.
-        resolution (float): resolution of studied sample (unitless), default: 1.
-        length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
-        direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
+        	statoildir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	resolution (float): resolution of studied sample (unitless), default: 1;
+        	
+        	length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M';
+        	
+        	direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
         """        
         super().__init__(statoildir, resolution, length_unit_type, direction, vectorizer=None)
         self.metric_type = 's'
@@ -30,13 +33,15 @@ class MeanConnectivity(BasicPNMMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube.
         
         **Output:**
         
-        name of file (str), in which mean connectivity, normalized over subcube volume, is written.
+        	name of file (str), in which mean connectivity, normalized over subcube volume, is written.
         """         
         pore_number = super().generate(inputdir, cut_name, l)
         if pore_number > 0:

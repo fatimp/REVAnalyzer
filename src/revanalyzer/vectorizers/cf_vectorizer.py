@@ -13,11 +13,10 @@ class CFVectorizer(BasicVectorizer):
         """
         **Input:**
         
-        mode (str): can be 'all' or 'max'. If mode = 'all', CF calculated for 'x', 'y' and 'z' directions are concatenate into 
-                    one vector during vectorization. If mode = 'max', CF calculared for different directions are vectorizes 
-                    independently. Then at the analisys step, maximal differences and deviations over 3 directions are taking
-                    for REV sizes calculation. Default: 'max'.
-        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        	mode (str): can be 'all' or 'max'. If mode = 'all', CF calculated for 'x', 'y' and 'z' directions are concatenate into one vector during vectorization. If mode = 'max', CF calculared for different directions are vectorizes  independently. 
+        	Then at the analisys step, maximal differences and deviations over 3 directions are taking for REV sizes calculation. Default: 'max';
+        	
+        	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
         """      
         super().__init__(norm)
         self.mode = mode
@@ -28,23 +27,21 @@ class CFVectorizer(BasicVectorizer):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube;
         
         **Output:**
         
         Depends on the chosen mode.
         
-        If mode = 'all':
+        	If mode = 'all':
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         
-        If mode = 'max:
+        	If mode = 'max:
         
-        (list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are 
-        vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of 
-        normalized distances between these vectors.        
+        		(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of normalized distances between these vectors.        
         """
         assert (self.mode == 'max' or self.mode ==
                 'all'), "Mode should be 'max' or 'all'"

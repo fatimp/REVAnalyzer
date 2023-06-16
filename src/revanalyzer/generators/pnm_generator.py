@@ -14,24 +14,36 @@ statoildir = 'PN_data'
 
 def generate_PNM(image, size, cut_step, sREV_max_size, exe_path, n_threads=1, resolution=1., length_unit_type='M', direction='z', inputdir = 'data', outputdir='output', show_time=False):
     """
+    Running PNM extractor for all the selected subcubes.
+    
     **Input:**
 
-     image (str): name of binary ('uint8') file representing the image.
-     size (int): image linear size. Note, that only cubical images can be analyzed. 
-     cut_step (int): increment step of subcube size.
-     sREV_max_size (int): maximal subcube size for which sREV analysis is performed.
-     exe_path(str): path to PNM extractor.
-     n_threads (int): number of CPU cores used by FDMSS, default: 1.
-     resolution (float): resolution of studied sample (unitless), default: 1.
-     length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
-     direction (str): 'x', 'y' or 'z'. If PNM extractor is used to generate PNM characteristic only, but not permeability, 
-                       the results do not depend on the direction value; defautlt: 'z'.
-     inputdir (str): path to the folder containing image, default: 'data'.
-     outputdir (str): path to the output folder containing generated data, default: 'output'.
-     show_time (bool): Added to monitor time cost for large images,  default: False. 
+     	image (str): name of binary ('uint8') file representing the image;
+     	
+     	size (int): image linear size. Note, that only cubical images can be analyzed;
+     	 
+     	cut_step (int): increment step of subcube size;
+     	
+     	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
+     	
+     	exe_path(str): path to PNM extractor;
+     	
+     	n_threads (int): number of CPU cores used by FDMSS, default: 1;
+     	
+     	resolution (float): resolution of studied sample (unitless), default: 1;
+     	
+     	length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M';
+     	
+     	direction (str): 'x', 'y' or 'z'. If PNM extractor is used to generate PNM characteristic only, but not permeability, the results do not depend on the direction value; defautlt: 'z';
+     	
+     	inputdir (str): path to the folder containing image, default: 'data';
+     	
+     	outputdir (str): path to the output folder containing generated data, default: 'output';
+     	
+     	show_time (bool): Added to monitor time cost for large images,  default: False. 
      
      **Output:**
-     path to statoil output folder (str)
+     	path to statoil output folder (str).
     """
     assert (direction == 'x' or direction == 'y' or direction == 'z'), "Direction should be 'x', 'y' or 'z'"
     start_time = time.time()

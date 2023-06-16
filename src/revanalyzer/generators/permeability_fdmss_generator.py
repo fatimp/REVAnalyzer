@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module for the computation of permeability using FDMSS solver."""
+
 import os
 import subprocess
 import shutil
@@ -14,20 +15,31 @@ fdmss_data = "fdmss_data"
 
 def generate_permeability_fdmss(image, size, cut_step, sREV_max_size, exe_path_fdmss, directions, n_threads=1, resolution=1., datadir='data', outputdir='output', show_time=False):
     """
+    Running FDMSS for all the selected subcubes.
+    
     **Input:**
 
-     image (str): name of binary ('uint8') file representing the image.
-     size (int): image linear size. Note, that only cubical images can be analyzed. 
-     cut_step (int): increment step of subcube size
-     sREV_max_size (int): maximal subcube size for which sREV analysis is performed.
-     exe_path_fdmss (str) path to fdmss exe file
-     directions (str): 'x', 'y', 'z' or 'all'. If label of this parameter is 'all', permeability values are generated for all 3 
-                        possible flow directions.
-     n_threads (int): number of CPU cores used by FDMSS, default: 1.
-     resolution (float): resolution of studied sample (micrometers), default: 1.
-     datadir (str): path to the folder containing image, default: 'data'.
-     outputdir (str): path to the output folder containing generated data, default: 'output'.
-     show_time (bool):Added to monitor time cost for large images,  default: False. 
+     	image (str): name of binary ('uint8') file representing the image;
+     
+     	size (int): image linear size. Note, that only cubical images can be analyzed;
+     	 
+     	cut_step (int): increment step of subcube size;
+     	
+     	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
+     	
+     	exe_path_fdmss (str): path to fdmss exe file;
+     	
+     	directions (str): 'x', 'y', 'z' or 'all'. If label of this parameter is 'all', permeability values are generated for all 3 possible flow directions;
+     	
+     	n_threads (int): number of CPU cores used by FDMSS, default: 1;
+     	
+     	resolution (float): resolution of studied sample (micrometers), default: 1;
+     	
+     	datadir (str): path to the folder containing image, default: 'data';
+     	
+     	outputdir (str): path to the output folder containing generated data, default: 'output';
+     	
+     	show_time (bool): Added to monitor time cost for large images,  default: False. 
     """
     assert (directions == 'x' or directions == 'y' or directions ==
             'z' or directions == 'all'), "Direction should be 'x', 'y', 'z' or 'all'"

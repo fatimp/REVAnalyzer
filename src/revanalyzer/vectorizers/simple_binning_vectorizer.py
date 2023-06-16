@@ -13,10 +13,11 @@ class SimpleBinningVectorizer(BasicVectorizer):
         """
         **Input:**
         
-        bins (int): number of bins at each axe in XY plane.
-        skip_zeros (bool): If True, bins of 2D histogram empty for both compared PDs are not included into the final vectors, 
-                           default: True.
-        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        	bins (int): number of bins at each axe in XY plane;
+        
+        	skip_zeros (bool): If True, bins of 2D histogram empty for both compared PDs are not included into the final vectors, default: True;
+        	
+        	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
         """         
         super().__init__(norm)
         self.bins = bins
@@ -28,13 +29,13 @@ class SimpleBinningVectorizer(BasicVectorizer):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube.
         
         **Output:**
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """        
         r1 = _range_pd(v1)
         v1 = _hist_pd(v1, self.bins, r1)

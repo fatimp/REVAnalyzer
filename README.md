@@ -5,6 +5,10 @@ functions and persistence diagrams can be analyzed, determenistic and statistica
 
 =================================================================================
 
+Actual branch
+=============
+develop
+
 Installation
 ============
 $git clone https://gce.digital-core.ru/gitlab-instance-4a5c00a2/rev-analyzer.git
@@ -107,6 +111,10 @@ $cmake -B ./build -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $cd build/
 $make -j
 
+Documentation
+=============
+To see the documentation open /docs/html/index.html
+To build the documentation read /docs/README.md
 
 Authors
 =======

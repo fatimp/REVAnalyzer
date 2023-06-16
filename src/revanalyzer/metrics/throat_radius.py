@@ -17,11 +17,15 @@ class ThroatRadius(BasicPNMMetric):
         """
         **Input:**
         
-        vectorizer (PNMVectorizer object): vectorizer to be used for Pore Radius metric.
-        statoildir (str): path to the folder containing generated data for subcubes in statoil format.
-        resolution (float): resolution of studied sample (unitless), default: 1.
-        length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
-        direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
+        	vectorizer (PNMVectorizer object): vectorizer to be used for Pore Radius metric;
+        	
+        	statoildir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	resolution (float): resolution of studied sample (unitless), default: 1;
+        	
+        	length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M';
+        	
+        	direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
         """        
         super().__init__(statoildir, resolution, length_unit_type, direction, vectorizer)
         self.metric_type = 'v'
@@ -32,13 +36,15 @@ class ThroatRadius(BasicPNMMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+       		cut_name (str): name of subcube;
+       		
+        	l (int): linear size of subcube.
         
         **Output:**
         
-        name of file (str), in which throat radius distribution, normalized over subcube volume, is written.
+        	name of file (str), in which throat radius distribution, normalized over subcube volume, is written.
         """ 
         pore_number = super().generate(inputdir, cut_name, l)
         if pore_number > 0:
@@ -58,11 +64,15 @@ class ThroatRadius(BasicPNMMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes. 
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
-        nbins (int): number of bins in histogram. 
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	 
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index;
+        	
+        	nbins (int): number of bins in histogram. 
         """
         x, hist = super().show(inputdir, name, cut_size, cut_id, nbins)
         fig, ax = plt.subplots(figsize=(10, 8))

@@ -15,8 +15,7 @@ class BasicPDMetric(BasicMetric):
         """
         **Input:**
         
-        vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer 
-                   object):vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
         """
         assert isinstance(vectorizer, SimpleBinningVectorizer) or isinstance(vectorizer, PersistenceImageVectorizer) or isinstance(
             vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer), 'Vectorizer should be an object of SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer class'
@@ -28,15 +27,17 @@ class BasicPDMetric(BasicMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes. 
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	 
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         
         **Output:**
         
-        (list(dtype = float), list(dtype = float)) -  a tuple, in which the first and the second elements are the vectors of 
-        birth and death values, respectively.
+        	(list(dtype = float), list(dtype = float)) -  a tuple, in which the first and the second elements are the vectors of birth and death values, respectively.
         """          
         data = self.read(inputdir, name, cut_size, cut_id)
         b = [elem[0] for elem in data]
@@ -51,13 +52,13 @@ class BasicPDMetric(BasicMetric):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube.
         
         **Output:**
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """
         return self.vectorizer.vectorize(v1, v2)
         
@@ -70,8 +71,7 @@ class PD0(BasicPDMetric):
         """
         **Input:**
         
-        vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer 
-                   object):vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
         """
         super().__init__(vectorizer)
         self.metric_type = 'v'
@@ -82,10 +82,13 @@ class PD0(BasicPDMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes. 
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	 
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         """  
         b, d = super().show(inputdir, name, cut_size, cut_id)
         title = 'PD0' + ", " + name + \
@@ -101,8 +104,7 @@ class PD1(BasicPDMetric):
         """
         **Input:**
         
-        vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer 
-                   object):vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
         """
         super().__init__(vectorizer)
         self.metric_type = 'v'
@@ -113,10 +115,13 @@ class PD1(BasicPDMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes. 
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+         
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         """  
         b, d = super().show(inputdir, name, cut_size, cut_id)
         title = 'PD1' + ", " + name + \
@@ -132,8 +137,7 @@ class PD2(BasicPDMetric):
         """
         **Input:**
         
-        vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer 
-                   object):vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
         """
         super().__init__(vectorizer)
         self.metric_type = 'v'
@@ -144,10 +148,13 @@ class PD2(BasicPDMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes. 
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	 
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         """  
         b, d = super().show(inputdir, name, cut_size, cut_id)
         title = 'PD2' + ", " + name + \

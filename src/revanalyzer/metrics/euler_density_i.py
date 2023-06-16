@@ -22,7 +22,7 @@ class EulerDensityI(BasicMetric):
         """
         **Input:**
         
-        show_time (bool): flag to monitor time cost for large images, default: False.
+        	show_time (bool): flag to monitor time cost for large images, default: False.
         """
         super().__init__(vectorizer=None)
         self.metric_type = 's'
@@ -34,13 +34,15 @@ class EulerDensityI(BasicMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing subcubes.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
+        	inputdir (str): path to the folder containing subcubes;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube.
         
         **Output:**
         
-        name of file (str), in which Euler density is written.
+        	name of file (str), in which Euler density is written.
         """         
         start_time = time.time()
         if inputdir is not None:

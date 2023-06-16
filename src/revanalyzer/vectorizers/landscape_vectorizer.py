@@ -16,9 +16,11 @@ class LandscapeVectorizer(BasicVectorizer):
         """
         **Input:**
         
-        resolution (int): number of sample for all piecewise-linear functions. 
-        num_landcapes (int): number of piecewise-linear functions to output, default = 1. 
-        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        	resolution (int): number of sample for all piecewise-linear functions;
+        	 
+        	num_landcapes (int): number of piecewise-linear functions to output, default = 1;
+        	 
+        	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
         """         
         super().__init__(norm)
         self.resolution = resolution
@@ -30,13 +32,13 @@ class LandscapeVectorizer(BasicVectorizer):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube.
         
         **Output:**
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """ 
         L1 = Landscape(self.num_landscapes, self.resolution)
         L1.fit([v1])

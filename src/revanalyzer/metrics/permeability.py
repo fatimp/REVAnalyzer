@@ -13,9 +13,7 @@ class Permeability(BasicMetric):
     def __init__(self, all_directions=True):
         """
         **Input:**
-        all_directions (bool): flag indicating if generation over 3 flow directions was done by external generator.
-                               It must be False, if in generator function parameter 'directions' = 'x', 'y' or 'z'. 
-                               It must be True, if 'directions' = 'all'. Default: True.
+        	all_directions (bool): flag indicating if generation over 3 flow directions was done by external generator. It must be False, if in generator function parameter 'directions' = 'x', 'y' or 'z'. It must be True, if 'directions' = 'all'. Default: True.
         """
         super().__init__(vectorizer=None)
         self.metric_type = 's'

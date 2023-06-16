@@ -9,6 +9,6 @@ class BasicVectorizer:
         """
         **Input:**
         
-        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function.
+        	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function.
         """
         self.norm = norm

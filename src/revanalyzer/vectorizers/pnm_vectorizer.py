@@ -13,8 +13,9 @@ class PNMVectorizer(BasicVectorizer):
         """
         **Input:**
         
-        factor (int): Defines how many bins are in linear size of one voxel, default: 1.
-        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        	factor (int): Defines how many bins are in linear size of one voxel, default: 1;
+        	
+        	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
         """      
         super().__init__(norm)
         self.factor = factor
@@ -25,13 +26,13 @@ class PNMVectorizer(BasicVectorizer):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube.
         
         **Output:**
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """
         rmax1 = np.ceil(max(v1))
         r1 = [0, rmax1]

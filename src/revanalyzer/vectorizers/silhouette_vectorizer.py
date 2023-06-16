@@ -16,9 +16,11 @@ class SilhouetteVectorizer(BasicVectorizer):
         """
         **Input:**
         
-        resolution (int): number of samples for the weighted average.
-        n (int): power parameter in weighted funtion (d-b)^n, default = 1. 
-        norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
+        	resolution (int): number of samples for the weighted average;
+        	
+        	n (int): power parameter in weighted funtion (d-b)^n, default = 1;
+        	 
+        	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
         """ 
         super().__init__(norm)
         self.resolution = resolution
@@ -30,13 +32,13 @@ class SilhouetteVectorizer(BasicVectorizer):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube.
         
         **Output:**
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """ 
         S1 = Silhouette(weight=lambda x: (
             x[1] - x[0])**self.n, resolution=self.resolution)

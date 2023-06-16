@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+"""Vectorizers for vector metrics."""
+
 from .basic_vectorizer import BasicVectorizer
 from .pnm_vectorizer import PNMVectorizer
 from .cf_vectorizer import CFVectorizer

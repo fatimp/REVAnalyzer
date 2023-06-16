@@ -21,11 +21,11 @@ class BasicCFMetric(BasicMetric):
         """
         **Input:**
         
-        vectorizer (CFVectorizer): vectorizer to be used for PD metric.
-        show_time (bool): flag to monitor time cost for large images, default: False.
-        normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. 
-                          See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized
-                          correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """        
         assert isinstance(
             vectorizer, CFVectorizer), "Vectorizer should be an object of CFVectorizer class"
@@ -43,15 +43,19 @@ class BasicCFMetric(BasicMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
-        outputdir (str): path to the folder containing generated CF data.
-        method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data;
+        	
+        	method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
         
         **Output:**
         
-        name of file (str), in which CF is written.
+        	name of file (str), in which CF is written.
         """          
         start_time = time.time()
         if inputdir is not None:
@@ -85,17 +89,25 @@ class BasicCFMetric(BasicMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes.
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         
         **Output:**
         
-        x (list(dtype = int)): 'x' coordinate values for a plot.
-        data[0] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'x' direction.
-        data[1] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'y' direction.
-        data[2] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'z' direction.
+        	(x, data) - a tuple, in which
+        	
+        		x (list(dtype = int)): 'x' coordinate values for a plot;
+        		
+        		data[0] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'x' direction;
+        		
+        		data[1] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'y' direction;
+        		
+        		data[2] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'z' direction.
         """        
         data = self.read(inputdir, name, cut_size, cut_id)
         x = np.arange(len(data[0]))
@@ -109,40 +121,38 @@ class BasicCFMetric(BasicMetric):
         
         **Input:**
         
-        v1 (list(dtype = float)): data for the first cubcube.
-        v2 (list(dtype = float)): data for the second cubcube.
+        	v1 (list(dtype = float)): data for the first cubcube;
+        	
+        	v2 (list(dtype = float)): data for the second cubcube;
         
         **Output:**
         
-        Depends on the chosen mode in CFVectorizer.
+        	Depends on the chosen mode in CFVectorizer.
         
-        If mode = 'all':
+        	If mode = 'all':
         
-        (list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values
-        for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         
-        If mode = 'max:
+        	If mode = 'max:
         
-        (list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which in which the first two elements
-        are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of 
-        normalized distances between these vectors.        
+ 			(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of normalized distances between these vectors.        
         """
         return self.vectorizer.vectorize(v1, v2)
 
 
 class C2(BasicCFMetric):
     """
-    Class describint metric C2. 
+    Class describing metric C2. 
     """ 
     def __init__(self,  vectorizer, show_time=False, normalize=True):
         """
         **Input:**
         
-        vectorizer (CFVectorizer): vectorizer to be used for PD metric.
-        show_time (bool): flag to monitor time cost for large images, default: False.
-        normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. 
-                          See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized
-                          correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """ 
         super().__init__(vectorizer, show_time, normalize)
         self.metric_type = 'v'
@@ -153,15 +163,17 @@ class C2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
-        outputdir (str): path to the folder containing generated CF data.
-        method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
-        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data;
+        	        
         **Output:**
         
-        name of file (str), in which CF is written.
+        	name of file (str), in which CF is written.
         """
         return super().generate(inputdir, cut_name, l, outputdir, method='c2')
 
@@ -171,10 +183,13 @@ class C2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes.
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         """
         x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -192,17 +207,17 @@ class C2(BasicCFMetric):
 
 class L2(BasicCFMetric):
     """
-    Class describint metric L2. 
+    Class describing metric L2. 
     """ 
     def __init__(self,  vectorizer, show_time=False, normalize=True):
         """
         **Input:**
         
-        vectorizer (CFVectorizer): vectorizer to be used for PD metric.
-        show_time (bool): flag to monitor time cost for large images, default: False.
-        normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. 
-                          See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized
-                          correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """
         super().__init__(vectorizer, show_time, normalize)
         self.metric_type = 'v'
@@ -213,15 +228,17 @@ class L2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
-        outputdir (str): path to the folder containing generated CF data.
-        method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data;
         
         **Output:**
         
-        name of file (str), in which CF is written.
+        	name of file (str), in which CF is written.
         """
         return super().generate(inputdir, cut_name, l, outputdir, method='l2')
 
@@ -231,10 +248,13 @@ class L2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes.
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         """
         x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -252,17 +272,17 @@ class L2(BasicCFMetric):
 
 class S2(BasicCFMetric): 
     """
-    Class describint metric S2. 
+    Class describing metric S2. 
     """ 
     def __init__(self,  vectorizer, show_time=False, normalize=True):
         """
         **Input:**
         
-        vectorizer (CFVectorizer): vectorizer to be used for PD metric.
-        show_time (bool): flag to monitor time cost for large images, default: False.
-        normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. 
-                          See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized
-                          correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """
         super().__init__(vectorizer, show_time, normalize)
         self.metric_type = 'v'
@@ -273,15 +293,17 @@ class S2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
-        outputdir (str): path to the folder containing generated CF data.
-        method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data;
         
         **Output:**
         
-        name of file (str), in which CF is written.
+        	name of file (str), in which CF is written.
         """
         return super().generate(inputdir, cut_name, l, outputdir, method='s2')
 
@@ -291,10 +313,13 @@ class S2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes.
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.
         """        
         x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -312,17 +337,17 @@ class S2(BasicCFMetric):
 
 class SS2(BasicCFMetric):
     """
-    Class describint metric SS2. 
+    Class describing metric SS2. 
     """ 
     def __init__(self,  vectorizer, show_time=False, normalize=True):
         """
         **Input:**
         
-        vectorizer (CFVectorizer): vectorizer to be used for PD metric.
-        show_time (bool): flag to monitor time cost for large images, default: False.
-        normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. 
-                          See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized
-                          correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """
         super().__init__(vectorizer, show_time, normalize)
         self.metric_type = 'v'
@@ -333,15 +358,17 @@ class SS2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
-        outputdir (str): path to the folder containing generated CF data.
-        method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
         
         **Output:**
         
-        name of file (str), in which CF is written.
+        	name of file (str), in which CF is written.
         """
         return super().generate(inputdir, cut_name, l, outputdir, method='ss')
 
@@ -351,10 +378,13 @@ class SS2(BasicCFMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated metric data for subcubes.
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
         """
         x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))

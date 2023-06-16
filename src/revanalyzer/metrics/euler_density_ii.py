@@ -17,10 +17,13 @@ class EulerDensityII(BasicPNMMetric):
         """
         **Input:**
         
-        statoildir (str): path to the folder containing generated data for subcubes in statoil format.
-        resolution (float): resolution of studied sample (unitless), default: 1.
-        length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
-        direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
+        	statoildir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	resolution (float): resolution of studied sample (unitless), default: 1;
+        	
+        	length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M';
+        	
+        	direction (str): flow direction, could be 'x', 'y' or 'z', default: 'z'. 
         """        
         super().__init__(statoildir, resolution, length_unit_type, direction, vectorizer=None)
         self.metric_type = 's'
@@ -31,13 +34,15 @@ class EulerDensityII(BasicPNMMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing generated data for subcubes in statoil format.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube.
         
         **Output:**
         
-        name of file (str), in which Euler density is written.
+        	name of file (str), in which Euler density is written.
         """        
         filein = os.path.join(inputdir, cut_name) + "_" + \
             self.direction + '_node1.dat'

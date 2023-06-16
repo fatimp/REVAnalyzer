@@ -1,0 +1,321 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Metrics &mdash; REVAnalyzer 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Structure and pipeline" href="structure.html" />
+    <link rel="prev" title="REV analysis" href="theory.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> REVAnalyzer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">How to install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">REV analysis</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#porosity">Porosity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#permeability">Permeability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#euler-density">Euler density</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pnm-characteristics">PNM characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#correlation-functions">Correlation functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#persistence-diagrams">Persistence diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure and pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="REVAnalyzer.html">Code Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">REVAnalyzer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Metrics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="metrics">
+<span id="id1"></span><h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="porosity">
+<h2>Porosity<a class="headerlink" href="#porosity" title="Permalink to this heading">¶</a></h2>
+<p>Porosity, the scalar metric, is computed internally by counting the number of pore voxels with subsequent normalization over the total number of voxels in the considered volume.</p>
+<p>This metric is implemented using <a class="reference internal" href="_autosummary/revanalyzer.metrics.porosity.Porosity.html"><span class="doc">class Porosity.</span></a></p>
+</section>
+<section id="permeability">
+<h2>Permeability<a class="headerlink" href="#permeability" title="Permalink to this heading">¶</a></h2>
+<p>Permeability, the scalar metric, can be computed using externally by two ways.</p>
+<p>First, FDMSS, the external solver of Stokes’s equation with 4th order spatial accuracy scheme can be used.
+To run FMDSS for all the chosen subcubes one can call <a class="reference internal" href="_autosummary/revanalyzer.generators.permeability_fdmss_generator.generate_permeability_fdmss.html"><span class="doc">FDMSS generator.</span></a></p>
+<p>Second, PNM-extractor and MEF modules should be sequentially run.
+To run them for all the chosen subcubes one can call <a class="reference internal" href="_autosummary/revanalyzer.generators.permeability_mef_generator.generate_permeability_mef.html"><span class="doc">MEF generator.</span></a></p>
+<p>The permeability metric is implemented using <a class="reference internal" href="_autosummary/revanalyzer.metrics.permeability.Permeability.html"><span class="doc">class Permeability.</span></a></p>
+</section>
+<section id="euler-density">
+<h2>Euler density<a class="headerlink" href="#euler-density" title="Permalink to this heading">¶</a></h2>
+<p>Euler density, the scalar metric, describing the topological properties of 3D image, is computed by the normalization of Euler number <span class="math notranslate nohighlight">\(\chi\)</span>  over the total number of voxels in the considered volume.
+One can use its correct (<a class="reference internal" href="_autosummary/revanalyzer.metrics.euler_density_i.EulerDensityI.html"><span class="doc">class EulerDensityI</span></a>) and approximate (<a class="reference internal" href="_autosummary/revanalyzer.metrics.euler_density_ii.EulerDensityII.html"><span class="doc">class EulerDensityII</span></a>) values.</p>
+<p>The correct Euler number for a given voxel domain can be calculated using the following expression (Vogel, H. J., Weller, U., &amp; Schlüter, S. (2010). Quantification of soil structure based on Minkowski functions. Computers &amp; Geosciences, 36(10), 1236-1245):</p>
+<div class="math notranslate nohighlight">
+\[\chi = \# vertices - \# edges + \# faces - \# volumes,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\#\)</span> means ‘number of’. The correct Euler densities are computed internally using julia library.</p>
+<p>One can also use the approximate expression for Euler number using the characteristics of pore-network model (PNM), extracted from 3D image (see the next subsection):</p>
+<div class="math notranslate nohighlight">
+\[\chi \approx N_p - N_t,\]</div>
+<p>where <span class="math notranslate nohighlight">\(N_p\)</span> and <span class="math notranslate nohighlight">\(N_t\)</span> are pores and throat numbers given by PNM.</p>
+</section>
+<section id="pnm-characteristics">
+<h2>PNM characteristics<a class="headerlink" href="#pnm-characteristics" title="Permalink to this heading">¶</a></h2>
+<p>Pore-network models (PNM) divide the void space of the 3D image into pores representing wider regions that are connected through narrower restrictions called throats.
+Coonectivity (also called coordination number) for a single pore is defined as the number of thoats, connecting the given pore with the other ones.</p>
+<p>Here, we consider 6 scalar PNM-based metrics:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>pore number (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pore_number.PoreNumber.html"><span class="doc">class PoreNumber</span></a>),</p></li>
+<li><p>throat number (<a class="reference internal" href="_autosummary/revanalyzer.metrics.throat_number.ThroatNumber.html"><span class="doc">class ThroatNumber</span></a>),</p></li>
+<li><p>mean pore radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.mean_pore_radius.MeanPoreRadius.html"><span class="doc">class MeanPoreRadius</span></a>),</p></li>
+<li><p>mean throat radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.mean_throat_radius.MeanThroatRadius.html"><span class="doc">class MeanThroatRadius</span></a>),</p></li>
+<li><p>mean connectivity (<a class="reference internal" href="_autosummary/revanalyzer.metrics.mean_connectivity.MeanConnectivity.html"><span class="doc">class MeanConnectivity</span></a>),</p></li>
+<li><p>approximate Euler density (<a class="reference internal" href="_autosummary/revanalyzer.metrics.euler_density_ii.EulerDensityII.html"><span class="doc">class EulerDensityII</span></a>, also see the previous subsection).</p></li>
+</ul>
+</div></blockquote>
+<p>We also consider 3 vector PNM-based metrics:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>pore radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pore_radius.PoreRadius.html"><span class="doc">class PoreRadius</span></a>),</p></li>
+<li><p>throat radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.throat_radius.ThroatRadius.html"><span class="doc">class ThroatRadius</span></a>),</p></li>
+<li><p>connectivity (<a class="reference internal" href="_autosummary/revanalyzer.metrics.connectivity.Connectivity.html"><span class="doc">class Connectivity</span></a>).</p></li>
+</ul>
+</div></blockquote>
+<p>Pore, throat radii and connectivities can be presented as 1d histograms (see the figure below). These histograms can be vectorized using PNM vectorizer (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.pnm_vectorizer.PNMVectorizer.html"><span class="doc">class PNMVectorizer</span></a>).</p>
+<img alt="_images/fig_pnm.png" class="align-center" src="_images/fig_pnm.png" />
+<p>Generation of PNM characteristics is performed in two steps. First, one can use PNM-extractor for the generation of output files in ‘statoil’ format.
+To run FMDSS for all the chosen subcubes one can call <a class="reference internal" href="_autosummary/revanalyzer.generators.pnm_generator.generate_PNM.html"><span class="doc">PNM generator.</span></a>
+Afterwards, PNM-based metrics can be computed internally using generated statoil outputs.</p>
+</section>
+<section id="correlation-functions">
+<h2>Correlation functions<a class="headerlink" href="#correlation-functions" title="Permalink to this heading">¶</a></h2>
+<p>We consider 4 types of correlation functions (CFs):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>two-point probability function <span class="math notranslate nohighlight">\(S_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.S2.html"><span class="doc">class S2</span></a>),</p></li>
+<li><p>lineal function <span class="math notranslate nohighlight">\(L_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.L2.html"><span class="doc">class L2</span></a>),</p></li>
+<li><p>cluster function <span class="math notranslate nohighlight">\(C_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.C2.html"><span class="doc">class C2</span></a>),</p></li>
+<li><p>surface-surface function <span class="math notranslate nohighlight">\(SS_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.SS2.html"><span class="doc">class SS2</span></a>).</p></li>
+</ul>
+</div></blockquote>
+<p>Each correlation function measures a probability of some event for a given correlation length <span class="math notranslate nohighlight">\(\boldsymbol{r}\)</span>. Specifically, <span class="math notranslate nohighlight">\(S_2(\boldsymbol{r})\)</span> measures the probability that both ends of the <span class="math notranslate nohighlight">\(\boldsymbol{r}\)</span> line segment lie within pore phase,
+<span class="math notranslate nohighlight">\(L_2(\boldsymbol{r})\)</span> — the probability that the whole segment lies within the pore space, <span class="math notranslate nohighlight">\(C_2(\boldsymbol{r})\)</span> — that both ends of the segment lie within the same pore cluster,
+and <span class="math notranslate nohighlight">\(SS_2(\boldsymbol{r})\)</span> — that both ends fall into a pore-solid interface. The correlation length <span class="math notranslate nohighlight">\(\boldsymbol{r}\)</span> was chosen to vary from 0 to a half of total linear size (in voxels) of the studied sample.
+Any additional details on different CFs can be found in comprehensive Torquato’s book (Torquato S. (2002) Random Heterogeneous Materials: Microstructure and Macroscopic Properties (SpringerVerlag, New York).</p>
+<p>The CFs ara computed internally using julia library along three major orthogonal directions <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span> and <span class="math notranslate nohighlight">\(z\)</span> exclusively for the pore phase.
+They can be normalized to satisfy the condition CF(<span class="math notranslate nohighlight">\(\boldsymbol{r} = 0\)</span>) (Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577).
+The example of computed CFs for a cubical <span class="math notranslate nohighlight">\(500^3\)</span> voxels sample are presented at the figure below.</p>
+<img alt="_images/fig_cf.png" class="align-center" src="_images/fig_cf.png" />
+<p>The computed CFs can be vectorized using CF vectorizer (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.cf_vectorizer.CFVectorizer.html"><span class="doc">CFVectorizer</span></a>).</p>
+</section>
+<section id="persistence-diagrams">
+<h2>Persistence diagrams<a class="headerlink" href="#persistence-diagrams" title="Permalink to this heading">¶</a></h2>
+<p>Persistence diagram (PD) is 2D visualization of persistent homology analysis applied to some 3D domain. PDs provide the scales of topological features and clarify the geometric relationships among them.
+The total set of persistent pairs located in 2D coordinate plane form a persistence diagram <span class="math notranslate nohighlight">\(\mathrm{PD}_k\)</span>. We condider 3 PD-based vector metrics:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_0\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pd.PD0.html"><span class="doc">class PD0</span></a>),</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_1\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pd.PD1.html"><span class="doc">class PD1</span></a>),</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_2\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pd.PD2.html"><span class="doc">class PD2</span></a>).</p></li>
+</ul>
+</div></blockquote>
+<p><span class="math notranslate nohighlight">\(\mathrm{PD}_0\)</span> represents the births and deaths of connected components, <span class="math notranslate nohighlight">\(\mathrm{PD}_1\)</span> — the births and deaths of 1-cycles (rings), and <span class="math notranslate nohighlight">\(\mathrm{PD}_2\)</span> — the births and deaths of 2-cycles (cavities).
+The example of computed PDs are presented at the figure below.</p>
+<img alt="_images/fig_pd.png" class="align-center" src="_images/fig_pd.png" />
+<p>PDs can be generated using external package. To run it for all the chosen subcubes one can call <a class="reference internal" href="_autosummary/revanalyzer.generators.pd_generator.generate_PD.html"><span class="doc">PD generator</span></a>.
+The generated PD data can be vectorized using 4 different vectorizers:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="_autosummary/revanalyzer.vectorizers.simple_binning_vectorizer.SimpleBinningVectorizer.html"><span class="doc">SimpleBinningVectorizer</span></a>,</p></li>
+<li><p><a class="reference internal" href="_autosummary/revanalyzer.vectorizers.persistence_image_vectorizer.PersistenceImageVectorizer.html"><span class="doc">PersistenceImageVectorizer</span></a>,</p></li>
+<li><p><a class="reference internal" href="_autosummary/revanalyzer.vectorizers.landscape_vectorizer.html"><span class="doc">LandscapeVectorizer</span></a>,</p></li>
+<li><p><a class="reference internal" href="_autosummary/revanalyzer.vectorizers.silhouette_vectorizer.SilhouetteVectorizer.html"><span class="doc">SilhouetteVectorizer</span></a>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structure.html" class="btn btn-neutral float-right" title="Structure and pipeline" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="theory.html" class="btn btn-neutral float-left" title="REV analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2023, Andrey Zubov
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

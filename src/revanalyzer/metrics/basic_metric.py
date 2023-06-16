@@ -13,7 +13,7 @@ class BasicMetric:
         """
         **Input:**
         
-        vectorizer (subclass of BasicVectorizer): vectorizer to be used for a vector metric.
+        	vectorizer (subclass of BasicVectorizer): vectorizer to be used for a vector metric.
         """
         self.vectorizer = vectorizer
         self.directional = False
@@ -25,14 +25,17 @@ class BasicMetric:
         
         **Input:**
         
-        inputdir (str): path to the folder containing image.
-        name (str): name of binary ('uint8') file representing the image.
-        cut_size (int): size of subcube.
-        cut_id (int: 0,..8): cut index.  
+        	inputdir (str): path to the folder containing image;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        	
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index.  
         
         **Output:**
         
-        metric value (float or np.array(dtype='float'))
+        	metric value (float or np.array(dtype='float')).
         """
         if self.directional:
             directions = ('_x', '_y', '_z')

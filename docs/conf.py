@@ -10,10 +10,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+from julia.api import Julia
+jl = Julia(compiled_modules=False)
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../src'))
-
+#print(os.path.abspath('../src/'))
 
 # -- Project information -----------------------------------------------------
 
@@ -33,6 +35,9 @@ release = '0.1.0'
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary', 'sphinx.ext.coverage', 'sphinx.ext.napoleon']
 
 autosummary_generate = True
+autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
+html_show_sourcelink = False  # Remove 'view source code' from top of page (for html, not python)
+autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

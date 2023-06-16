@@ -20,13 +20,15 @@ class Porosity(BasicMetric):
         
         **Input:**
         
-        inputdir (str): path to the folder containing subcubes.
-        cut_name (str): name of subcube.
-        l (int): linear size of subcube.
+        	inputdir (str): path to the folder containing subcubes;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube.
         
         **Output:**
         
-        name of file (str), in which porosity is written.
+        	name of file (str), in which porosity is written.
         """  
         filein = os.path.join(inputdir, cut_name)
         v = np.fromfile(filein, dtype='uint8', sep="")

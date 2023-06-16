@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+""" Classes describing metrics to be analyzed."""
+
 from .basic_metric import BasicMetric
 from .porosity import Porosity
 from .basic_pnm_metric import BasicPNMMetric

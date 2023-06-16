@@ -20,13 +20,19 @@ class REVAnalyzer:
         """
         **Input:**
 
-        metric (subclass of BasicMetric): metric to be analyzed .
-        image (str): name of binary ('uint8') file representing the image.
-        size (int): image linear size. Note, that only cubical images can be analyzed. 
-        cut_step (int): increment step of subcube size
-        sREV_max_size (int): maximal subcube size for which sREV analysis is performed.
-        datadir (str): path to the folder containing image, default: 'data'
-        outputdir (str): ath to the output folder containing generated data, default: 'output'
+        	metric (subclass of BasicMetric): metric to be analyzed;
+        
+        	image (str): name of binary ('uint8') file representing the image;
+        
+        	size (int): image linear size. Note, that only cubical images can be analyzed;
+         
+        	cut_step (int): increment step of subcube size;
+        
+        	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
+        
+        	datadir (str): path to the folder containing image, default: 'data';
+        
+        	outputdir (str): path to the output folder containing generated data, default: 'output'.
         """
         assert issubclass(
             metric.__class__, BasicMetric), "Metric should be an object of a class derived from BasicMetric"
@@ -108,12 +114,13 @@ class REVAnalyzer:
         
         **Input:**
         
-        cut_size (int): size of subcube
-        cut_id (int: 0,..8): cut index    
+        	cut_size (int): size of subcube;
+        	
+        	cut_id (int: 0,..8): cut index .   
         
         **Output**
         
-        metric value (float or np.array(dtype='float'))       
+        	metric value (float or np.array(dtype='float')).       
         """
         return self.metric.read(
             self._outputdir_cut_values, self.image, cut_size, cut_id)
@@ -122,11 +129,13 @@ class REVAnalyzer:
         """
         Vizualize the vector metric for a specific subcube.
         
-         **Input:**
+        **Input:**
          
-        cut_size (int): size of subcube
-        cut_id (int: 0,..8): cut index
-        nbins (int): number of bins in histogram. For PNM-based metric only.
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index;
+        	
+        	nbins (int): number of bins in histogram. For PNM-based metric only.
         """
         assert self.metric.metric_type == 'v', "Metric type should be vector"
         if issubclass(self.metric.__class__, BasicPNMMetric):
@@ -216,8 +225,9 @@ class REVAnalyzer:
         
         **Input:**
         
-        dREV_threshold (float, <1): threshold to estimate dREV size
-        sREV_threshold (float, <1): threshold to estimate sREV size
+        	dREV_threshold (float, <1): threshold to estimate dREV size;
+        	
+        	sREV_threshold (float, <1): threshold to estimate sREV size.
         """
         self.dREV_threshold = dREV_threshold
         self.sREV_threshold = sREV_threshold
@@ -300,6 +310,10 @@ class REVAnalyzer:
     def show_results(self, figdir='figs'):
         """
         Visualization of REV analysis results.
+        
+        **Input:**
+        
+        	figdir (str): path to the folder for saving figures.
         """
         figdir = os.path.join(self.outputdir, self.image, figdir)
         os.makedirs(figdir, exist_ok=True)
