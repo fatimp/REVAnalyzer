@@ -46,7 +46,7 @@ function vectorize(str_args)
     elseif (method == "ss")
         v = surf2(data, 0)
         if (normalize == 1)
-            res = [v[DirX()]/[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
+            res = [v[DirX()]/v[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
         else
             res = [v[DirX()], v[DirY()], v[DirZ()]]
         end

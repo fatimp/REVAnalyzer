@@ -10,7 +10,7 @@ mode = 'all'
 vectorizer = CFVectorizer(norm, mode) #vectorizer inizialization
 
 normalize = True 
-metric = S2(vectorizer, normalize) #metric inizialization
+metric = SS2(vectorizer, normalize) #metric inizialization
 
 #here insert your dirs and images: 
 datadir = 'data'
@@ -30,5 +30,5 @@ v2 = metric.read(outputdir, image2, 0, 0)
 #if metric is vector type, you need the following:
 output = metric.vectorize(v1, v2)
 result = output[2]
-print("Distance between images in S2 metric: ", result)
+print("Distance between images in SS2 metric: ", result)
 
