@@ -51,7 +51,7 @@ class BasicMetric:
                     filein = os.path.join(inputdir, cut_name)
                 else:
                     filein = cut_name
-                d = np.loadtxt(filein, delimiter=" ", dtype=np.float)
+                d = np.loadtxt(filein, delimiter=" ", dtype=float)
                 if self.metric_type == 'v':
                     data.append(d)
                 if self.metric_type == 's':
@@ -70,7 +70,7 @@ class BasicMetric:
                 filein = os.path.join(inputdir, cut_name)
             else:
                 filein = cut_name
-            data = np.loadtxt(filein, delimiter=" ", dtype=np.float)
+            data = np.loadtxt(filein, delimiter=" ", dtype=float)
             if self.metric_type == 's' and np.isnan(data):
                 data = np.array(0)
             return data

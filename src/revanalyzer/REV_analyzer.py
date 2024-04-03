@@ -125,7 +125,7 @@ class REVAnalyzer:
         return self.metric.read(
             self._outputdir_cut_values, self.image, cut_size, cut_id)
     
-    def show(self, cut_size, cut_id, nbins = None):
+    def show(self, cut_size, cut_id = 0, nbins = None):
         """
         Vizualize the vector metric for a specific subcube.
         
