@@ -21,7 +21,7 @@ class BasicCFMetric(BasicMetric):
         """
         **Input:**
         
-        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -148,7 +148,7 @@ class C2(BasicCFMetric):
         """
         **Input:**
         
-        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -213,7 +213,7 @@ class L2(BasicCFMetric):
         """
         **Input:**
         
-        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -278,7 +278,7 @@ class S2(BasicCFMetric):
         """
         **Input:**
         
-        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -335,15 +335,15 @@ class S2(BasicCFMetric):
         plt.show()
 
 
-class SS2(BasicCFMetric):
+class SS(BasicCFMetric):
     """
-    Class describing metric SS2. 
+    Class describing metric SS. 
     """ 
     def __init__(self,  vectorizer, show_time=False, normalize=True):
         """
         **Input:**
         
-        	vectorizer (CFVectorizer): vectorizer to be used for PD metric;
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -354,7 +354,7 @@ class SS2(BasicCFMetric):
 
     def generate(self, inputdir, cut_name, l, outputdir):
         """
-        Generates the correlation function SS2 for a specific subcube.
+        Generates the correlation function SS for a specific subcube.
         
         **Input:**
         
@@ -374,7 +374,592 @@ class SS2(BasicCFMetric):
 
     def show(self, inputdir, name, cut_size, cut_id):
         """
-        Vizualize the correlation function SS2 for a specific subcube.
+        Vizualize the correlation function SS for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class SV(BasicCFMetric):
+    """
+    Class describing metric SV. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function SV for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='sv')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function SV for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class SSS(BasicCFMetric):
+    """
+    Class describing metric SSS. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function SSS for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='sss')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function SSS for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class SSV(BasicCFMetric):
+    """
+    Class describing metric SSV. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function SSV for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='ssv')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function SSV for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class SVV(BasicCFMetric):
+    """
+    Class describing metric SVV. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function SVV for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='svv')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function SVV for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class ChordLength(BasicCFMetric):
+    """
+    Class describing metric chord-length. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function chord-length for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='cl')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function chord-length for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class PoreSize(BasicCFMetric):
+    """
+    Class describing metric pore-size. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function pore-size for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='ps')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function pore-size for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class CrossCorrelation(BasicCFMetric):
+    """
+    Class describing metric cross-correlation. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function cross-correlation for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='cc')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function cross-correlation for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class S3(BasicCFMetric):
+    """
+    Class describing metric S3. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function S3 for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='s3')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function S3 for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	
+        	name (str): name of binary ('uint8') file representing the image;
+        
+        	cut_size (int): size of subcube;
+        
+        	cut_id (int: 0,..8): cut index.
+        """
+        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + name + \
+            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
+
+
+class C3(BasicCFMetric):
+    """
+    Class describing metric C3. 
+    """ 
+    def __init__(self,  vectorizer, show_time=False, normalize=True):
+        """
+        **Input:**
+        
+        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+        	
+        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        """
+        super().__init__(vectorizer, show_time, normalize)
+        self.metric_type = 'v'
+
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates the correlation function S3 for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        	
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """
+        return super().generate(inputdir, cut_name, l, outputdir, method='c3')
+
+    def show(self, inputdir, name, cut_size, cut_id):
+        """
+        Vizualize the correlation function S3 for a specific subcube.
         
         **Input:**
         
