@@ -43,8 +43,8 @@ class CFVectorizer(BasicVectorizer):
         
         		(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of normalized distances between these vectors.        
         """
-        assert (self.mode == 'max' or self.mode ==
-                'all'), "Mode should be 'max' or 'all'"
+        if not (self.mode == 'max' or self.mode == 'all'):
+            raise ValueError("Mode should be 'max' or 'all'.")
         n = min(len(v1[0]), len(v2[0]))
         if self.mode == 'max':
             v_res1 = []

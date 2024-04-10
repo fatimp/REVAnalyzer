@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from .basic_metric import BasicMetric
-from revanalyzer.vectorizers import PNMVectorizer
+from revanalyzer.vectorizers import HistVectorizer
 
 units = {'M': 1, 'MM': 1e-3, 'UM': 1e-6, 'NN': 1e-9}
 
@@ -28,8 +28,8 @@ class BasicPNMMetric(BasicMetric):
         	 
         	vectorizer (PNMVectorizer object): vectorizer to be used for a vector metric.
         """
-        assert (isinstance(
-            vectorizer, PNMVectorizer) or (vectorizer is None)), "Vectorizer should be None or an object of PNMVectorizer class"
+        if not (isinstance(vectorizer, HistVectorizer) or (vectorizer is None)):
+            raise TypeError("Vectorizer should be None or an object of HistVectorizer class.")
         super().__init__(vectorizer)
         self.statoildir = statoildir
         self.resolution = resolution
@@ -80,7 +80,9 @@ class BasicPNMMetric(BasicMetric):
         
         	(list(dtype = int), list(dtype = float)) : 'x' and 'y' coordinate values for a plot.
         """
+        coef_to_voxels = self.resolution * units[self.length_unit_type]
         data = self.read(inputdir, name, cut_size, cut_id)
+        data = data/coef_to_voxels
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(
@@ -106,7 +108,8 @@ class BasicPNMMetric(BasicMetric):
         
         	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """
-        assert self.metric_type == 'v', "Metric type should be vector"
+        if not self.metric_type == 'v':
+            raise TypeError("Metric type should be vector")
         coef_to_voxels = self.resolution * units[self.length_unit_type]
         v1 = v1/coef_to_voxels
         v2 = v2/coef_to_voxels

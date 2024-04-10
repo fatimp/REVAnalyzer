@@ -41,8 +41,8 @@ def generate_permeability_fdmss(image, size, cut_step, sREV_max_size, exe_path_f
      	
      	show_time (bool): Added to monitor time cost for large images,  default: False. 
     """
-    assert (directions == 'x' or directions == 'y' or directions ==
-            'z' or directions == 'all'), "Direction should be 'x', 'y', 'z' or 'all'"
+    if not (directions == 'x' or directions == 'y' or directions == 'z' or directions == 'all'):
+        raise ValueError("Direction should be 'x', 'y', 'z' or 'all'")
     if directions == 'all':
         directions_list = ['x', 'y', 'z']
     else:

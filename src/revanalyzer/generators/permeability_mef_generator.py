@@ -49,8 +49,8 @@ def generate_permeability_mef(image, directions, size, cut_step, sREV_max_size, 
      **Output:**
      	path to MEF output folder (str)
     """
-    assert (directions == 'x' or directions == 'y' or directions ==
-            'z' or directions == 'all'), "Direction should be 'x', 'y', 'z' or 'all'"
+    if not (directions == 'x' or directions == 'y' or directions == 'z' or directions == 'all'):
+        raise ValueError("Direction should be 'x', 'y', 'z' or 'all'")
     if directions == 'all':
         directions_list = ['x', 'y', 'z']
     else:

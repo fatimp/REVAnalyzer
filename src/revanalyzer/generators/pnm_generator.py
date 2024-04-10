@@ -45,7 +45,8 @@ def generate_PNM(image, size, cut_step, sREV_max_size, exe_path, n_threads=1, re
      **Output:**
      	path to statoil output folder (str).
     """
-    assert (direction == 'x' or direction == 'y' or direction == 'z'), "Direction should be 'x', 'y' or 'z'"
+    if not (directions == 'x' or directions == 'y' or directions == 'z' or directions == 'all'):
+        raise ValueError("Direction should be 'x', 'y', 'z' or 'all'")
     start_time = time.time()
     glob_path = os.getcwd()
     outputdir = os.path.join(outputdir, image)

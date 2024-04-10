@@ -2,7 +2,7 @@
 """Vectorizers for vector metrics."""
 
 from .basic_vectorizer import BasicVectorizer
-from .pnm_vectorizer import PNMVectorizer
+from .hist_vectorizer import HistVectorizer
 from .cf_vectorizer import CFVectorizer
 from .simple_binning_vectorizer import SimpleBinningVectorizer
 from .persistence_image_vectorizer import PersistenceImageVectorizer

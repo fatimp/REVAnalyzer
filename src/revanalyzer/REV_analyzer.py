@@ -8,7 +8,7 @@ import shutil
 import matplotlib.pyplot as plt
 import itertools
 from .generators import make_cuts
-from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability
+from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability, ChordLength, PoreSize
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
 
@@ -34,8 +34,8 @@ class REVAnalyzer:
         
         	outputdir (str): path to the output folder containing generated data, default: 'output'.
         """
-        assert issubclass(
-            metric.__class__, BasicMetric), "Metric should be an object of a class derived from BasicMetric"
+        if not issubclass(metric.__class__, BasicMetric):
+            raise TypeError("Metric should be an object of a class derived from BasicMetric.")
         self.metric = metric
         self.image = image
         self.size = size
@@ -137,9 +137,11 @@ class REVAnalyzer:
         	
         	nbins (int): number of bins in histogram. For PNM-based metric only.
         """
-        assert self.metric.metric_type == 'v', "Metric type should be vector"
-        if issubclass(self.metric.__class__, BasicPNMMetric):
-            assert nbins is not None, "Number of bins in histogram should be defined for the visualization of this metric"
+        if not self.metric.metric_type == 'v':
+            raise TypeError("Metric type should be vector")
+        if issubclass(self.metric.__class__, BasicPNMMetric) or isinstance(self.metric, ChordLength) or isinstance(self.metric, PoreSize):
+            if nbins is None:
+                raise ValueError("Number of bins in histogram should be defined for the visualization of this metric")
             self.metric.show(self._outputdir_cut_values, self.image, cut_size, cut_id, nbins)
         else:
             self.metric.show(self._outputdir_cut_values, self.image, cut_size, cut_id)
@@ -149,7 +151,8 @@ class REVAnalyzer:
         """
         Vectorization of generated metric data using vetorizer. For vector metric only.
         """
-        assert self.metric.metric_type == 'v', "Metric type should be vector"
+        if not self.metric.metric_type == 'v':
+            raise TypeError("Metric type should be vector")
         cut_sizes = [x for x in self.cut_sizes]
         self._outputdir_vectorized_cut_values = os.path.join(
             self.outputdir, self.image, self.metric.__class__.__name__, 'vectorized_cuts_values')

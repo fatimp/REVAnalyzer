@@ -14,6 +14,6 @@ from .euler_density_ii import EulerDensityII
 from .pore_radius import PoreRadius
 from .throat_radius import ThroatRadius
 from .connectivity import Connectivity
-from .cf import L2, S2, C2, SS, SV, SSS, SSV, SVV, S3, C3, ChordLength, PoreSize, CrossCorrelation
+from .cf import L2, S2, C2, SS, SV, ChordLength, PoreSize, CrossCorrelation
 from .pd import BasicPDMetric, PD0, PD1, PD2
 from .permeability import Permeability

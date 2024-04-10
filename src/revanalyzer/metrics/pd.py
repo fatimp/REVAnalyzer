@@ -17,8 +17,9 @@ class BasicPDMetric(BasicMetric):
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
         """
-        assert isinstance(vectorizer, SimpleBinningVectorizer) or isinstance(vectorizer, PersistenceImageVectorizer) or isinstance(
-            vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer), 'Vectorizer should be an object of SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer class'
+        if not isinstance(vectorizer, SimpleBinningVectorizer) or isinstance(vectorizer, PersistenceImageVectorizer) or isinstance(
+            vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer):
+            raise TypeError('Vectorizer should be an object of SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer class')
         super().__init__(vectorizer)
 
     def show(self, inputdir, name, cut_size, cut_id):
@@ -61,7 +62,7 @@ class BasicPDMetric(BasicMetric):
         	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
         """
         return self.vectorizer.vectorize(v1, v2)
-        
+
 
 class PD0(BasicPDMetric):
     """
