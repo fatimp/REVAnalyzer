@@ -58,3 +58,44 @@ def make_cuts(datadir, image, outputdir, L, l, total=True):
 def _read_array(image, dim, dtype):
     v = np.fromfile(image, dtype=dtype, sep="")
     return v.reshape([dim, dim, dim])
+
+
+def make_cut(A, L, l, idx):
+    """
+    Making subcube cut for a given 3D array. 
+    
+    **Input:**
+     
+     	A(np.array): initial 3D array;
+     
+     	L (int): image linear size. Note, that only cubical images can be analyzed;
+     	 
+     	l (int): linear size of cut subcube;
+     	
+     	idx (int): index of subcube (0,1,..8). idx = 0 corresponds to the center subcube, idx = 1,..8 corrspond to the corner subcubes.
+    **Output:**
+    
+    	np.array() generated subcubes (list(dtype=str)).
+    """
+    if not len(A.shape) == 3:
+        raise ValueError("Initial array should have 3 dimensions.")
+    if idx < 0 or idx > 8:
+        raise ValueError("Index value should be from the set (0,1,..8).")
+    if idx == 0:
+        return A[int((L-l)/2):int((L+l)/2), int((L-l)/2):int((L+l)/2), int((L-l)/2):int((L+l)/2)]
+    if idx == 1:
+        return A[:l, :l, :l]
+    if idx == 2:
+        return A[:l, :l, L-l:]
+    if idx == 3:
+        return A[:l, L-l:, :l]
+    if idx == 4:
+        return A[L-l:, :l, :l]
+    if idx == 5:
+        return A[L-l:, L-l:, L-l:]
+    if idx == 6:
+        return A[:l, L-l:, L-l:]
+    if idx == 7:
+        return A[L-l:, :l, L-l:]
+    if idx == 8:
+        return A[L-l:, L-l:, :l]

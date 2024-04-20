@@ -10,12 +10,84 @@ class Permeability(BasicMetric):
     """
     Class describing porosity metric.
     """
-    def __init__(self, all_directions=True):
+    def __init__(self, direction='all', n_threads=1, resolution=1., show_time = False):
         """
         **Input:**
-        	all_directions (bool): flag indicating if generation over 3 flow directions was done by external generator. It must be False, if in generator function parameter 'directions' = 'x', 'y' or 'z'. It must be True, if 'directions' = 'all'. Default: True.
+        
+         	direction (str): 'x', 'y', 'z' or 'all'. If label of this parameter is 'all', permeability values are generated for all 3 possible flow directions;
+            
+            n_threads (int): number of threads used by FDMSS, default: 1;
+            
+            resolution (float): resolution of studied sample (micrometers), default: 1;
+            
+            show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
         super().__init__(vectorizer=None)
         self.metric_type = 's'
-        if all_directions:
+        self.direction = direction
+        self.n_threads = n_threads
+        self.resolution = resolution
+        self.show_time = show_time
+        if direction == 'all':
             self.directional = True
+            
+    def generate(self, inputdir, cut_name, l, outputdir):
+        """
+        Generates permeability for a specific subcube.
+        
+        **Input:**
+        
+        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	
+        	cut_name (str): name of subcube;
+        
+        	l (int): linear size of subcube;
+        	
+        	outputdir (str): path to the folder containing generated CF data;
+        	
+        	method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
+        
+        **Output:**
+        
+        	name of file (str), in which CF is written.
+        """          
+        if inputdir is not None:
+            filein = os.path.join(inputdir, cut_name)
+        else:
+            filein = cut_name
+        if self.directional:
+            directions_list = ['x', 'y', 'z']
+        else:
+            directions_list = [self.direction]
+        
+
+
+def _pressure_diff(image, pressure, axis):
+    inv = ~image
+    pressure = np.where(inv, pressure, 0)
+    if axis == 'x':
+        p_start = np.sum(pressure[:, :, 1])/np.sum(inv[:, :, 1])
+        p_end = np.sum(pressure[:, :, -1])/np.sum(inv[:, :, -1])
+    if axis == 'y':
+        p_start = np.sum(pressure[:, 1, :])/np.sum(inv[:, 1, :])
+        p_end = np.sum(pressure[:, -1, :])/np.sum(inv[:, -1, :])
+    if axis == 'z':
+        p_start = np.sum(pressure[1, :, :])/np.sum(inv[1, :, :])
+        p_end = np.sum(pressure[-1, :, :])/np.sum(inv[-1, :, :])
+    return (p_start - p_end)/image.shape[0]
+
+
+def _get_permeability(image, porosity, pressure, vel, direction):
+    dim = image.shape[0]
+    pores = dim**3 - np.count_nonzero(image)
+    p = _pressure_diff(image, pressure, direction)
+    v = np.sum(vel)/pores
+    return 100*v/p*porosity/0.986*1000
+
+
+def _get_porosity(image):
+    dim = image.shape[0]
+    pores = dim**3 - np.count_nonzero(image)
+    return pores/(dim**3)
+
+

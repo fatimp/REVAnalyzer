@@ -7,7 +7,7 @@ import json
 import shutil
 import matplotlib.pyplot as plt
 import itertools
-from .generators import make_cuts
+from .generators import make_cuts, run_fdmss
 from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability, ChordLength, PoreSize
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
@@ -62,13 +62,28 @@ class REVAnalyzer:
         self.sREV_size_2 = None
         self.dREV_size_1 = None
         self.dREV_size_2 = None
+        self.is_fdmss_data = False
+        if isinstance(self.metric, Permeability):
+            fdmss_input=os.path.join(self.outputdir, self.image, 'fdmss_data', 'fdmss_input.txt')
+            if os.path.isfile(fdmss_input):
+                with open(fdmss_input) as f:
+                    lines = [line.rstrip('\n') for line in f]
+                    if lines[0] == self.metric.direction and lines[1] == str(self.metric.resolution):                        
+                        self.is_fdmss_data = True
+                    
 
     def generate(self):
         """
         Generator of metric values for all selected subcubes.
         """
-        assert not (issubclass(self.metric.__class__, BasicPDMetric) or isinstance(self.metric, Permeability)), 'Use external\
-        generator for this metric'
+        if isinstance(self.metric, Permeability) and not self.is_fdmss_data:
+            fdmss_data=os.path.join(self.outputdir, self.image, 'fdmss_data')
+            os.makedirs(fdmss_data, exist_ok=True)
+            run_fdmss(self.image, self.metric.direction, self.datadir, fdmss_data, self.metric.n_threads, self.metric.resolution, self.metric.show_time)
+            fdmss_input = os.path.join(fdmss_data, 'fdmss_input.txt')            
+            with open(fdmss_input, 'w') as f:
+                lines = [self.metric.direction, str(self.metric.resolution)]
+                f.write('\n'.join(lines))
         if issubclass(self.metric.__class__, BasicPNMMetric):
             for l in self.cut_sizes:
                 if (l <= self.sREV_max_size):
