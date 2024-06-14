@@ -4,71 +4,53 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
 from .basic_metric import BasicMetric
 from revanalyzer.vectorizers import HistVectorizer
-
-units = {'M': 1, 'MM': 1e-3, 'UM': 1e-6, 'NN': 1e-9}
 
 
 class BasicPNMMetric(BasicMetric):
     """
     Base class of PNM-based metrics. (Don't use it directly but derive from it).
     """  
-    def __init__(self, statoildir, resolution, length_unit_type, direction, vectorizer):
+    def __init__(self, vectorizer, resolution, show_time):
         """
         **Input:**
-        
-        	statoildir (str): path to the folder containing generated data for subcubes in statoil format;
-        	
-        	resolution (float): resolution of studied sample (unitless);
-        	
-        	length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M';
-        	
-        	direction (str): flow direction, could be 'x', 'y' or 'z';
-        	 
         	vectorizer (PNMVectorizer object): vectorizer to be used for a vector metric.
+            
+            resolution (float): resolution of studied sample (micrometers), default: 1;
+            
+            show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
         if not (isinstance(vectorizer, HistVectorizer) or (vectorizer is None)):
             raise TypeError("Vectorizer should be None or an object of HistVectorizer class.")
         super().__init__(vectorizer)
-        self.statoildir = statoildir
         self.resolution = resolution
-        self.length_unit_type = length_unit_type
-        self.resolution_value = resolution * units[length_unit_type]
-        self.direction = direction
+        self.show_time = show_time
 
-    def generate(self, statoildir, cut_name, l):
+    def generate(self, cut_name, gendatadir):
         """
-        Generator of a metric value for a specific subcube.
+        Generates PNM metric for a specific subcube.
         
         **Input:**
-        
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+            cut_name (str): name of subcube;
         	
-        	cut_name (str): name of subcube;
+        	outputdir (str): output folder;
         	
-        	l (int): linear size of subcube.
-        
-        **Output:**
-        
-        	pore number (float). Used for all PNM-based metrics exception handling. 
+        	gendatadir (str): folder with generated fdmss data output.    
         """
-        filein = os.path.join(statoildir, cut_name) + "_" + \
-            self.direction + '_node1.dat'
-        with open(filein, "r") as f:
-            str_0 = f.readline().split()
-            pore_number = (int(str_0[0])-1)/l**3
-        return pore_number
-
-    def show(self, inputdir, name, cut_size, cut_id, nbins):
+        cut_name = os.path.join(gendatadir, cut_name + '.csv')
+        df =  pd.read_csv(cut_name)
+        return df 
+        
+        
+    def show(self, inputdir, cut_size, cut_id, nbins):
         """
         Vizualize the vector metric for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
         	
         	cut_size (int): size of subcube;
         	
@@ -80,9 +62,8 @@ class BasicPNMMetric(BasicMetric):
         
         	(list(dtype = int), list(dtype = float)) : 'x' and 'y' coordinate values for a plot.
         """
-        coef_to_voxels = self.resolution * units[self.length_unit_type]
-        data = self.read(inputdir, name, cut_size, cut_id)
-        data = data/coef_to_voxels
+        data = self.read(inputdir, cut_size, cut_id)
+        data = data/self.resolution 
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(
@@ -110,8 +91,7 @@ class BasicPNMMetric(BasicMetric):
         """
         if not self.metric_type == 'v':
             raise TypeError("Metric type should be vector")
-        coef_to_voxels = self.resolution * units[self.length_unit_type]
-        v1 = v1/coef_to_voxels
-        v2 = v2/coef_to_voxels
+        v1 = v1/self.resolution
+        v2 = v2/self.resolution
         res = self.vectorizer.vectorize(v1, v2)
         return res

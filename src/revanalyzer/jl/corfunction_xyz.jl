@@ -1,13 +1,10 @@
 using CorrelationFunctions.Directional
 using CorrelationFunctions.Utilities
 using StatsBase
-function compute_cf(str_args)
-    filename = str_args[1]
-    method = str_args[2]
-    dim = parse(Int64, str_args[3])
-    normalize = parse(Int64, str_args[4])
-    data = Array{UInt8, 3}(undef, dim, dim, dim)
-    open(filename) do io read!(io, data) end
+function compute_cf(addr, dim, normalize, method)
+    volume = dim*dim*dim
+    data = unsafe_wrap(Array{UInt8}, Ptr{UInt8}(addr), volume)
+    data = reshape(data, (dim, dim, dim))
     if (method == "c2")
         n = count(i->(i== 0), data)
         if (n == 0)
@@ -16,7 +13,7 @@ function compute_cf(str_args)
         end
         v = c2(data, 0)
         if (normalize == 1)            
-            p = n/dim/dim/dim
+            p = n/volume
             vx1 = [(elem - p*p)/p/(1-p) for elem in v[DirX()]]
             vy1 = [(elem - p*p)/p/(1-p) for elem in v[DirY()]]
             vz1 = [(elem - p*p)/p/(1-p) for elem in v[DirZ()]]
@@ -28,7 +25,7 @@ function compute_cf(str_args)
         v = s2(data, 0)
         if (normalize == 1)
             n = count(i->(i== 0), data)
-            p = n/dim/dim/dim
+            p = n/volume
             vx1 = [(elem - p*p)/p/(1-p) for elem in v[DirX()]]
             vy1 = [(elem - p*p)/p/(1-p) for elem in v[DirY()]]
             vz1 = [(elem - p*p)/p/(1-p) for elem in v[DirZ()]]
@@ -65,7 +62,7 @@ function compute_cf(str_args)
         v = cross_correlation(data, 0, 1)
         if (normalize == 1)
             n = count(i->(i== 0), data)
-            p = n/dim/dim/dim
+            p = n/volume
             vx1 = [elem/p/(1-p) for elem in v[DirX()]]
             vy1 = [elem/p/(1-p) for elem in v[DirY()]]
             vz1 = [elem/p/(1-p) for elem in v[DirZ()]]

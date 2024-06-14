@@ -1,158 +1,66 @@
 # -*- coding: utf-8 -*-
-"""Module for the generation of PNM characteristics using PNM extractor."""
+"""Module for the generation of PNM characteristics using SNOW algorithm."""
 
-import os
-import subprocess
-import json
-import shutil
-import numpy as np
 import time
-from .utils import make_cuts
+import os
+import numpy as np
+import porespy as ps
+import openpnm as op
+from .utils import _read_array, make_cut
 
-statoildir = 'PN_data'
 
-
-def generate_PNM(image, size, cut_step, sREV_max_size, exe_path, n_threads=1, resolution=1., length_unit_type='M', direction='z', inputdir = 'data', outputdir='output', show_time=False):
+def generate_PNM(image, cut_step, sREV_max_size, outputdir, resolution=1., show_time=False):
     """
     Running PNM extractor for all the selected subcubes.
     
     **Input:**
 
-     	image (str): name of binary ('uint8') file representing the image;
+     	image (numpy.ndarray): 3D array representing the image;
      	
-     	size (int): image linear size. Note, that only cubical images can be analyzed;
-     	 
      	cut_step (int): increment step of subcube size;
      	
      	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
      	
-     	exe_path(str): path to PNM extractor;
+     	outputdir (str): path to the output folder containing generated data;
      	
-     	n_threads (int): number of CPU cores used by FDMSS, default: 1;
-     	
-     	resolution (float): resolution of studied sample (unitless), default: 1;
-     	
-     	length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M';
-     	
-     	direction (str): 'x', 'y' or 'z'. If PNM extractor is used to generate PNM characteristic only, but not permeability, the results do not depend on the direction value; defautlt: 'z';
-     	
-     	inputdir (str): path to the folder containing image, default: 'data';
-     	
-     	outputdir (str): path to the output folder containing generated data, default: 'output';
-     	
+     	resolution (float): resolution of studied sample, default: 1;
+        
      	show_time (bool): Added to monitor time cost for large images,  default: False. 
-     
-     **Output:**
-     	path to statoil output folder (str).
     """
-    if not (directions == 'x' or directions == 'y' or directions == 'z' or directions == 'all'):
-        raise ValueError("Direction should be 'x', 'y', 'z' or 'all'")
     start_time = time.time()
-    glob_path = os.getcwd()
-    outputdir = os.path.join(outputdir, image)
-    _make_PN_config(inputdir, image, size, outputdir,
-                    resolution=resolution, length_unit_type=length_unit_type, inout_axe=direction)
-    config_path = os.path.join(glob_path, 'PN_config', image)
-    my_env = os.environ.copy()
-    my_env["OMP_NUM_THREADS"] = str(n_threads)
-    code = subprocess.call([exe_path, config_path], env=my_env)
-    if (code != 0):
-        raise RuntimeError("Error in PNM extractor run occured!")
-    if show_time:
-        print("Size ", size, ", run time: ")
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-    n_steps = int(np.ceil(size/cut_step))
+    L = image.shape[0]
+    n_steps = int(np.ceil(L/cut_step))
     cut_sizes = [cut_step*(i+1) for i in range(n_steps-1)]
     for l in cut_sizes:
-        start_time_l = time.time()
-        cuts_data = 'cuts_data'
-        os.makedirs(cuts_data, exist_ok=True)
         if (l <= sREV_max_size):
-            cut_names = make_cuts(
-                inputdir, image, cuts_data, size, l, total=True)
-            for cut_name in cut_names:
-                _make_PN_config(cuts_data, cut_name, l, outputdir,
-                                resolution=resolution, length_unit_type=length_unit_type, inout_axe=direction)
-                config_path = os.path.join(glob_path, 'PN_config', cut_name)
-                code = subprocess.call([exe_path, config_path], env=my_env)
-                if (code != 0):
-                    raise RuntimeError("Error in PNM extractor run occured!")
-            shutil.rmtree(cuts_data)
+            for idx in range(9):
+                cut = make_cut(image, L, l, idx)
+                cut_name = 'cut'+str(idx)+'_'+str(l) + '.csv'
+                get_pn_csv(cut, cut_name, outputdir, resolution)
         else:
-            cut_name = make_cuts(
-                inputdir, image, cuts_data, size, l, total=False)
-            _make_PN_config(cuts_data, cut_name, l, outputdir,
-                            resolution=resolution, length_unit_type=length_unit_type, inout_axe=direction)
-            config_path = os.path.join(glob_path, 'PN_config', cut_name)
-            code = subprocess.call([exe_path, config_path], env=my_env)
-            if (code != 0):
-                raise RuntimeError("Error in PNM extractor run occured!")
-            shutil.rmtree(cuts_data)
-        if show_time:
-            print("Size ", l, ", run time: ")
-            print("--- %s seconds ---" % (time.time() - start_time_l))
-    shutil.rmtree('PN_config')
-    return os.path.join(outputdir, statoildir)
+            cut = make_cut(image, L, l, 0)
+            cut_name = 'cut0'+'_'+str(l)+ '.csv'
+            get_pn_csv(cut, cut_name, outputdir, resolution)
+    get_pn_csv(image, 'cut0.csv', outputdir, resolution)
+    if show_time:
+        print("---PNM extractor run time is %s seconds ---" % (time.time() - start_time))
 
 
-def _make_PN_config(inputdir, name, size, outputdir, resolution=1., length_unit_type='M', inout_axe='z', persistence_limit=1.):
-    json_string = """
-    {
-    "input_data": {
-        "filename": "pathname_in",
-        "size": {
-            "x": 0,
-            "y": 0,
-            "z": 0
-        }
-    },
-    "output_data": {
-        "statoil_prefix": "pathname_out"
-    },
-    "extraction_parameters": {
-        "resolution": 1,
-        "partitioning_coeff": 0.67,
-        "length_unit_type_options": [
-            "NM",
-            "UM",
-            "MM",
-            "M"
-        ],
-        "length_unit_type": "M",
-        "axis_type_options": [
-            "DEFAULT",
-            "INOUT",
-            "PERIODIC"
-        ],
-        "axes": {
-            "x": "DEFAULT",
-            "y": "DEFAULT",
-            "z": "DEFAULT"
-        },
-        "persistence_limit": 1.0,
-        "simplification_size_limit": 0.0
-    }
-    }
+def get_pn_csv(cut, cut_name, outputdir, resolution):
     """
-    PN_config = json.loads(json_string)
-    glob_path = os.getcwd()
-    PN_config["input_data"]["filename"] = os.path.join(
-        glob_path, inputdir, name)
-    PN_config["input_data"]["size"]["x"] = size
-    PN_config["input_data"]["size"]["y"] = size
-    PN_config["input_data"]["size"]["z"] = size
-    os.makedirs(os.path.join(glob_path, outputdir, statoildir), exist_ok=True)
-    PN_config["output_data"]["statoil_prefix"] = os.path.join(
-        glob_path, outputdir, statoildir, name + "_" + inout_axe)
-    PN_config["extraction_parameters"]["resolution"] = resolution
-    PN_config["extraction_parameters"]["length_unit_type"] = length_unit_type
-    directions = ['x', 'y', 'z']
-    for i in directions:
-        if i == inout_axe:
-            PN_config["extraction_parameters"]["axes"][i] = "INOUT"
-    PN_config["extraction_parameters"]["resolution"] = persistence_limit
-    configdir = 'PN_config'
-    os.makedirs(configdir, exist_ok=True)
-    with open(os.path.join(glob_path, configdir, name), 'w') as f:
-        json.dump(PN_config, f, indent=4)
+    Calculation of PNM statistics for a given subcube and writing the result to csv file.
+    
+    **Input:**
+
+     	cut (numpy.ndarray): 3D array representing a subcube;
+     	
+     	cut_name (str): name of output file;
+     	
+     	outputdir (str): path to the output folder containing generated data;
+        
+     	resolution (float): resolution of studied sample, default: 1;
+    """
+    snow_output = ps.networks.snow2(cut, voxel_size = resolution)
+    pn = op.io.network_from_porespy(snow_output.network)
+    cut_name = os.path.join(outputdir, cut_name)
+    op.io.network_to_csv(pn, filename = cut_name)

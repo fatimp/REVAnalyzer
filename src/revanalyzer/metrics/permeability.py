@@ -4,6 +4,7 @@
 import numpy as np
 import os
 from .basic_metric import BasicMetric
+from ..generators import _read_array, make_cut
 
 
 class Permeability(BasicMetric):
@@ -31,35 +32,48 @@ class Permeability(BasicMetric):
         if direction == 'all':
             self.directional = True
             
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir):
         """
         Generates permeability for a specific subcube.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
-        
-        	l (int): linear size of subcube;
         	
-        	outputdir (str): path to the folder containing generated CF data;
+        	outputdir (str): output folder;
         	
-        	method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
-        """          
-        if inputdir is not None:
-            filein = os.path.join(inputdir, cut_name)
-        else:
-            filein = cut_name
+        	gendatadir (str): folder with generated fdmss data output.    
+        """
+        fdmss_input = os.path.join(gendatadir, 'fdmss_input.txt')
+        with open(fdmss_input) as f:
+            lines = [line.rstrip('\n') for line in f]
+            L = int(lines[2])
         if self.directional:
             directions_list = ['x', 'y', 'z']
         else:
             directions_list = [self.direction]
-        
+        for direction in directions_list:
+            pressure_name = os.path.join(gendatadir, direction + '_pressure')
+            vel_name  = os.path.join(gendatadir, direction + '_vel' + direction)
+            pressure = _read_array(pressure_name, L, 'float32')
+            vel = _read_array(vel_name, L, 'float32')
+            if self.directional:
+                cut_name_out = cut_name + "_" + direction + ".txt"
+            else:
+                cut_name_out = cut_name + ".txt"
+            fileout = os.path.join(outputdir, cut_name_out)
+            if cut_name == 'cut0':
+                permeability = _get_permeability(cut, pressure, vel, direction)
+            else:
+                l = cut.shape[0]
+                idx = int(cut_name[3])
+                pressure_cut = make_cut(pressure, L, l, idx)
+                vel_cut = make_cut(vel, L, l, idx)
+                permeability = _get_permeability(cut, pressure_cut, vel_cut, direction)
+            with open(fileout, "w") as f:
+                f.write(str(permeability))
 
 
 def _pressure_diff(image, pressure, axis):
@@ -77,17 +91,12 @@ def _pressure_diff(image, pressure, axis):
     return (p_start - p_end)/image.shape[0]
 
 
-def _get_permeability(image, porosity, pressure, vel, direction):
+def _get_permeability(image, pressure, vel, direction):
     dim = image.shape[0]
     pores = dim**3 - np.count_nonzero(image)
     p = _pressure_diff(image, pressure, direction)
     v = np.sum(vel)/pores
+    porosity = pores/(dim**3)
     return 100*v/p*porosity/0.986*1000
-
-
-def _get_porosity(image):
-    dim = image.shape[0]
-    pores = dim**3 - np.count_nonzero(image)
-    return pores/(dim**3)
 
 

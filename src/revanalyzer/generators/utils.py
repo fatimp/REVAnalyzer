@@ -60,6 +60,10 @@ def _read_array(image, dim, dtype):
     return v.reshape([dim, dim, dim])
 
 
+def _write_array(A, fileout):
+    A.astype('uint8').tofile(fileout)
+
+
 def make_cut(A, L, l, idx):
     """
     Making subcube cut for a given 3D array. 

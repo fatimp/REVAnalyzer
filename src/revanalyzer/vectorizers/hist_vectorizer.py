@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Definition of PNM vectorizer"""
+"""Definition of histogram vectorizer"""
 
 import numpy as np
 from .basic_vectorizer import BasicVectorizer
@@ -7,7 +7,7 @@ from .basic_vectorizer import BasicVectorizer
 
 class HistVectorizer(BasicVectorizer):
     """
-    Class describing PNM vectorizer.
+    Class describing vectorizer for histogram-like data.
     """     
     def __init__(self, factor=1, norm=2):
         """

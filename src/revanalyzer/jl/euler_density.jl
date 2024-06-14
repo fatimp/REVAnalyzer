@@ -1,11 +1,10 @@
 using EulerCharacteristic
-function euler_density(str_args)
-    filename = str_args[1]
-    dim = parse(Int64, str_args[2])
-    data = Array{UInt8, 3}(undef, dim, dim, dim)
-    open(filename) do io read!(io, data) end
+function euler_density(addr, length)
+    volume = length*length*length
+    data = unsafe_wrap(Array{UInt8}, Ptr{UInt8}(addr), volume)
     data = Bool.(data)
+    data = reshape(data, (length, length, length))
     data = .!data
-    volume = dim*dim*dim
-    return euler_characteristic(data)/volume
+    res = euler_characteristic(data)
+    return res/volume
 end

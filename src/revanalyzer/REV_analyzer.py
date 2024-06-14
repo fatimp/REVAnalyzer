@@ -7,7 +7,7 @@ import json
 import shutil
 import matplotlib.pyplot as plt
 import itertools
-from .generators import make_cuts, run_fdmss
+from .generators import make_cuts, run_fdmss, _read_array, _write_array, make_cut, generate_PNM
 from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability, ChordLength, PoreSize
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
@@ -16,16 +16,14 @@ class REVAnalyzer:
     """
     analysis of representativity of a given image for a given scalar or vector metric.
     """
-    def __init__(self, metric, image, size, cut_step, sREV_max_size, datadir='data', outputdir='output'):
+    def __init__(self, metric, image, cut_step, sREV_max_size, datadir=None, outputdir='output'):
         """
         **Input:**
 
         	metric (subclass of BasicMetric): metric to be analyzed;
         
-        	image (str): name of binary ('uint8') file representing the image;
-        
-        	size (int): image linear size. Note, that only cubical images can be analyzed;
-         
+        	image (str or numpy.ndarray): name of binary ('uint8') file or numpy.ndarray representing the image;
+                
         	cut_step (int): increment step of subcube size;
         
         	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
@@ -37,18 +35,31 @@ class REVAnalyzer:
         if not issubclass(metric.__class__, BasicMetric):
             raise TypeError("Metric should be an object of a class derived from BasicMetric.")
         self.metric = metric
+        if isinstance(image, str):
+            if datadir is not None:
+                filein = os.path.join(datadir, image)
+            else:
+                filein = image
+            file_size = os.path.getsize(filein)
+            self.size = int(np.ceil(file_size**(0.333333333)))
+            self._outputdir_cut_values = os.path.join(outputdir, image, self.metric.__class__.__name__, 'cuts_values')
+        elif isinstance(image, np.ndarray):
+            self.size = image.shape[0]
+            if not (self.size == image.shape[1] and self.size == image.shape[2]):
+                raise ValueError("Array should have equal dimensions in all 3 axes.")
+            self._outputdir_cut_values = os.path.join(outputdir, self.metric.__class__.__name__, 'cuts_values')
+        else:
+            raise TypeError("Image type should be str or numpy.ndarray")
         self.image = image
-        self.size = size
         self.cut_step = cut_step
         self.sREV_max_size = sREV_max_size
         self.datadir = datadir
         self.outputdir = outputdir
-        self._outputdir_cut_values = os.path.join(
-            self.outputdir, self.image, self.metric.__class__.__name__, 'cuts_values')
+        self.gendatadir = None
         self._outputdir_vectorized_cut_values = None
         os.makedirs(self.outputdir, exist_ok=True)
         os.makedirs(self._outputdir_cut_values, exist_ok=True)
-        self.n_steps = int(np.ceil(size/cut_step))
+        self.n_steps = int(np.ceil(self.size/cut_step))
         self.cut_sizes = [cut_step*(i+1) for i in range(self.n_steps-1)]
         self._metric_cut_names = []
         self.metric_mean = {}
@@ -63,13 +74,29 @@ class REVAnalyzer:
         self.dREV_size_1 = None
         self.dREV_size_2 = None
         self.is_fdmss_data = False
+        self.is_pnm_data = False
         if isinstance(self.metric, Permeability):
-            fdmss_input=os.path.join(self.outputdir, self.image, 'fdmss_data', 'fdmss_input.txt')
+            if isinstance(self.image, str):
+                self.gendatadir = os.path.join(self.outputdir, self.image, 'fdmss_data')
+            else:
+                self.gendatadir = os.path.join(self.outputdir, 'fdmss_data')
+            fdmss_input=os.path.join(self.gendatadir, 'fdmss_input.txt')
             if os.path.isfile(fdmss_input):
                 with open(fdmss_input) as f:
                     lines = [line.rstrip('\n') for line in f]
                     if lines[0] == self.metric.direction and lines[1] == str(self.metric.resolution):                        
                         self.is_fdmss_data = True
+        if issubclass(self.metric.__class__, BasicPNMMetric):
+            if isinstance(self.image, str):
+                self.gendatadir = os.path.join(self.outputdir, self.image, 'pn_data')
+            else:
+                self.gendatadir = os.path.join(self.outputdir, 'pn_data')
+            pn_input=os.path.join(self.gendatadir, 'pn_input.txt')
+            if os.path.isfile(pn_input):
+                with open(pn_input) as f:
+                    lines = [line.rstrip('\n') for line in f]
+                    if lines[0] == str(self.cut_step) and lines[1] == str(self.sREV_max_size) and lines[2] == str(self.metric.resolution):                        
+                        self.is_pnm_data = True
                     
 
     def generate(self):
@@ -77,51 +104,45 @@ class REVAnalyzer:
         Generator of metric values for all selected subcubes.
         """
         if isinstance(self.metric, Permeability) and not self.is_fdmss_data:
-            fdmss_data=os.path.join(self.outputdir, self.image, 'fdmss_data')
-            os.makedirs(fdmss_data, exist_ok=True)
-            run_fdmss(self.image, self.metric.direction, self.datadir, fdmss_data, self.metric.n_threads, self.metric.resolution, self.metric.show_time)
-            fdmss_input = os.path.join(fdmss_data, 'fdmss_input.txt')            
+            os.makedirs(self.gendatadir, exist_ok=True)
+            if isinstance(self.image, str):
+                run_fdmss(self.image, self.metric.direction, self.datadir, self.gendatadir, self.metric.n_threads, self.metric.resolution, self.metric.show_time)
+            else:
+                fileout = os.path.join(self.gendatadir, 'image.raw') 
+                _write_array(self.image, fileout)
+                run_fdmss('image.raw', self.metric.direction, self.gendatadir, self.gendatadir, self.metric.n_threads, self.metric.resolution, self.metric.show_time)
+                os.remove(fileout)
+            fdmss_input = os.path.join(self.gendatadir, 'fdmss_input.txt')            
             with open(fdmss_input, 'w') as f:
-                lines = [self.metric.direction, str(self.metric.resolution)]
+                lines = [self.metric.direction, str(self.metric.resolution), str(self.size)]
                 f.write('\n'.join(lines))
-        if issubclass(self.metric.__class__, BasicPNMMetric):
-            for l in self.cut_sizes:
-                if (l <= self.sREV_max_size):
-                    cut_names = [
-                        'cut'+str(i)+'_'+str(l)+'_'+self.image for i in range(9)]
-                    for cut_name in cut_names:
-                        metric_cut_name = self.metric.generate(
-                            self.metric.statoildir, cut_name, l, self._outputdir_cut_values)
-                        self._metric_cut_names.append(metric_cut_name)
-                else:
-                    cut_name = 'cut'+str(0)+'_'+str(l)+'_'+self.image
-                    metric_cut_name = self.metric.generate(
-                        self.metric.statoildir, cut_name, l, self._outputdir_cut_values)
-                    self._metric_cut_names.append(metric_cut_name)
-                metric_cut_name = self.metric.generate(
-                    self.metric.statoildir, self.image, self.size, self._outputdir_cut_values)
+        if isinstance(self.image, str):
+            if self.datadir is not None:
+                filein = os.path.join(self.datadir, self.image)
+            else:
+                filein = self.image
+            image = _read_array(filein, self.size, 'uint8')
         else:
-            for l in self.cut_sizes:
-                cuts_data = 'cuts_data'
-                os.makedirs(cuts_data, exist_ok=True)
-                if (l <= self.sREV_max_size):
-                    cut_names = make_cuts(self.datadir,
-                                          self.image, cuts_data, self.size, l, total=True)
-                    for cut_name in cut_names:
-                        metric_cut_name = self.metric.generate(
-                            cuts_data, cut_name, l, self._outputdir_cut_values)
-                        self._metric_cut_names.append(metric_cut_name)
-                    shutil.rmtree(cuts_data)
-                else:
-                    cut_name = make_cuts(self.datadir, self.image, cuts_data,
-                                         self.size, l, total=False)
-                    metric_cut_name = self.metric.generate(
-                        cuts_data, cut_name, l, self._outputdir_cut_values)
-                    self._metric_cut_names.append(metric_cut_name)
-                    shutil.rmtree(cuts_data)
-            metric_cut_name = self.metric.generate(
-                self.datadir, self.image, self.size, self._outputdir_cut_values)
-            self._metric_cut_names.append(metric_cut_name)
+            image = self.image
+        if issubclass(self.metric.__class__, BasicPNMMetric) and not self.is_pnm_data:
+            os.makedirs(self.gendatadir, exist_ok=True)
+            generate_PNM(image, self.cut_step, self.sREV_max_size, self.gendatadir, self.metric.resolution, self.metric.show_time)    
+            fdmss_input = os.path.join(self.gendatadir, 'pn_input.txt')            
+            with open(fdmss_input, 'w') as f:
+                lines = [str(self.cut_step), str(self.sREV_max_size), str(self.metric.resolution)]
+                f.write('\n'.join(lines))
+        for l in self.cut_sizes:
+            if (l <= self.sREV_max_size):
+                for idx in range(9):
+                    cut = make_cut(image, self.size, l, idx)
+                    cut_name = 'cut'+str(idx)+'_'+str(l)
+                    self.metric.generate(cut, cut_name, self._outputdir_cut_values, self.gendatadir)
+            else:
+                cut = make_cut(image, self.size, l, 0)
+                cut_name = 'cut0'+'_'+str(l)
+                self.metric.generate(cut, cut_name, self._outputdir_cut_values, self.gendatadir)
+        self.metric.generate(image, 'cut0', self._outputdir_cut_values, self.gendatadir)
+            
 
     def read(self, cut_size, cut_id=0): 
         """
@@ -138,7 +159,7 @@ class REVAnalyzer:
         	metric value (float or np.array(dtype='float')).       
         """
         return self.metric.read(
-            self._outputdir_cut_values, self.image, cut_size, cut_id)
+            self._outputdir_cut_values, cut_size, cut_id)
     
     def show(self, cut_size, cut_id = 0, nbins = None):
         """
@@ -157,9 +178,9 @@ class REVAnalyzer:
         if issubclass(self.metric.__class__, BasicPNMMetric) or isinstance(self.metric, ChordLength) or isinstance(self.metric, PoreSize):
             if nbins is None:
                 raise ValueError("Number of bins in histogram should be defined for the visualization of this metric")
-            self.metric.show(self._outputdir_cut_values, self.image, cut_size, cut_id, nbins)
+            self.metric.show(self._outputdir_cut_values, cut_size, cut_id, nbins)
         else:
-            self.metric.show(self._outputdir_cut_values, self.image, cut_size, cut_id)
+            self.metric.show(self._outputdir_cut_values, cut_size, cut_id)
         
 
     def vectorize(self):
@@ -169,8 +190,10 @@ class REVAnalyzer:
         if not self.metric.metric_type == 'v':
             raise TypeError("Metric type should be vector")
         cut_sizes = [x for x in self.cut_sizes]
-        self._outputdir_vectorized_cut_values = os.path.join(
-            self.outputdir, self.image, self.metric.__class__.__name__, 'vectorized_cuts_values')
+        if isinstance(self.image, str):
+            self._outputdir_vectorized_cut_values = os.path.join(self.outputdir, self.image, self.metric.__class__.__name__, 'vectorized_cuts_values')
+        else:
+            self._outputdir_vectorized_cut_values = os.path.join(self.outputdir, self.metric.__class__.__name__, 'vectorized_cuts_values')
         os.makedirs(self._outputdir_vectorized_cut_values, exist_ok=True)
         x = np.arange(9)
         y = [0]
@@ -325,7 +348,7 @@ class REVAnalyzer:
             self.sREV_size_2 = get_sREV_size(
                 self.metric_normed_std_2, self.sREV_threshold)
 
-    def show_results(self, figdir='figs'):
+    def show_results(self):
         """
         Visualization of REV analysis results.
         
@@ -333,8 +356,6 @@ class REVAnalyzer:
         
         	figdir (str): path to the folder for saving figures.
         """
-        figdir = os.path.join(self.outputdir, self.image, figdir)
-        os.makedirs(figdir, exist_ok=True)
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         x = list(self.metric_mean.keys())
@@ -343,7 +364,7 @@ class REVAnalyzer:
         xerr.sort()
         nzeros = len(x) - len(xerr)
         fig, ax = plt.subplots()
-        title = self.metric.__class__.__name__ + ", " + self.image
+        title = self.metric.__class__.__name__ 
         plt.title(title)
         if self.metric.metric_type == 's' and self.metric.directional:
             y = [self.metric_mean[l] for l in x]
@@ -371,9 +392,7 @@ class REVAnalyzer:
             plt.ylabel("difference in distance")
             ax.axhline(y=self.dREV_threshold, color='k',
                        linestyle='-', label="dREV threshold")
-            plt.legend()
-        fig_name = "fig_REV_" + self.image + "_" + self.metric.__class__.__name__
-        plt.savefig(os.path.join(figdir, fig_name), bbox_inches='tight')
+        plt.legend()
         plt.show()
 
         fig, ax = plt.subplots()
@@ -411,6 +430,4 @@ class REVAnalyzer:
         plt.xlabel("linear size of subcube, voxels")
 
         plt.legend()
-        fig_name = "fig_threshold_" + self.image + "_" + self.metric.__class__.__name__
-        plt.savefig(os.path.join(figdir, fig_name), bbox_inches='tight')
         plt.show()

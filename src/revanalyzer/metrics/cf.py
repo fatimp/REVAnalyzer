@@ -23,48 +23,40 @@ class BasicCFMetric(BasicMetric):
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
         	
-        	show_time (bool): flag to monitor time cost for large images, default: False;
+        	show_time (bool): flag to monitor time cost for large images;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """        
         super().__init__(vectorizer)
         self.show_time = show_time
         if normalize == True:
-            self.normalize = str(1)
+            self.normalize = 1
         else:
-            self.normalize = str(0)
+            self.normalize = 0
 
-    def generate(self, inputdir, cut_name, l, outputdir, method):
+    def generate(self, cut, cut_name, outputdir, method, gendatadir = None):
         """
-        Generates the CF for a specific subcube.
+        Generates CF metric for a specific subcube.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
-        
-        	l (int): linear size of subcube;
         	
-        	outputdir (str): path to the folder containing generated CF data;
-        	
+        	outputdir (str): output folder;
+        	    
         	method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
         """          
         start_time = time.time()
-        if inputdir is not None:
-            filein = os.path.join(inputdir, cut_name)
-        else:
-            filein = cut_name
         path0 = imp.find_module('revanalyzer')[1]
         pathjl = os.path.join(path0, 'jl', 'corfunction_xyz.jl')
         pathjl = 'include("'+pathjl+'")'
         jl.eval(pathjl)
-        Main.data = [filein, method, str(l), self.normalize]
-        cf = jl.eval("compute_cf(data)")
+        length = cut.shape[0]
+        v = cut.reshape(cut.size,)
+        addr = v.ctypes.data
+        cf = Main.compute_cf(addr, length, self.normalize, method)
         if len(np.shape(cf)) > 1:
             cf0 = np.concatenate(cf)
             for elem in cf0:
@@ -85,15 +77,13 @@ class BasicCFMetric(BasicMetric):
             print("--- %s seconds ---" % (time.time() - start_time))
         return cut_name + ".txt"
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize CF for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
         	
         	cut_size (int): size of subcube;
         	
@@ -111,7 +101,7 @@ class BasicCFMetric(BasicMetric):
         		
         		data[2] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'z' direction.
         """        
-        data = self.read(inputdir, name, cut_size, cut_id)
+        data = self.read(inputdir, cut_size, cut_id)
         x = np.arange(len(data[0]))
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
@@ -162,44 +152,35 @@ class C2(BasicCFMetric):
         self.directional = True
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function C2 for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data;
-        	        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='c2')
+        return super().generate(cut, cut_name, outputdir, method = 'c2')
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize the correlation function C2 for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
-        	
+        	       
         	cut_size (int): size of subcube;
-        	
+        
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -230,44 +211,35 @@ class L2(BasicCFMetric):
         self.directional = True
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function L2 for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data;
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='l2')
+        return super().generate(cut, cut_name, outputdir, method = 'l2')
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize the correlation function L2 for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
-        	
+        	       
         	cut_size (int): size of subcube;
-        	
+        
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -298,44 +270,35 @@ class S2(BasicCFMetric):
         self.directional = True
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function S2 for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data;
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='s2')
+        return super().generate(cut, cut_name, outputdir, method = 's2')
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize the correlation function S2 for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
-        	
+        	       
         	cut_size (int): size of subcube;
-        	
+        
         	cut_id (int: 0,..8): cut index.
-        """        
-        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        """
+        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -344,7 +307,6 @@ class S2(BasicCFMetric):
         ax.set_xlabel("voxels")
         ax.set_ylabel("CF value")
         plt.show()
-        
 
 
 class SS(BasicCFMetric):
@@ -367,44 +329,35 @@ class SS(BasicCFMetric):
         self.directional = True
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function SS for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='ss')
+        return super().generate(cut, cut_name, outputdir, method = 'ss')
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize the correlation function SS for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
-        
+        	       
         	cut_size (int): size of subcube;
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -435,44 +388,35 @@ class SV(BasicCFMetric):
         self.directional = True
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function SV for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='sv')
+        return super().generate(cut, cut_name, outputdir, method = 'sv')
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize the correlation function SV for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
-        
+        	       
         	cut_size (int): size of subcube;
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -485,7 +429,7 @@ class SV(BasicCFMetric):
 
 class ChordLength(BasicCFMetric):
     """
-    Class describing metric S2. 
+    Class describing metric chord-length. 
     """
     def __init__(self,  vectorizer, show_time=False, normalize=True):
         """
@@ -503,27 +447,21 @@ class ChordLength(BasicCFMetric):
         self.directional = False
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function chord-length for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='cl')
+        return super().generate(cut, cut_name, outputdir, method = 'cl')
 
-    def show(self, inputdir, name, cut_size, cut_id, nbins):
+    def show(self, inputdir, cut_size, cut_id, nbins):
         """
         Vizualize the correlation function chord-length for a specific subcube.
         
@@ -539,7 +477,7 @@ class ChordLength(BasicCFMetric):
             
             nbins (int): number of bins in histrogram
         """
-        data = self.read(inputdir, name, cut_size, cut_id)
+        data = self.read(inputdir, cut_size, cut_id)
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(data, bins=nbins, range=range_data, density=True)
@@ -548,8 +486,7 @@ class ChordLength(BasicCFMetric):
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " +  ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.bar(x, hist, width=0.5, color='r')
         ax.set_xlabel('chord-length')
@@ -577,27 +514,21 @@ class PoreSize(BasicCFMetric):
         self.directional = False
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function pore-size for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='ps')
+        return super().generate(cut, cut_name, outputdir, method = 'ps')
 
-    def show(self, inputdir, name, cut_size, cut_id, nbins):
+    def show(self, inputdir, cut_size, cut_id, nbins):
         """
         Vizualize the correlation function chord-length for a specific subcube.
         
@@ -613,7 +544,7 @@ class PoreSize(BasicCFMetric):
             
             nbins (int): number of bins in histrogram
         """
-        data = self.read(inputdir, name, cut_size, cut_id)
+        data = self.read(inputdir, cut_size, cut_id)
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(data, bins=nbins, range=range_data, density=True)
@@ -622,8 +553,7 @@ class PoreSize(BasicCFMetric):
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " +  ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.bar(x, hist, width=0.5, color='r')
         ax.set_xlabel('pore-size')
@@ -648,46 +578,38 @@ class CrossCorrelation(BasicCFMetric):
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
         super().__init__(vectorizer, show_time, normalize)
+        self.directional = True
         self.metric_type = 'v'
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates the correlation function cross-correlation for a specific subcube.
         
-        **Input:**
+               **Input:**
         
-        	inputdir (str): path to the folder containing generated data for subcubes in statoil format;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube;
-        	
-        	outputdir (str): path to the folder containing generated CF data.
-        
-        **Output:**
-        
-        	name of file (str), in which CF is written.
+        	outputdir (str): output folder.
         """
-        return super().generate(inputdir, cut_name, l, outputdir, method='cc')
+        return super().generate(cut, cut_name, outputdir, method = 'cc')
 
-    def show(self, inputdir, name, cut_size, cut_id):
+    def show(self, inputdir, cut_size, cut_id):
         """
         Vizualize the correlation function cross-correlation for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
-        
+        	       
         	cut_size (int): size of subcube;
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, name, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + name + \
-            ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')

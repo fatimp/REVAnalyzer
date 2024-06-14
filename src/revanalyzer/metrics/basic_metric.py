@@ -18,16 +18,15 @@ class BasicMetric:
         self.vectorizer = vectorizer
         self.directional = False
         self.metric_type = None
-
-    def read(self, inputdir, name, cut_size, cut_id):
+        
+       
+    def read(self, inputdir, cut_size, cut_id):
         """
         Read the metric data generated for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing image;
-        	
-        	name (str): name of binary ('uint8') file representing the image;
         	
         	cut_size (int): size of subcube;
         	
@@ -40,11 +39,9 @@ class BasicMetric:
         if self.directional:
             directions = ('_x', '_y', '_z')
             if cut_size == 0:
-                cut_names = [name + direction +
-                             ".txt" for direction in directions]
+                cut_names = ['cut0' + direction + ".txt" for direction in directions]
             else:
-                cut_names = ["cut" + str(cut_id) + "_" + str(cut_size) +
-                             "_" + name + direction + ".txt" for direction in directions]
+                cut_names = ["cut" + str(cut_id) + "_" + str(cut_size) + direction + ".txt" for direction in directions]
             data = []
             for cut_name in cut_names:
                 if inputdir is not None:
@@ -62,10 +59,9 @@ class BasicMetric:
             return data
         else:
             if cut_size == 0:
-                cut_name = name + ".txt"
+                cut_name = "cut0.txt"
             else:
-                cut_name = "cut" + str(cut_id) + "_" + \
-                    str(cut_size) + "_" + name + ".txt"
+                cut_name = "cut" + str(cut_id) + "_" + str(cut_size) + ".txt"
             if inputdir is not None:
                 filein = os.path.join(inputdir, cut_name)
             else:

@@ -28,33 +28,27 @@ class EulerDensityI(BasicMetric):
         self.metric_type = 's'
         self.show_time = show_time
 
-    def generate(self, inputdir, cut_name, l, outputdir):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates Euler density for a specific subcube.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing subcubes;
+        	cut (numpy.ndarray): subcube;
         	
         	cut_name (str): name of subcube;
         	
-        	l (int): linear size of subcube.
-        
-        **Output:**
-        
-        	name of file (str), in which Euler density is written.
-        """         
+        	outputdir (str): output folder.
+        """        
         start_time = time.time()
-        if inputdir is not None:
-            filein = os.path.join(inputdir, cut_name)
-        else:
-            filein = cut_name
         path0 = imp.find_module('revanalyzer')[1]
         pathjl = os.path.join(path0, 'jl', 'euler_density.jl')
         pathjl = 'include("'+pathjl+'")'
         jl.eval(pathjl)
-        Main.data = [filein, str(l)]
-        euler_d = jl.eval("euler_density(data)")
+        length = cut.shape[0]
+        v = cut.reshape(cut.size,)
+        addr = v.ctypes.data
+        euler_d = Main.euler_density(addr, length)
         cut_name_out = cut_name + ".txt"
         fileout = os.path.join(outputdir, cut_name_out)
         with open(fileout, "w") as f:
@@ -62,4 +56,3 @@ class EulerDensityI(BasicMetric):
         if self.show_time:
             print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))
-        return cut_name_out

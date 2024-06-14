@@ -2,8 +2,6 @@
 """Module for running FDMSS solver."""
 
 import os
-import subprocess
-import shutil
 import numpy as np
 import time
 import xml.etree.ElementTree as ET
@@ -16,7 +14,7 @@ fdmss_data = "fdmss_data"
 
 def run_fdmss(image, direction, datadir, outputdir, n_threads=1, resolution=1., show_time=False):
     """
-    Running FDMSS for all the selected subcubes.
+    Running FDMSS solver for an initial image.
     
     **Input:**
 
@@ -42,7 +40,10 @@ def run_fdmss(image, direction, datadir, outputdir, n_threads=1, resolution=1., 
         directions_list = [direction]
     for d in directions_list:
         start_time = time.time()
-        image_path = os.path.join(datadir, image)
+        if datadir is not None:
+            image_path = os.path.join(datadir, image)
+        else:
+            image_path = image
         config_path = os.path.join(outputdir, d + '_config.xml')
         _make_fdmss_config(config_path, d, resolution, n_threads)
         summary_path = os.path.join(outputdir, d + '_summary.xml')
