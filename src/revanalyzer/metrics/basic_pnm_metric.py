@@ -13,11 +13,13 @@ class BasicPNMMetric(BasicMetric):
     """
     Base class of PNM-based metrics. (Don't use it directly but derive from it).
     """  
-    def __init__(self, vectorizer, resolution, show_time):
+    def __init__(self, vectorizer, n_threads, resolution, show_time):
         """
         **Input:**
         	vectorizer (PNMVectorizer object): vectorizer to be used for a vector metric.
             
+            n_threads (int): number of CPU cores used for data generation, default: 1;
+                    
             resolution (float): resolution of studied sample (micrometers), default: 1;
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
@@ -25,6 +27,7 @@ class BasicPNMMetric(BasicMetric):
         if not (isinstance(vectorizer, HistVectorizer) or (vectorizer is None)):
             raise TypeError("Vectorizer should be None or an object of HistVectorizer class.")
         super().__init__(vectorizer)
+        self.n_threads = n_threads
         self.resolution = resolution
         self.show_time = show_time
 

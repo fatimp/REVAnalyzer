@@ -126,7 +126,7 @@ class REVAnalyzer:
             image = self.image
         if issubclass(self.metric.__class__, BasicPNMMetric) and not self.is_pnm_data:
             os.makedirs(self.gendatadir, exist_ok=True)
-            generate_PNM(image, self.cut_step, self.sREV_max_size, self.gendatadir, self.metric.resolution, self.metric.show_time)    
+            generate_PNM(image, self.cut_step, self.sREV_max_size, self.gendatadir, self.metric.n_threads, self.metric.resolution, self.metric.show_time)    
             fdmss_input = os.path.join(self.gendatadir, 'pn_input.txt')            
             with open(fdmss_input, 'w') as f:
                 lines = [str(self.cut_step), str(self.sREV_max_size), str(self.metric.resolution)]

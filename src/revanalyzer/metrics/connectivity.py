@@ -13,16 +13,16 @@ class Connectivity(BasicPNMMetric):
     """
     Class describing connectivity metric.
     """     
-    def __init__(self, vectorizer, resolution = 1., show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, resolution = 1., show_time = False):
         """
         **Input:**
-        	vectorizer (HistVectorizer object): vectorizer to be used for a vector metric.
-            
+            n_threads (int): number of CPU cores used for data generation, default: 1;
+        
             resolution (float): resolution of studied sample (micrometers), default: 1;
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
-        super().__init__(vectorizer, resolution = resolution, show_time = show_time)
+        super().__init__(vectorizer, n_threads = n_threads, resolution = resolution, show_time = show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir):

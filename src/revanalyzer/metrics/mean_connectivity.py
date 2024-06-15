@@ -12,14 +12,16 @@ class MeanConnectivity(BasicPNMMetric):
     """
     Class describing mean connectivity metric.
     """     
-    def __init__(self, resolution = 1., show_time = False):
+    def __init__(self, n_threads = 1, resolution = 1., show_time = False):
         """
-        **Input:**          
+        **Input:**
+            n_threads (int): number of CPU cores used for data generation, default: 1;
+        
             resolution (float): resolution of studied sample (micrometers), default: 1;
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
-        super().__init__(vectorizer=None, resolution = resolution, show_time = show_time)
+        super().__init__(vectorizer=None, n_threads = n_threads, resolution = resolution, show_time = show_time)
         self.metric_type = 's'
 
     def generate(self, cut, cut_name, outputdir, gendatadir):

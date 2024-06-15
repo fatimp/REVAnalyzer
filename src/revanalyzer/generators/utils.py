@@ -64,6 +64,19 @@ def _write_array(A, fileout):
     A.astype('uint8').tofile(fileout)
 
 
+def _subcube_ids(L, cut_step, sREV_max_size):
+    n_steps = int(np.ceil(L/cut_step))
+    ids = [(0,0)]
+    cut_sizes = [cut_step*(i+1) for i in range(n_steps-1)]
+    for l in cut_sizes:
+        if (l <= sREV_max_size):
+            for idx in range(9):
+                ids.append((l, idx))
+        else:
+            ids.append((l, 0))
+    return ids
+
+
 def make_cut(A, L, l, idx):
     """
     Making subcube cut for a given 3D array. 

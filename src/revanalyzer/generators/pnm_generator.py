@@ -3,13 +3,14 @@
 
 import time
 import os
-import numpy as np
+import multiprocessing
+from functools import partial
 import porespy as ps
 import openpnm as op
-from .utils import _read_array, make_cut
+from .utils import _subcube_ids, make_cut
 
 
-def generate_PNM(image, cut_step, sREV_max_size, outputdir, resolution=1., show_time=False):
+def generate_PNM(image, cut_step, sREV_max_size, outputdir, n_threads = 1, resolution=1., show_time=False):
     """
     Running PNM extractor for all the selected subcubes.
     
@@ -23,25 +24,22 @@ def generate_PNM(image, cut_step, sREV_max_size, outputdir, resolution=1., show_
      	
      	outputdir (str): path to the output folder containing generated data;
      	
+        n_threads (int): number of CPU cores used for data generation, default: 1;
+        
      	resolution (float): resolution of studied sample, default: 1;
         
      	show_time (bool): Added to monitor time cost for large images,  default: False. 
     """
     start_time = time.time()
     L = image.shape[0]
-    n_steps = int(np.ceil(L/cut_step))
-    cut_sizes = [cut_step*(i+1) for i in range(n_steps-1)]
-    for l in cut_sizes:
-        if (l <= sREV_max_size):
-            for idx in range(9):
-                cut = make_cut(image, L, l, idx)
-                cut_name = 'cut'+str(idx)+'_'+str(l) + '.csv'
-                get_pn_csv(cut, cut_name, outputdir, resolution)
-        else:
-            cut = make_cut(image, L, l, 0)
-            cut_name = 'cut0'+'_'+str(l)+ '.csv'
-            get_pn_csv(cut, cut_name, outputdir, resolution)
-    get_pn_csv(image, 'cut0.csv', outputdir, resolution)
+    ids = _subcube_ids(L, cut_step, sREV_max_size)
+    print(ids)
+    pool = multiprocessing.Pool(processes=n_threads)
+    print('aaa')
+    results = pool.map(partial(_pnm_for_subcube, image=image, L=L, outputdir=outputdir, resolution=resolution), ids)
+    print('bbb')
+    pool.close()
+    pool.join()
     if show_time:
         print("---PNM extractor run time is %s seconds ---" % (time.time() - start_time))
 
@@ -64,3 +62,14 @@ def get_pn_csv(cut, cut_name, outputdir, resolution):
     pn = op.io.network_from_porespy(snow_output.network)
     cut_name = os.path.join(outputdir, cut_name)
     op.io.network_to_csv(pn, filename = cut_name)
+
+
+def _pnm_for_subcube(ids, image, L, outputdir, resolution):
+    l = ids[0]
+    idx = ids[1]
+    if l  == 0 and idx == 0:
+        get_pn_csv(image, 'cut0.csv', outputdir, resolution)
+    else:
+        cut = make_cut(image, L, l, idx)
+        cut_name = 'cut'+str(idx)+'_'+str(l) + '.csv'
+        get_pn_csv(cut, cut_name, outputdir, resolution)
