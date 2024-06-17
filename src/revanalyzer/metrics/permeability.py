@@ -23,10 +23,9 @@ class Permeability(BasicMetric):
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
-        super().__init__(vectorizer=None)
+        super().__init__(vectorizer=None, n_threads = n_threads)
         self.metric_type = 's'
         self.direction = direction
-        self.n_threads = n_threads
         self.resolution = resolution
         self.show_time = show_time
         if direction == 'all':

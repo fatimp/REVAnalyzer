@@ -17,7 +17,7 @@ class BasicCFMetric(BasicMetric):
     """
     Base class of CF-based metrics. (Don't use it directly but derive from it).
     """ 
-    def __init__(self, vectorizer, show_time, normalize):
+    def __init__(self, vectorizer, n_threads, show_time, normalize):
         """
         **Input:**
         
@@ -27,7 +27,7 @@ class BasicCFMetric(BasicMetric):
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """        
-        super().__init__(vectorizer)
+        super().__init__(vectorizer, n_threads = n_threads)
         self.show_time = show_time
         if normalize == True:
             self.normalize = 1
@@ -136,7 +136,7 @@ class C2(BasicCFMetric):
     """
     Class describing metric C2. 
     """ 
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -148,7 +148,7 @@ class C2(BasicCFMetric):
         """ 
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = True
         self.metric_type = 'v'
 
@@ -195,7 +195,7 @@ class L2(BasicCFMetric):
     """
     Class describing metric L2. 
     """ 
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -204,10 +204,10 @@ class L2(BasicCFMetric):
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """
+        """ 
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = True
         self.metric_type = 'v'
 
@@ -253,8 +253,8 @@ class L2(BasicCFMetric):
 class S2(BasicCFMetric): 
     """
     Class describing metric S2. 
-    """
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    """ 
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -263,10 +263,10 @@ class S2(BasicCFMetric):
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """
+        """ 
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = True
         self.metric_type = 'v'
 
@@ -313,7 +313,7 @@ class SS(BasicCFMetric):
     """
     Class describing metric SS. 
     """ 
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -322,10 +322,10 @@ class SS(BasicCFMetric):
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """
+        """ 
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = True
         self.metric_type = 'v'
 
@@ -371,8 +371,8 @@ class SS(BasicCFMetric):
 class SV(BasicCFMetric):
     """
     Class describing metric SV. 
-    """ 
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    """  
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -381,10 +381,10 @@ class SV(BasicCFMetric):
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """
+        """ 
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = True
         self.metric_type = 'v'
 
@@ -431,7 +431,7 @@ class ChordLength(BasicCFMetric):
     """
     Class describing metric chord-length. 
     """
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -443,7 +443,7 @@ class ChordLength(BasicCFMetric):
         """
         if not isinstance(vectorizer, HistVectorizer):
             raise TypeError("Vectorizer should be an object of HistVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = False
         self.metric_type = 'v'
 
@@ -497,8 +497,8 @@ class ChordLength(BasicCFMetric):
 class PoreSize(BasicCFMetric):
     """
     Class describing metric pore-size. 
-    """ 
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    """
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -510,7 +510,7 @@ class PoreSize(BasicCFMetric):
         """
         if not isinstance(vectorizer, HistVectorizer):
             raise TypeError("Vectorizer should be an object of HistVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = False
         self.metric_type = 'v'
 
@@ -565,7 +565,7 @@ class CrossCorrelation(BasicCFMetric):
     """
     Class describing metric cross-correlation. 
     """ 
-    def __init__(self,  vectorizer, show_time=False, normalize=True):
+    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
         **Input:**
         
@@ -574,10 +574,10 @@ class CrossCorrelation(BasicCFMetric):
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """
+        """ 
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, show_time, normalize)
+        super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = True
         self.metric_type = 'v'
 

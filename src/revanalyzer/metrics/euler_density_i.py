@@ -18,13 +18,13 @@ class EulerDensityI(BasicMetric):
     """
     Class describing Euler density I metric.
     """     
-    def __init__(self, show_time=False):
+    def __init__(self, n_threads = 1, show_time=False):
         """
         **Input:**
         
         	show_time (bool): flag to monitor time cost for large images, default: False.
         """
-        super().__init__(vectorizer=None)
+        super().__init__(vectorizer=None, n_threads = n_threads)
         self.metric_type = 's'
         self.show_time = show_time
 

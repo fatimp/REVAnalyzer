@@ -10,8 +10,8 @@ class Porosity(BasicMetric):
     """
     Class describing porosity metric.
     """
-    def __init__(self):
-        super().__init__(vectorizer=None)
+    def __init__(self, n_threads = 1):
+        super().__init__(vectorizer=None, n_threads = n_threads)
         self.metric_type = 's'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):

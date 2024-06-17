@@ -4,7 +4,7 @@
 import time
 import os
 import multiprocessing
-from functools import partial
+from itertools import repeat
 import porespy as ps
 import openpnm as op
 from .utils import _subcube_ids, make_cut
@@ -36,7 +36,7 @@ def generate_PNM(image, cut_step, sREV_max_size, outputdir, n_threads = 1, resol
     print(ids)
     pool = multiprocessing.Pool(processes=n_threads)
     print('aaa')
-    results = pool.map(partial(_pnm_for_subcube, image=image, L=L, outputdir=outputdir, resolution=resolution), ids)
+    results = pool.starmap(_pnm_for_subcube, zip(ids, repeat(image), repeat(L), repeat(outputdir), repeat(resolution)))
     print('bbb')
     pool.close()
     pool.join()
@@ -58,10 +58,16 @@ def get_pn_csv(cut, cut_name, outputdir, resolution):
         
      	resolution (float): resolution of studied sample, default: 1;
     """
+    cut = cut.astype(bool)
+    print(cut)
+    print('get_pn_csv: ', cut_name, outputdir, resolution)
     snow_output = ps.networks.snow2(cut, voxel_size = resolution)
+    print('snow passed')
     pn = op.io.network_from_porespy(snow_output.network)
+    print('pn passed')
     cut_name = os.path.join(outputdir, cut_name)
     op.io.network_to_csv(pn, filename = cut_name)
+    print(cut_name, ' passed')
 
 
 def _pnm_for_subcube(ids, image, L, outputdir, resolution):
@@ -73,3 +79,16 @@ def _pnm_for_subcube(ids, image, L, outputdir, resolution):
         cut = make_cut(image, L, l, idx)
         cut_name = 'cut'+str(idx)+'_'+str(l) + '.csv'
         get_pn_csv(cut, cut_name, outputdir, resolution)
+
+
+# +
+def _generation(data, a, b):
+    pool = multiprocessing.Pool(processes=4)
+    results = pool.starmap(fun, zip(data, repeat(a), repeat(b)))
+    pool.close()
+    pool.join()
+    return results
+
+def fun(data, a, b):
+    result = data*data +a + b
+    return result

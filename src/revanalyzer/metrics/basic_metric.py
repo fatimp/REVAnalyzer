@@ -9,13 +9,14 @@ class BasicMetric:
     """
     Base class of all metrics. (Don't use it directly but derive from it).
     """    
-    def __init__(self, vectorizer):
+    def __init__(self, vectorizer, n_threads):
         """
         **Input:**
         
         	vectorizer (subclass of BasicVectorizer): vectorizer to be used for a vector metric.
         """
         self.vectorizer = vectorizer
+        self.n_threads = n_threads
         self.directional = False
         self.metric_type = None
         

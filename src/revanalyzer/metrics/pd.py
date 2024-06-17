@@ -14,7 +14,7 @@ class BasicPDMetric(BasicMetric):
     """
     Base class of PD-based metrics. (Don't use it directly but derive from it).
     """ 
-    def __init__(self, vectorizer, show_time):
+    def __init__(self, vectorizer, n_threads, show_time):
         """
         **Input:**
         
@@ -25,7 +25,7 @@ class BasicPDMetric(BasicMetric):
         if not isinstance(vectorizer, SimpleBinningVectorizer) or isinstance(vectorizer, PersistenceImageVectorizer) or isinstance(
             vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer):
             raise TypeError('Vectorizer should be an object of SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer class')
-        super().__init__(vectorizer)
+        super().__init__(vectorizer, n_threads = n_threads)
         self.show_time = show_time
         
     def generate(self, cut, cut_name, outputdir, i, gendatadir = None):
@@ -98,7 +98,7 @@ class PD0(BasicPDMetric):
     """
     Class describing metric PD of rank 0.
     """    
-    def __init__(self, vectorizer, show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, show_time = False):
         """
         **Input:**
         
@@ -106,7 +106,7 @@ class PD0(BasicPDMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, show_time)
+        super().__init__(vectorizer, n_threads, show_time)
         self.metric_type = 'v'
         
     def generate(self, cut, cut_name, outputdir, gendatadir = None):

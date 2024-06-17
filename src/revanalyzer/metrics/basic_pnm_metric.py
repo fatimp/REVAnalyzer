@@ -26,8 +26,7 @@ class BasicPNMMetric(BasicMetric):
         """
         if not (isinstance(vectorizer, HistVectorizer) or (vectorizer is None)):
             raise TypeError("Vectorizer should be None or an object of HistVectorizer class.")
-        super().__init__(vectorizer)
-        self.n_threads = n_threads
+        super().__init__(vectorizer, n_threads = n_threads)
         self.resolution = resolution
         self.show_time = show_time
 

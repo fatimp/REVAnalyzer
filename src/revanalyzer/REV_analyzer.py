@@ -7,7 +7,9 @@ import json
 import shutil
 import matplotlib.pyplot as plt
 import itertools
-from .generators import make_cuts, run_fdmss, _read_array, _write_array, make_cut, generate_PNM
+import multiprocessing
+from functools import partial
+from .generators import make_cuts, run_fdmss, _read_array, _write_array, _subcube_ids, make_cut, generate_PNM
 from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability, ChordLength, PoreSize
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
@@ -131,18 +133,11 @@ class REVAnalyzer:
             with open(fdmss_input, 'w') as f:
                 lines = [str(self.cut_step), str(self.sREV_max_size), str(self.metric.resolution)]
                 f.write('\n'.join(lines))
-        for l in self.cut_sizes:
-            if (l <= self.sREV_max_size):
-                for idx in range(9):
-                    cut = make_cut(image, self.size, l, idx)
-                    cut_name = 'cut'+str(idx)+'_'+str(l)
-                    self.metric.generate(cut, cut_name, self._outputdir_cut_values, self.gendatadir)
-            else:
-                cut = make_cut(image, self.size, l, 0)
-                cut_name = 'cut0'+'_'+str(l)
-                self.metric.generate(cut, cut_name, self._outputdir_cut_values, self.gendatadir)
-        self.metric.generate(image, 'cut0', self._outputdir_cut_values, self.gendatadir)
-            
+        ids = _subcube_ids(self.size, self.cut_step, self.sREV_max_size)
+        pool = multiprocessing.Pool(processes=self.metric.n_threads) 
+        results = pool.map(partial(self._metric_for_subcube, image=image), ids)
+        pool.close()
+        pool.join()
 
     def read(self, cut_size, cut_id=0): 
         """
@@ -431,3 +426,13 @@ class REVAnalyzer:
 
         plt.legend()
         plt.show()
+    
+    def _metric_for_subcube(self, ids, image):
+        l = ids[0]
+        idx = ids[1]
+        if l  == 0 and idx == 0:
+            self.metric.generate(image, 'cut0', self._outputdir_cut_values, self.gendatadir)
+        else:
+            cut = make_cut(image, self.size, l, idx)
+            cut_name = 'cut'+str(idx)+'_'+str(l)
+            self.metric.generate(cut, cut_name, self._outputdir_cut_values, self.gendatadir)
