@@ -36,7 +36,9 @@ def generate_PNM(image, cut_step, sREV_max_size, outputdir, n_threads = 1, resol
     print(ids)
     pool = multiprocessing.Pool(processes=n_threads)
     print('aaa')
-    results = pool.starmap(_pnm_for_subcube, zip(ids, repeat(image), repeat(L), repeat(outputdir), repeat(resolution)))
+    #results = pool.starmap(_pnm_for_subcube, zip(ids, repeat(image), repeat(L), repeat(outputdir), repeat(resolution)))
+    for elem in ids:
+        pool.apply_async(_pnm_for_subcube, args = (elem, image, L, outputdir, resolution))
     print('bbb')
     pool.close()
     pool.join()
@@ -81,14 +83,3 @@ def _pnm_for_subcube(ids, image, L, outputdir, resolution):
         get_pn_csv(cut, cut_name, outputdir, resolution)
 
 
-# +
-def _generation(data, a, b):
-    pool = multiprocessing.Pool(processes=4)
-    results = pool.starmap(fun, zip(data, repeat(a), repeat(b)))
-    pool.close()
-    pool.join()
-    return results
-
-def fun(data, a, b):
-    result = data*data +a + b
-    return result

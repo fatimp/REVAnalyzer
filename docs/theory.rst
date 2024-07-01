@@ -69,7 +69,7 @@ If ranges :math:`r(i)` and :math:`r(i+1)` coincide, this condition is satisfied 
     
 **Fig. 1.** a) Modification of the vectorized descriptor D to prepare it for the REV analysis; b) the overall scheme of the comparison based on vector metrics.
 
-At each cut step :math:`i`  we take subcubes SC :math:`_k(i)` and SC :math:`_l(i+1)` and compute the normalized distance between the vectors :math:`\boldsymbol{V_{l(i+1)}}` and :math:`\boldsymbol{V_{ki}}` is computed:
+At each cut step :math:`i`  we take subcubes SC :math:`_k(i)` and SC :math:`_l(i+1)` and compute the normalized distance between the vectors :math:`\boldsymbol{V_{l(i+1)}}` and :math:`\boldsymbol{V_{ki}}`:
 
 .. math::
 
@@ -77,7 +77,7 @@ At each cut step :math:`i`  we take subcubes SC :math:`_k(i)` and SC :math:`_l(i
 
 Order of the vector norm :math:`||\boldsymbol{V}||` is the input parameter of any vectorizer used in REVAnalyzer library.
 
-For the estimation of dREV and sREV sizes for vector metric, fist we calculate mean values :math:`\bar{\delta}(i)` over all pairs of indices (:math:`k`, :math:`д`), its standard deviation :math:`\sigma_i` and normalized standard deviation  :math:`\sigma_{norm}(i) = \sigma_i/ \bar{S_i}`.
+For the estimation of dREV and sREV sizes for vector metric, fist we calculate mean values :math:`\bar{\delta}(i)` over all pairs of indices (:math:`k`, :math:`l`), its standard deviation :math:`\sigma_i` and normalized standard deviation  :math:`\sigma_{norm}(i) = \sigma_i/ \bar{\delta}(i)`.
 
 Then for the estimation of dREV size we use the following formula:
 
