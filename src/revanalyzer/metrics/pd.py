@@ -144,7 +144,7 @@ class PD1(BasicPDMetric):
     """
     Class describing metric PD of rank 1.
     """ 
-    def __init__(self, vectorizer, show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, show_time = False):
         """
         **Input:**
         
@@ -152,7 +152,7 @@ class PD1(BasicPDMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, show_time)
+        super().__init__(vectorizer, n_threads, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
@@ -190,7 +190,7 @@ class PD2(BasicPDMetric):
     """
     Class describing metric PD of rank 2.
     """ 
-    def __init__(self, vectorizer, show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, show_time = False):
         """
         **Input:**
         
@@ -198,7 +198,7 @@ class PD2(BasicPDMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, show_time)
+        super().__init__(vectorizer, n_threads, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):

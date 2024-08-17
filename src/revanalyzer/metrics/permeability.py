@@ -72,7 +72,10 @@ class Permeability(BasicMetric):
                 vel_cut = make_cut(vel, L, l, idx)
                 permeability = _get_permeability(cut, pressure_cut, vel_cut, direction)
             with open(fileout, "w") as f:
-                f.write(str(permeability))
+                if permeability > 0:
+                    f.write(str(permeability))
+                else:
+                    f.write(str(0))
 
 
 def _pressure_diff(image, pressure, axis):
@@ -96,6 +99,6 @@ def _get_permeability(image, pressure, vel, direction):
     p = _pressure_diff(image, pressure, direction)
     v = np.sum(vel)/pores
     porosity = pores/(dim**3)
-    return 100*v/p*porosity/0.986*1000
+    return v/p*porosity
 
 
