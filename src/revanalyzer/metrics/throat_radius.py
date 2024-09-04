@@ -13,7 +13,7 @@ class ThroatRadius(BasicPNMMetric):
     """
     Class describing throat radius metric.
     """ 
-    def __init__(self, vectorizer, n_threads = 1, resolution = 1., show_time = False):
+    def __init__(self, vectorizer, exe_path, n_threads = 1, resolution = 1., length_unit_type = 'M', direction = 'z', show_time = False):
         """
         **Input:**
             n_threads (int): number of CPU cores used for data generation, default: 1;
@@ -22,7 +22,7 @@ class ThroatRadius(BasicPNMMetric):
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
-        super().__init__(vectorizer, n_threads = n_threads, resolution = resolution, show_time = show_time)
+        super().__init__(vectorizer, exe_path = exe_path, n_threads = n_threads, resolution = resolution, length_unit_type = length_unit_type, direction = direction, show_time = show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir):
@@ -39,8 +39,12 @@ class ThroatRadius(BasicPNMMetric):
         	
         	gendatadir (str): folder with generated fdmss data output.    
         """
-        df = super().generate(cut_name, gendatadir)
-        throat_radius = np.array(df['throat.inscribed_diameter'].dropna().tolist())/2
+        pore_number = super().generate(cut, cut_name, gendatadir)
+        if pore_number > 0:
+            filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_link1.dat'
+            throat_radius = _read_throat_radius(filein)
+        else:
+            throat_radius = []
         cut_name_out = cut_name + ".txt"
         fileout = os.path.join(outputdir, cut_name_out)
         np.savetxt(fileout, throat_radius, delimiter='\t')
@@ -67,3 +71,15 @@ class ThroatRadius(BasicPNMMetric):
         ax.set_xlabel('throat radius')
         ax.set_ylabel('density')
         plt.show()
+
+def _read_throat_radius(filein):
+    with open(filein, mode='r') as f:
+        link = pd.read_table(filepath_or_buffer=f,
+                             header=None,
+                             skiprows=1,
+                             sep='\s+',
+                             skipinitialspace=True,
+                             index_col=0)
+    link.columns = ['throat.pore1', 'throat.pore2', 'throat.radius',
+                    'throat.shape_factor', 'throat.total_length']
+    return np.array(link['throat.radius'])

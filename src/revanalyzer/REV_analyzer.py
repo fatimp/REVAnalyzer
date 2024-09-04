@@ -97,8 +97,8 @@ class REVAnalyzer:
             if os.path.isfile(pn_input):
                 with open(pn_input) as f:
                     lines = [line.rstrip('\n') for line in f]
-                    if lines[0] == str(self.cut_step) and lines[1] == str(self.sREV_max_size) and lines[2] == str(self.metric.resolution):                        
-                        self.is_pnm_data = True
+                if lines[0] == str(self.cut_step) and lines[1] == str(self.sREV_max_size) and lines[2] == str(self.metric.resolution) and lines[3] == self.metric.length_unit_type and lines[4] == self.metric.direction:
+                    self.is_pnm_data = True
                     
 
     def generate(self):
@@ -128,13 +128,17 @@ class REVAnalyzer:
             image = self.image
         if issubclass(self.metric.__class__, BasicPNMMetric) and not self.is_pnm_data:
             os.makedirs(self.gendatadir, exist_ok=True)
-            generate_PNM(image, self.cut_step, self.sREV_max_size, self.gendatadir, self.metric.n_threads, self.metric.resolution, self.metric.show_time)    
-            fdmss_input = os.path.join(self.gendatadir, 'pn_input.txt')            
-            with open(fdmss_input, 'w') as f:
-                lines = [str(self.cut_step), str(self.sREV_max_size), str(self.metric.resolution)]
+            generate_PNM(image, self.cut_step, self.sREV_max_size, self.gendatadir, self.metric.exe_path, self.metric.n_threads, self.metric.resolution, self.metric.length_unit_type, self.metric.direction, self.metric.show_time)    
+            pn_input = os.path.join(self.gendatadir, 'pn_input.txt')            
+            with open(pn_input, 'w') as f:
+                lines = [str(self.cut_step), str(self.sREV_max_size), str(self.metric.resolution), self.metric.length_unit_type, self.metric.direction]
                 f.write('\n'.join(lines))
         ids = _subcube_ids(self.size, self.cut_step, self.sREV_max_size)
-        pool = multiprocessing.Pool(processes=self.metric.n_threads) 
+        if issubclass(self.metric.__class__, BasicPDMetric):
+            n_threads = 1
+        else:
+            n_threads = self.metric.n_threads
+        pool = multiprocessing.Pool(processes=n_threads) 
         results = pool.map(partial(self._metric_for_subcube, image=image), ids)
         pool.close()
         pool.join()
@@ -387,7 +391,6 @@ class REVAnalyzer:
             plt.ylabel("difference in distance")
             ax.axhline(y=self.dREV_threshold, color='k',
                        linestyle='-', label="dREV threshold")
-        plt.legend()
         plt.show()
 
         fig, ax = plt.subplots()
@@ -428,11 +431,18 @@ class REVAnalyzer:
         plt.show()
     
     def _metric_for_subcube(self, ids, image):
+        if issubclass(self.metric.__class__, BasicPDMetric):
+            if isinstance(self.image, str):
+                outputdir = os.path.join(self.outputdir, self.image)
+            else:
+                outputdir = self.outputdir
+        else:
+            outputdir = self._outputdir_cut_values
         l = ids[0]
         idx = ids[1]
         if l  == 0 and idx == 0:
-            self.metric.generate(image, 'cut0', self._outputdir_cut_values, self.gendatadir)
+            self.metric.generate(image, 'cut0', outputdir, self.gendatadir)
         else:
             cut = make_cut(image, self.size, l, idx)
             cut_name = 'cut'+str(idx)+'_'+str(l)
-            self.metric.generate(cut, cut_name, self._outputdir_cut_values, self.gendatadir)
+            self.metric.generate(cut, cut_name, outputdir, self.gendatadir)

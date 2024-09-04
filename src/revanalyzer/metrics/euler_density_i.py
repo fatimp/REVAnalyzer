@@ -4,15 +4,11 @@ Definition of Euler Density I metric. The Euler density here is calculated using
 """
 
 from .basic_metric import BasicMetric
-import numpy as np
-import matplotlib.pyplot as plt
+from ..generators import _write_array
 import os
 import time
 import imp
-from julia import Main
-from julia.api import Julia
-jl = Julia(compiled_modules=False)
-
+import subprocess
 
 class EulerDensityI(BasicMetric):
     """
@@ -41,18 +37,18 @@ class EulerDensityI(BasicMetric):
         	outputdir (str): output folder.
         """        
         start_time = time.time()
-        path0 = imp.find_module('revanalyzer')[1]
-        pathjl = os.path.join(path0, 'jl', 'euler_density.jl')
-        pathjl = 'include("'+pathjl+'")'
-        jl.eval(pathjl)
+        glob_path = os.getcwd()
         length = cut.shape[0]
-        v = cut.reshape(cut.size,)
-        addr = v.ctypes.data
-        euler_d = Main.euler_density(addr, length)
-        cut_name_out = cut_name + ".txt"
-        fileout = os.path.join(outputdir, cut_name_out)
-        with open(fileout, "w") as f:
-            f.write(str(euler_d))
+        path0 = imp.find_module('revanalyzer')[1]
+        jl_path = os.path.join(path0, 'jl', 'euler_density.jl')
+        output_path = os.path.join(glob_path, outputdir)
+        image_path = os.path.join(output_path, cut_name +'.raw')
+        _write_array(cut, image_path)
+        file_out = os.path.join(output_path, cut_name +'.txt')
+        code = subprocess.call(['julia', jl_path, image_path, str(length), file_out])
+        if (code != 0):
+            raise RuntimeError("Error in julia run occured!")
+        os.remove(image_path)
         if self.show_time:
             print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))

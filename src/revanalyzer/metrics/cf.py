@@ -2,15 +2,14 @@
 """Definition of CF-based metrics. For the definition of correlation functions (CF) see the documentation."""
 
 from .basic_metric import BasicMetric
-from revanalyzer.vectorizers  import CFVectorizer, HistVectorizer
+from ..generators import _write_array
+from ..vectorizers  import CFVectorizer, HistVectorizer
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 import time
 import imp
-from julia import Main
-from julia.api import Julia
-jl = Julia(compiled_modules=False)
+import subprocess
 
 
 class BasicCFMetric(BasicMetric):
@@ -49,29 +48,18 @@ class BasicCFMetric(BasicMetric):
         	method (str): method for generation of cpecific CF. Different in differenent CF-based metrics.
         """          
         start_time = time.time()
-        path0 = imp.find_module('revanalyzer')[1]
-        pathjl = os.path.join(path0, 'jl', 'corfunction_xyz.jl')
-        pathjl = 'include("'+pathjl+'")'
-        jl.eval(pathjl)
+        glob_path = os.getcwd()
         length = cut.shape[0]
-        v = cut.reshape(cut.size,)
-        addr = v.ctypes.data
-        cf = Main.compute_cf(addr, length, self.normalize, method)
-        if len(np.shape(cf)) > 1:
-            cf0 = np.concatenate(cf)
-            for elem in cf0:
-                if np.isnan(elem) or np.isinf(elem):
-                    cf = np.array(([], [], []))
-                    break
-            directions = ('_x', '_y', '_z')
-            for i, direction in enumerate(directions):
-                cut_name_out = cut_name + direction + ".txt"
-                fileout = os.path.join(outputdir, cut_name_out)
-                np.savetxt(fileout, cf[i])
-        else:
-            cut_name_out = cut_name + ".txt"
-            fileout = os.path.join(outputdir, cut_name_out)
-            np.savetxt(fileout, cf)           
+        path0 = imp.find_module('revanalyzer')[1]
+        jl_path = os.path.join(path0, 'jl', 'corfunction_xyz.jl')
+        output_path = os.path.join(glob_path, outputdir)
+        image_path = os.path.join(output_path, cut_name +'.raw')
+        _write_array(cut, image_path)
+        file_out = os.path.join(output_path, cut_name)
+        code = subprocess.call(['julia', jl_path, image_path, str(length), method, str(self.normalize), file_out])
+        if (code != 0):
+            raise RuntimeError("Error in julia run occured!")
+        os.remove(image_path)           
         if self.show_time:
             print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))

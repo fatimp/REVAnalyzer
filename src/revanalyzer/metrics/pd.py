@@ -6,15 +6,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import os
-import pyperspairdiamorse as pppdm
-from revanalyzer.vectorizers import SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer, SilhouetteVectorizer
+import subprocess
+from ..generators import _write_array
+from ..vectorizers import SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer, SilhouetteVectorizer
 
 
 class BasicPDMetric(BasicMetric):
     """
     Base class of PD-based metrics. (Don't use it directly but derive from it).
     """ 
-    def __init__(self, vectorizer, n_threads, show_time):
+    def __init__(self, vectorizer, exe_path, n_threads, show_time):
         """
         **Input:**
         
@@ -22,13 +23,14 @@ class BasicPDMetric(BasicMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.
         """
-        if not isinstance(vectorizer, SimpleBinningVectorizer) or isinstance(vectorizer, PersistenceImageVectorizer) or isinstance(
-            vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer):
+        if not (isinstance(vectorizer, SimpleBinningVectorizer) or isinstance(vectorizer, PersistenceImageVectorizer) or isinstance(
+            vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer)):
             raise TypeError('Vectorizer should be an object of SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer class')
         super().__init__(vectorizer, n_threads = n_threads)
+        self.exe_path = exe_path
         self.show_time = show_time
         
-    def generate(self, cut, cut_name, outputdir, i, gendatadir = None):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates PD metric for a specific subcube.
         
@@ -43,11 +45,23 @@ class BasicPDMetric(BasicMetric):
         	i (0,1,2): rank of generated PD.
         """ 
         start_time = time.time()
-        cut = cut.astype(bool)
-        pds = pppdm.extract(cut)
-        cut_name_out = cut_name + ".txt"
-        fileout = os.path.join(outputdir, cut_name_out)
-        np.savetxt(fileout, pds[i]) 
+        glob_path = os.getcwd()
+        my_env = os.environ.copy()
+        my_env["OMP_NUM_THREADS"] = str(self.n_threads)
+        output_path = os.path.join(glob_path, outputdir)
+        image_path = os.path.join(output_path, cut_name) 
+        length = cut.shape[0]
+        pd0 = os.path.join(output_path, 'PD0', 'cuts_values')
+        pd1 = os.path.join(output_path, 'PD1', 'cuts_values')
+        pd2 = os.path.join(output_path, 'PD2', 'cuts_values')
+        os.makedirs(pd0, exist_ok=True)
+        os.makedirs(pd1, exist_ok=True)
+        os.makedirs(pd2, exist_ok=True)
+        _write_array(cut, image_path)
+        code = subprocess.call([self.exe_path, str(length), output_path, cut_name, output_path], env=my_env)
+        if (code != 0):
+            raise RuntimeError("Error in PD generator occured!")
+        os.remove(image_path)
         if self.show_time:
             print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))
@@ -98,7 +112,7 @@ class PD0(BasicPDMetric):
     """
     Class describing metric PD of rank 0.
     """    
-    def __init__(self, vectorizer, n_threads = 1, show_time = False):
+    def __init__(self, vectorizer, exe_path, n_threads = 1, show_time = False):
         """
         **Input:**
         
@@ -106,7 +120,7 @@ class PD0(BasicPDMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, n_threads, show_time)
+        super().__init__(vectorizer, exe_path, n_threads, show_time)
         self.metric_type = 'v'
         
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
@@ -121,7 +135,7 @@ class PD0(BasicPDMetric):
         	
         	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir, i = 0)
+        return super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, cut_size, cut_id):
         """
@@ -144,7 +158,7 @@ class PD1(BasicPDMetric):
     """
     Class describing metric PD of rank 1.
     """ 
-    def __init__(self, vectorizer, n_threads = 1, show_time = False):
+    def __init__(self, vectorizer, exe_path, n_threads = 1, show_time = False):
         """
         **Input:**
         
@@ -152,7 +166,7 @@ class PD1(BasicPDMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, n_threads, show_time)
+        super().__init__(vectorizer, exe_path, n_threads, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
@@ -167,7 +181,7 @@ class PD1(BasicPDMetric):
         	
         	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir, i = 1)
+        return super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, cut_size, cut_id):
         """
@@ -190,7 +204,7 @@ class PD2(BasicPDMetric):
     """
     Class describing metric PD of rank 2.
     """ 
-    def __init__(self, vectorizer, n_threads = 1, show_time = False):
+    def __init__(self, vectorizer, exe_path, n_threads = 1, show_time = False):
         """
         **Input:**
         
@@ -198,7 +212,7 @@ class PD2(BasicPDMetric):
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, n_threads, show_time)
+        super().__init__(vectorizer, exe_path, n_threads, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
@@ -213,7 +227,7 @@ class PD2(BasicPDMetric):
         	
         	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir, i = 2)
+        return super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, cut_size, cut_id):
         """

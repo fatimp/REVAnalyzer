@@ -12,7 +12,7 @@ class MeanConnectivity(BasicPNMMetric):
     """
     Class describing mean connectivity metric.
     """     
-    def __init__(self, n_threads = 1, resolution = 1., show_time = False):
+    def __init__(self, exe_path, n_threads = 1, resolution = 1., length_unit_type = 'M', direction = 'z', show_time = False):
         """
         **Input:**
             n_threads (int): number of CPU cores used for data generation, default: 1;
@@ -21,7 +21,7 @@ class MeanConnectivity(BasicPNMMetric):
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
-        super().__init__(vectorizer=None, n_threads = n_threads, resolution = resolution, show_time = show_time)
+        super().__init__(vectorizer=None, exe_path = exe_path, n_threads = n_threads, resolution = resolution, length_unit_type = length_unit_type, direction = direction, show_time = show_time)
         self.metric_type = 's'
 
     def generate(self, cut, cut_name, outputdir, gendatadir):
@@ -38,17 +38,30 @@ class MeanConnectivity(BasicPNMMetric):
         	
         	gendatadir (str): folder with generated fdmss data output.    
         """
-        df = super().generate(cut_name, gendatadir)
-        L = cut.shape[0]
-        pore_number = df.shape[0] - df['pore.phase'].isna().sum()
-        con1 = df['throat.conns[0]'].dropna().tolist()
-        con2 = df['throat.conns[1]'].dropna().tolist()
-        con = con1 +con2
-        (unique, counts) = np.unique(con, return_counts=True)
-        counts0 = [0 for i in range(pore_number) if i not in unique]
-        counts = counts.tolist() + counts0
-        mean_con = np.mean(counts)
+        pore_number = super().generate(cut, cut_name, gendatadir)
+        if pore_number > 0:
+            filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_link2.dat'
+            mean_con = _read_mean_connectivity(filein)
+        else:
+            mean_con = 0
         cut_name_out = cut_name + ".txt"
         fileout = os.path.join(outputdir, cut_name_out)
         with open(fileout, "w") as f:
             f.write(str(mean_con))
+
+def _read_mean_connectivity(filein):
+    with open(filein, mode='r') as f:
+        link = pd.read_table(filepath_or_buffer=f,
+                             header=None,
+                             sep='\s+',
+                             skipinitialspace=True,
+                             index_col=0)
+    link.columns = ['throat.pore1', 'throat.pore2',
+                    'throat.pore1_length', 'throat.pore2_length',
+                    'throat.length', 'throat.volume',
+                    'throat.clay_volume']
+    con = np.vstack((link['throat.pore1']-1,
+                     link['throat.pore2']-1)).T
+    con1 = con.reshape(-1)
+    (unique, counts) = np.unique(con1, return_counts=True)
+    return np.mean(counts)

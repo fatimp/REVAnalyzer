@@ -2,8 +2,4 @@ numpy
 pandas
 matplotlib
 scikit-learn
-julia
 gudhi
-pyfdmss
-pyperspairdiamorse
-porespy

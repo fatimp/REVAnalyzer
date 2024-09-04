@@ -13,7 +13,7 @@ class BasicPNMMetric(BasicMetric):
     """
     Base class of PNM-based metrics. (Don't use it directly but derive from it).
     """  
-    def __init__(self, vectorizer, n_threads, resolution, show_time):
+    def __init__(self, vectorizer, exe_path, n_threads, resolution, length_unit_type, direction, show_time):
         """
         **Input:**
         	vectorizer (PNMVectorizer object): vectorizer to be used for a vector metric.
@@ -28,9 +28,12 @@ class BasicPNMMetric(BasicMetric):
             raise TypeError("Vectorizer should be None or an object of HistVectorizer class.")
         super().__init__(vectorizer, n_threads = n_threads)
         self.resolution = resolution
+        self.length_unit_type = length_unit_type
+        self.direction = direction
         self.show_time = show_time
+        self.exe_path = exe_path
 
-    def generate(self, cut_name, gendatadir):
+    def generate(self, cut, cut_name, gendatadir):
         """
         Generates PNM metric for a specific subcube.
         
@@ -41,9 +44,12 @@ class BasicPNMMetric(BasicMetric):
         	
         	gendatadir (str): folder with generated fdmss data output.    
         """
-        cut_name = os.path.join(gendatadir, cut_name + '.csv')
-        df =  pd.read_csv(cut_name)
-        return df 
+        L = cut.shape[0]
+        filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_node1.dat'
+        with open(filein, "r") as f:
+            str_0 = f.readline().split()
+            pore_number = (int(str_0[0])-1)/L**3
+        return pore_number 
         
         
     def show(self, inputdir, cut_size, cut_id, nbins):
