@@ -31,9 +31,10 @@ PNM-extractor:
 ---------------------
 In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction, branch develop. Author - Dmitry Murygin.
 
-###install & build:###
+install & build
 ---------------------
 see here: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction/-/blob/develop/README.md
+
 Executable file: ./bin/extractor_example 
 
 PD generation
@@ -42,11 +43,12 @@ PD generation
 PD-generator: 
 ----------------------
 In gitlab: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction, branch ppairs_new. Author - Andrey Zubov
-Built module in dcore-gpu (10.4.128.112):
 
-###install & build:###
+
+install & build:
 ---------------------
 see here: https://gce.digital-core.ru/gitlab-instance-4a5c00a2/pore-network-extraction/-/blob/develop/README.md
+
 Executable file: ./bin/persistence_pairs 
 
 Documentation
