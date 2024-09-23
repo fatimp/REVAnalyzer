@@ -56,21 +56,19 @@ class Permeability(BasicMetric):
         for direction in directions_list:
             pressure_name = os.path.join(gendatadir, direction + '_pressure')
             vel_name  = os.path.join(gendatadir, direction + '_vel' + direction)
-            pressure = _read_array(pressure_name, L, 'float32')
-            vel = _read_array(vel_name, L, 'float32')
+            pressure = _read_array(pressure_name, L, L, L, 'float32')
+            vel = _read_array(vel_name, L, L, L, 'float32')
             if self.directional:
                 cut_name_out = cut_name + "_" + direction + ".txt"
             else:
                 cut_name_out = cut_name + ".txt"
             fileout = os.path.join(outputdir, cut_name_out)
-            if cut_name == 'cut0':
-                permeability = _get_permeability(cut, pressure, vel, direction)
-            else:
-                l = cut.shape[0]
-                idx = int(cut_name[3])
-                pressure_cut = make_cut(pressure, L, l, idx)
-                vel_cut = make_cut(vel, L, l, idx)
-                permeability = _get_permeability(cut, pressure_cut, vel_cut, direction)
+            cut_size = (cut.shape[0], cut.shape[1], cut.shape[2])
+            idx = int(cut_name[-1])
+            size0 = (L, L, L)
+            pressure_cut = make_cut(pressure, size0, cut_size, idx)
+            vel_cut = make_cut(vel, size0, cut_size, idx)
+            permeability = _get_permeability(cut, pressure_cut, vel_cut, direction)
             with open(fileout, "w") as f:
                 if permeability > 0:
                     f.write(str(permeability))

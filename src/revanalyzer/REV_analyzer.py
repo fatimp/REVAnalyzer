@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import itertools
 import multiprocessing
 from functools import partial
-from .generators import make_cuts, run_fdmss, _read_array, _write_array, _subcube_ids, make_cut, generate_PNM
+from statistics import geometric_mean
+from .generators import run_fdmss, _read_array, _write_array, _subcube_ids, make_cut, generate_PNM
 from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability, ChordLength, PoreSize
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
@@ -18,7 +19,7 @@ class REVAnalyzer:
     """
     analysis of representativity of a given image for a given scalar or vector metric.
     """
-    def __init__(self, metric, image, cut_step, sREV_max_size, datadir=None, outputdir='output'):
+    def __init__(self, metric, image, size, n_steps, sREV_max_step, datadir=None, outputdir='output'):
         """
         **Input:**
 
@@ -37,32 +38,36 @@ class REVAnalyzer:
         if not issubclass(metric.__class__, BasicMetric):
             raise TypeError("Metric should be an object of a class derived from BasicMetric.")
         self.metric = metric
+        self.size = size
         if isinstance(image, str):
-            if datadir is not None:
-                filein = os.path.join(datadir, image)
-            else:
-                filein = image
-            file_size = os.path.getsize(filein)
-            self.size = int(np.ceil(file_size**(0.333333333)))
             self._outputdir_cut_values = os.path.join(outputdir, image, self.metric.__class__.__name__, 'cuts_values')
         elif isinstance(image, np.ndarray):
-            self.size = image.shape[0]
-            if not (self.size == image.shape[1] and self.size == image.shape[2]):
-                raise ValueError("Array should have equal dimensions in all 3 axes.")
             self._outputdir_cut_values = os.path.join(outputdir, self.metric.__class__.__name__, 'cuts_values')
         else:
             raise TypeError("Image type should be str or numpy.ndarray")
         self.image = image
-        self.cut_step = cut_step
-        self.sREV_max_size = sREV_max_size
+        self.n_steps = n_steps
+        self.sREV_max_step = sREV_max_step
+        self.cut_step = (np.array(size)/n_steps).astype(int)
         self.datadir = datadir
         self.outputdir = outputdir
         self.gendatadir = None
-        self._outputdir_vectorized_cut_values = None
+        if isinstance(self.image, str):
+            self._outputdir_vectorized_cut_values = os.path.join(self.outputdir, self.image, self.metric.__class__.__name__, 'vectorized_cuts_values')
+        else:
+            self._outputdir_vectorized_cut_values = os.path.join(self.outputdir, self.metric.__class__.__name__, 'vectorized_cuts_values')
         os.makedirs(self.outputdir, exist_ok=True)
         os.makedirs(self._outputdir_cut_values, exist_ok=True)
-        self.n_steps = int(np.ceil(self.size/cut_step))
-        self.cut_sizes = [cut_step*(i+1) for i in range(self.n_steps-1)]
+        self.cut_sizes = [(self.cut_step*(i+1)).tolist() for i in range(self.n_steps-1)]
+        if self.size[0] == self.size[1] and self.size[0] == self.size[2]:
+            self.geom_mean_cut_sizes = [size[0] for size in self.cut_sizes]
+            self.geom_mean_cut_sizes.append(self.size[0])
+        else:
+            self.geom_mean_cut_sizes = [int(geometric_mean(size)) for size in self.cut_sizes]
+            self.geom_mean_cut_sizes.append(int(geometric_mean(self.size)))
+        self._sizes_dict = dict(zip(np.arange(1, n_steps+1), self.geom_mean_cut_sizes))
+        self._sizes_dict[None] = None
+        self.cut_ids = _subcube_ids(self.n_steps, self.sREV_max_step)
         self._metric_cut_names = []
         self.metric_mean = {}
         self.metric_std = {}
@@ -78,6 +83,8 @@ class REVAnalyzer:
         self.is_fdmss_data = False
         self.is_pnm_data = False
         if isinstance(self.metric, Permeability):
+            if not (self.size[0] == self.size[1] and self.size[0] == self.size[2]):
+                raise ValueError("Only cubical images can be input for FDMSS solver.")
             if isinstance(self.image, str):
                 self.gendatadir = os.path.join(self.outputdir, self.image, 'fdmss_data')
             else:
@@ -97,7 +104,7 @@ class REVAnalyzer:
             if os.path.isfile(pn_input):
                 with open(pn_input) as f:
                     lines = [line.rstrip('\n') for line in f]
-                if lines[0] == str(self.cut_step) and lines[1] == str(self.sREV_max_size) and lines[2] == str(self.metric.resolution) and lines[3] == self.metric.length_unit_type and lines[4] == self.metric.direction:
+                if lines[0] == str(self.n_steps) and lines[1] == str(self.sREV_max_step) and lines[2] == str(self.metric.resolution) and lines[3] == self.metric.length_unit_type and lines[4] == self.metric.direction:
                     self.is_pnm_data = True
                     
 
@@ -116,24 +123,24 @@ class REVAnalyzer:
                 os.remove(fileout)
             fdmss_input = os.path.join(self.gendatadir, 'fdmss_input.txt')            
             with open(fdmss_input, 'w') as f:
-                lines = [self.metric.direction, str(self.metric.resolution), str(self.size)]
+                lines = [self.metric.direction, str(self.metric.resolution), str(self.size[0])]
                 f.write('\n'.join(lines))
         if isinstance(self.image, str):
             if self.datadir is not None:
                 filein = os.path.join(self.datadir, self.image)
             else:
                 filein = self.image
-            image = _read_array(filein, self.size, 'uint8')
+            image = _read_array(filein, self.size[0], self.size[1], self.size[2], 'uint8')
         else:
             image = self.image
         if issubclass(self.metric.__class__, BasicPNMMetric) and not self.is_pnm_data:
             os.makedirs(self.gendatadir, exist_ok=True)
-            generate_PNM(image, self.cut_step, self.sREV_max_size, self.gendatadir, self.metric.exe_path, self.metric.n_threads, self.metric.resolution, self.metric.length_unit_type, self.metric.direction, self.metric.show_time)    
+            generate_PNM(image, self.size, self.n_steps, self.sREV_max_step, self.gendatadir, self.metric.exe_path, self.metric.n_threads, self.metric.resolution, self.metric.length_unit_type, self.metric.direction, self.metric.show_time)    
             pn_input = os.path.join(self.gendatadir, 'pn_input.txt')            
             with open(pn_input, 'w') as f:
-                lines = [str(self.cut_step), str(self.sREV_max_size), str(self.metric.resolution), self.metric.length_unit_type, self.metric.direction]
+                lines = [str(self.n_steps), str(self.sREV_max_step), str(self.metric.resolution), self.metric.length_unit_type, self.metric.direction]
                 f.write('\n'.join(lines))
-        ids = _subcube_ids(self.size, self.cut_step, self.sREV_max_size)
+        ids = _subcube_ids(self.n_steps, self.sREV_max_step)
         if issubclass(self.metric.__class__, BasicPDMetric):
             n_threads = 1
         else:
@@ -142,8 +149,11 @@ class REVAnalyzer:
         results = pool.map(partial(self._metric_for_subcube, image=image), ids)
         pool.close()
         pool.join()
+        #for i in ids:
+        #    self._metric_for_subcube(i, image)
+            
 
-    def read(self, cut_size, cut_id=0): 
+    def read(self, step, cut_id=0): 
         """
         Read the generated metric value for a given subcube. analyzer.read(0) returns the metric value for the uncut image.
         
@@ -158,9 +168,9 @@ class REVAnalyzer:
         	metric value (float or np.array(dtype='float')).       
         """
         return self.metric.read(
-            self._outputdir_cut_values, cut_size, cut_id)
+            self._outputdir_cut_values, step, cut_id)
     
-    def show(self, cut_size, cut_id = 0, nbins = None):
+    def show(self, step, cut_id = 0, nbins = None):
         """
         Vizualize the vector metric for a specific subcube.
         
@@ -177,9 +187,9 @@ class REVAnalyzer:
         if issubclass(self.metric.__class__, BasicPNMMetric) or isinstance(self.metric, ChordLength) or isinstance(self.metric, PoreSize):
             if nbins is None:
                 raise ValueError("Number of bins in histogram should be defined for the visualization of this metric")
-            self.metric.show(self._outputdir_cut_values, cut_size, cut_id, nbins)
+            self.metric.show(self._outputdir_cut_values, step, cut_id, nbins)
         else:
-            self.metric.show(self._outputdir_cut_values, cut_size, cut_id)
+            self.metric.show(self._outputdir_cut_values, step, cut_id)
         
 
     def vectorize(self):
@@ -188,76 +198,14 @@ class REVAnalyzer:
         """
         if not self.metric.metric_type == 'v':
             raise TypeError("Metric type should be vector")
-        cut_sizes = [x for x in self.cut_sizes]
-        if isinstance(self.image, str):
-            self._outputdir_vectorized_cut_values = os.path.join(self.outputdir, self.image, self.metric.__class__.__name__, 'vectorized_cuts_values')
-        else:
-            self._outputdir_vectorized_cut_values = os.path.join(self.outputdir, self.metric.__class__.__name__, 'vectorized_cuts_values')
+        #for step in range(1, self.n_steps):
+        #    self._vectorize_for_step(step)
         os.makedirs(self._outputdir_vectorized_cut_values, exist_ok=True)
-        x = np.arange(9)
-        y = [0]
-        for i in range(len(self.cut_sizes)-1):
-            d = {}
-            if (self.cut_sizes[i] < self.sREV_max_size and self.cut_sizes[i+1] <= self.sREV_max_size):
-                idx = itertools.product(x, repeat=2)
-            else:
-                if (self.cut_sizes[i] <= self.sREV_max_size and self.cut_sizes[i+1] > self.sREV_max_size):
-                    idx = itertools.product(x, y)
-                else:
-                    idx = itertools.product(y, repeat=2)
-            for elem in idx:
-                v1 = self.read(self.cut_sizes[i], elem[0])
-                if self.metric.directional:
-                    v0 = v1[0]
-                else:
-                    v0 = v1
-                if len(v0) == 0:
-                    print("Metric is not defined at l = ",
-                          self.cut_sizes[i], " for cut = ", elem[0])
-                    cut_sizes.remove(self.cut_sizes[i])
-                    break
-                v2 = self.read(self.cut_sizes[i+1], elem[1])
-                str_elem = str(elem[0]) + ', ' + str(elem[1])
-                result = self.metric.vectorize(v1, v2)
-                if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
-                    print("Metric is not defined at l = ",
-                          self.cut_sizes[i], " for cut = ", elem[0])
-                    cut_sizes.remove(self.cut_sizes[i])
-                    break
-                d[str_elem] = result
-
-            jsonname = 'cut_' + str(self.cut_sizes[i])
-            with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
-                json.dump(d, f, indent=4)
-        if (self.cut_sizes[-1] <= self.sREV_max_size):
-            idx = itertools.product(x, y)
-        else:
-            idx = itertools.product(y, repeat=2)
-        d = {}
-        for elem in idx:
-            v1 = self.read(self.cut_sizes[-1], elem[0])
-            if self.metric.directional:
-                v0 = v1[0]
-            else:
-                v0 = v1
-            if len(v0) == 0:
-                print("Metric is not defined at l = ",
-                      self.cut_sizes[-1], " for cut = ", elem[0])
-                cut_sizes.remove(self.cut_sizes[-1])
-                break
-            v2 = self.read(0)
-            str_elem = str(elem[0]) + ', ' + str(elem[1])
-            result = self.metric.vectorize(v1, v2)
-            if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
-                print("Metric is not defined at l = ",
-                      self.cut_sizes[i], " for cut = ", elem[0])
-                cut_sizes.remove(self.cut_sizes[i])
-                break
-            d[str_elem] = result
-        jsonname = 'cut_' + str(self.cut_sizes[-1])
-        with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
-            json.dump(d, f, indent=4)
-        self.cut_sizes = cut_sizes
+        steps = np.arange(1, self.n_steps)
+        pool = multiprocessing.Pool(processes=self.metric.n_threads)
+        results = pool.map(self._vectorize_for_step, steps)
+        pool.close()
+        pool.join()
 
     def analyze(self, dREV_threshold, sREV_threshold):
         """
@@ -272,12 +220,8 @@ class REVAnalyzer:
         self.dREV_threshold = dREV_threshold
         self.sREV_threshold = sREV_threshold
         if self.metric.metric_type == 's':
-            if self.metric.directional:
-                self.metric_mean[self.size] = self.read(0)
-            else:
-                self.metric_mean[self.size] = self.read(0).item()
-            for l in self.cut_sizes:
-                if (l <= self.sREV_max_size):
+            for l in range(1, self.n_steps+1):
+                if (l <= self.sREV_max_step):
                     data = [self.read(l, i) for i in range(9)]
                     if self.metric.directional:
                         self.metric_mean[l] = [
@@ -296,56 +240,52 @@ class REVAnalyzer:
                         self.metric_mean[l] = self.read(l, 0)
                     else:
                         self.metric_mean[l] = self.read(l, 0).item()
-            self.sREV_size_1 = get_sREV_size(
-                self.metric_normed_std, self.sREV_threshold)
+            self.sREV_size_1 = self._sizes_dict[get_sREV_size(
+                self.metric_normed_std, self.sREV_threshold)]
             if self.metric.directional:
-                self.dREV_size_1 = get_dREV_size_1_scalar_dimensional(
-                    self.metric_mean, self.dREV_threshold)
-                self.dREV_size_2 = get_dREV_size_2_scalar_dimensional(
-                    self.metric_mean, self.dREV_threshold)
+                self.dREV_size_1 = self._sizes_dict[get_dREV_size_1_scalar_dimensional(
+                    self.metric_mean, self.dREV_threshold)]
+                self.dREV_size_2 = self._sizes_dict[get_dREV_size_2_scalar_dimensional(
+                    self.metric_mean, self.dREV_threshold)]
             else:
-                self.dREV_size_1 = get_dREV_size_1_scalar(
-                    self.metric_mean, self.dREV_threshold)
-                self.dREV_size_2 = get_dREV_size_2_scalar(
-                    self.metric_mean, self.dREV_threshold)
+                self.dREV_size_1 = self._sizes_dict[get_dREV_size_1_scalar(
+                    self.metric_mean, self.dREV_threshold)]
+                self.dREV_size_2 = self._sizes_dict[get_dREV_size_2_scalar(
+                    self.metric_mean, self.dREV_threshold)]
         if self.metric.metric_type == 'v':
-            for l in self.cut_sizes:
-                if l == self.cut_sizes[-1]:
-                    l1 = self.size
-                else:
-                    l1 = l + self.cut_step
+            for l in range(1, self.n_steps):
                 jsonname = 'cut_' + str(l)
                 with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'r') as f:
                     d = json.load(f)
                 deltas = [elem[2] for elem in d.values()]
                 n = deltas[0]
                 if (type(n) is list):
-                    self.metric_mean[l1] = max(
+                    self.metric_mean[l] = max(
                         [np.mean(list(i)) for i in zip(*deltas)])
                 else:
-                    self.metric_mean[l1] = np.mean(deltas)
-                if (l <= self.sREV_max_size):
+                    self.metric_mean[l] = np.mean(deltas)
+                if (l <= self.sREV_max_step):
                     if (type(n) is list):
-                        self.metric_std[l1] = max(
+                        self.metric_std[l] = max(
                             [np.std(list(i)) for i in zip(*deltas)])
-                        self.metric_normed_std[l1] = max(
+                        self.metric_normed_std[l] = max(
                             [np.std(list(i))/np.mean(list(i)) for i in zip(*deltas)])
                     else:
-                        self.metric_std[l1] = np.std(deltas)
-                        self.metric_normed_std[l1] = self.metric_std[l1] / \
-                            self.metric_mean[l1]
-                    self.metric_normed_std_1[l1] = self.metric_std[l1] / \
+                        self.metric_std[l] = np.std(deltas)
+                        self.metric_normed_std[l] = self.metric_std[l] / \
+                            self.metric_mean[l]
+                    self.metric_normed_std_1[l] = self.metric_std[l] / \
                         self.dREV_threshold
-                    if (self.dREV_threshold is None or self.metric_mean[l1] > self.dREV_threshold):
-                        self.metric_normed_std_2[l1] = self.metric_normed_std[l1]
+                    if (self.dREV_threshold is None or self.metric_mean[l] > self.dREV_threshold):
+                        self.metric_normed_std_2[l] = self.metric_normed_std[l]
                     else:
-                        self.metric_normed_std_2[l1] = self.metric_normed_std_1[l1]
-            self.dREV_size_1 = get_dREV_size_1_vector(
-                self.metric_mean, self.dREV_threshold)
-            self.sREV_size_1 = get_sREV_size(
-                self.metric_normed_std_1, self.sREV_threshold)
-            self.sREV_size_2 = get_sREV_size(
-                self.metric_normed_std_2, self.sREV_threshold)
+                        self.metric_normed_std_2[l] = self.metric_normed_std_1[l]
+            self.dREV_size_1 = self._sizes_dict[get_dREV_size_1_vector(
+                self.metric_mean, self.dREV_threshold)]
+            self.sREV_size_1 = self._sizes_dict[get_sREV_size(
+                self.metric_normed_std_1, self.sREV_threshold)]
+            self.sREV_size_2 = self._sizes_dict[get_sREV_size(
+                self.metric_normed_std_2, self.sREV_threshold)]
 
     def show_results(self):
         """
@@ -372,10 +312,11 @@ class REVAnalyzer:
             for i in range(nzeros):
                 yerr.append([0, 0, 0])
             yerr1 = [i for i in zip(*yerr)]
-            x1 = np.array(x)-2
-            x2 = np.array(x)+2
+            x0 = [self._sizes_dict[i] for i in x]
+            x1 = np.array(x0)-2
+            x2 = np.array(x0)+2
             plt.errorbar(x1, y1[0], yerr=yerr1[0], label='x')
-            plt.errorbar(x, y1[1], yerr=yerr1[1], label='y')
+            plt.errorbar(x0, y1[1], yerr=yerr1[1], label='y')
             plt.errorbar(x2, y1[2], yerr=yerr1[2], label='z')
             plt.legend()
         else:
@@ -383,8 +324,9 @@ class REVAnalyzer:
             yerr = [self.metric_std[l] for l in xerr]
             for i in range(nzeros):
                 yerr.append(0)
-            plt.errorbar(x, y, yerr=yerr)
-        plt.xlabel("linear size of subcube, voxels")
+            x1 = [self._sizes_dict[i] for i in x]
+            plt.errorbar(x1, y, yerr=yerr)
+        plt.xlabel("Mean size of subsample")
         if self.metric.metric_type == 's':
             plt.ylabel(self.metric.__class__.__name__)
         if self.metric.metric_type == 'v':
@@ -411,6 +353,8 @@ class REVAnalyzer:
                 ydrev2 = [_delta(self.metric_mean[x[i]], y0)
                           for i in range(len(xdrev))]
             ysrev = [self.metric_normed_std[l] for l in xsrev]
+            xsrev = [self._sizes_dict[i] for i in xsrev]
+            xdrev = [self._sizes_dict[i] for i in xdrev]
             ax.plot(xsrev, ysrev, "r--", label='sREV, $\sigma_{norm}$')
             ax.plot(xdrev, ydrev1, "b-", label='dREV, $\delta_1$')
             ax.plot(xdrev, ydrev2, "g-", label='dREV, $\delta_2$')
@@ -420,12 +364,13 @@ class REVAnalyzer:
         if self.metric.metric_type == 'v':
             ysrev1 = [self.metric_normed_std_1[l] for l in xsrev]
             ysrev2 = [self.metric_normed_std_2[l] for l in xsrev]
+            xsrev = [self._sizes_dict[i] for i in xsrev]
             ax.plot(xsrev, ysrev1, "r-", label='sREV, $\sigma_{norm1}$')
             ax.plot(xsrev, ysrev2, "r--", label='sREV, $\sigma_{norm2}$')
             plt.ylabel("$\sigma_{norm1}$, $\sigma_{norm2}$")
         ax.axhline(y=self.sREV_threshold, color='k',
                    linestyle='--', label="sREV threshold")
-        plt.xlabel("linear size of subcube, voxels")
+        plt.xlabel("Mean size of subsample")
 
         plt.legend()
         plt.show()
@@ -440,9 +385,41 @@ class REVAnalyzer:
             outputdir = self._outputdir_cut_values
         l = ids[0]
         idx = ids[1]
-        if l  == 0 and idx == 0:
-            self.metric.generate(image, 'cut0', outputdir, self.gendatadir)
+        cut_name = 'cut'+str(l)+'_'+str(idx)
+        if l  == self.n_steps:
+            self.metric.generate(image, cut_name, outputdir, self.gendatadir)
         else:
-            cut = make_cut(image, self.size, l, idx)
-            cut_name = 'cut'+str(idx)+'_'+str(l)
+            cut_size = self.cut_sizes[l-1]
+            cut = make_cut(image, self.size, cut_size, idx)
             self.metric.generate(cut, cut_name, outputdir, self.gendatadir)
+            
+    def _vectorize_for_step(self, step):
+        d = {}
+        x = np.arange(9)
+        y = [0]
+        if step < self.sREV_max_step:
+            idx = itertools.product(x, repeat=2)
+        elif step == self.sREV_max_step:
+            idx = itertools.product(x, y)
+        else:
+            idx = itertools.product(y, repeat=2)
+        for elem in idx:
+            v1 = self.read(step, elem[0])
+            if self.metric.directional:
+                v0 = v1[0]
+            else:
+                v0 = v1
+            if len(v0) == 0:
+                print("Metric is not defined at step = ", step, " for cut = ", elem[0])
+                break
+            v2 = self.read(step + 1, elem[1])
+            str_elem = str(elem[0]) + ', ' + str(elem[1])
+            result = self.metric.vectorize(v1, v2)
+            if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
+                print("Metric is not defined at step = ", step, " for cut = ", elem[0])
+                break
+            d[str_elem] = result
+
+        jsonname = 'cut_' + str(step)
+        with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
+            json.dump(d, f, indent=4)

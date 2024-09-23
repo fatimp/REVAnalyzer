@@ -37,13 +37,16 @@ class ThroatNumber(BasicPNMMetric):
         	
         	gendatadir (str): folder with generated fdmss data output.    
         """
-        L = cut.shape[0]
+        dimx = cut.shape[0]
+        dimy = cut.shape[1]
+        dimz = cut.shape[2]
+        volume = dimx*dimy*dimz
         pore_number = super().generate(cut, cut_name, gendatadir)
         if pore_number > 0:
             filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_link1.dat'
             with open(filein, "r") as f:
                 str_0 = f.readline().split()
-                throat_number = int(str_0[0])/L**3
+                throat_number = int(str_0[0])/volume
         else:
             throat_number = 0
         cut_name_out = cut_name + ".txt"

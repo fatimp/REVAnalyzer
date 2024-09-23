@@ -4,13 +4,15 @@ using StatsBase
 using DelimitedFiles
 
 filename = ARGS[1]
-dim = parse(Int64, ARGS[2])
-volume = dim*dim*dim
-data = Array{UInt8, 3}(undef, dim, dim, dim)
+dimz = parse(Int64, ARGS[2])
+dimy = parse(Int64, ARGS[3])
+dimx = parse(Int64, ARGS[4])
+volume = dimx*dimy*dimz
+data = Array{UInt8, 3}(undef, dimx, dimy, dimz)
 open(filename) do io read!(io, data) end
-method = ARGS[3]
-normalize = parse(Int64, ARGS[4])
-fpath = ARGS[5]
+method = ARGS[5]
+normalize = parse(Int64, ARGS[6])
+fpath = ARGS[7]
 
 if (method == "c2")
     n = count(i->(i== 0), data)

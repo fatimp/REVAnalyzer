@@ -38,14 +38,16 @@ class EulerDensityI(BasicMetric):
         """        
         start_time = time.time()
         glob_path = os.getcwd()
-        length = cut.shape[0]
+        dimx = cut.shape[0]
+        dimy = cut.shape[1]
+        dimz = cut.shape[2]
         path0 = imp.find_module('revanalyzer')[1]
         jl_path = os.path.join(path0, 'jl', 'euler_density.jl')
         output_path = os.path.join(glob_path, outputdir)
         image_path = os.path.join(output_path, cut_name +'.raw')
         _write_array(cut, image_path)
         file_out = os.path.join(output_path, cut_name +'.txt')
-        code = subprocess.call(['julia', jl_path, image_path, str(length), file_out])
+        code = subprocess.call(['julia', jl_path, image_path, str(dimx), str(dimy), str(dimz), file_out])
         if (code != 0):
             raise RuntimeError("Error in julia run occured!")
         os.remove(image_path)

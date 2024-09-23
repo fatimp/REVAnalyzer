@@ -55,29 +55,27 @@ def make_cuts(datadir, image, outputdir, L, l, total=True):
         return cut_name0
 
 
-def _read_array(image, dim, dtype):
+def _read_array(image, dimx, dimy, dimz, dtype):
     v = np.fromfile(image, dtype=dtype, sep="")
-    return v.reshape([dim, dim, dim])
+    return v.reshape([dimx, dimy, dimz])
 
 
 def _write_array(A, fileout):
     A.astype('uint8').tofile(fileout)
 
 
-def _subcube_ids(L, cut_step, sREV_max_size):
-    n_steps = int(np.ceil(L/cut_step))
-    ids = [(0,0)]
-    cut_sizes = [cut_step*(i+1) for i in range(n_steps-1)]
-    for l in cut_sizes:
-        if (l <= sREV_max_size):
+def _subcube_ids(n_steps, sREV_max_step):
+    ids = []
+    for l in range(n_steps):
+        if (l <= sREV_max_step-1):
             for idx in range(9):
-                ids.append((l, idx))
+                ids.append((l+1, idx))
         else:
-            ids.append((l, 0))
+            ids.append((l+1, 0))
     return ids
 
 
-def make_cut(A, L, l, idx):
+def make_cut(A, L, cut_size, idx):
     """
     Making subcube cut for a given 3D array. 
     
@@ -99,20 +97,22 @@ def make_cut(A, L, l, idx):
     if idx < 0 or idx > 8:
         raise ValueError("Index value should be from the set (0,1,..8).")
     if idx == 0:
-        return A[int((L-l)/2):int((L+l)/2), int((L-l)/2):int((L+l)/2), int((L-l)/2):int((L+l)/2)]
+        return A[int((L[0]-cut_size[0])/2):int((L[0]+cut_size[0])/2), 
+                 int((L[1]-cut_size[1])/2):int((L[1]+cut_size[1])/2), 
+                 int((L[2]-cut_size[2])/2):int((L[2]+cut_size[2])/2)]
     if idx == 1:
-        return A[:l, :l, :l]
+        return A[:cut_size[0], :cut_size[1], :cut_size[2]]
     if idx == 2:
-        return A[:l, :l, L-l:]
+        return A[:cut_size[0], :cut_size[1], L[2]-cut_size[2]:]
     if idx == 3:
-        return A[:l, L-l:, :l]
+        return A[:cut_size[0], L[1]-cut_size[1]:, :cut_size[2]]
     if idx == 4:
-        return A[L-l:, :l, :l]
+        return A[L[0]-cut_size[0]:, :cut_size[1], :cut_size[2]]
     if idx == 5:
-        return A[L-l:, L-l:, L-l:]
+        return A[L[0]-cut_size[0]:, L[1]-cut_size[1]:, L[2]-cut_size[2]:]
     if idx == 6:
-        return A[:l, L-l:, L-l:]
+        return A[:cut_size[0], L[1]-cut_size[1]:, L[2]-cut_size[2]:]
     if idx == 7:
-        return A[L-l:, :l, L-l:]
+        return A[L[0]-cut_size[0]:, :cut_size[1], L[2]-cut_size[2]:]
     if idx == 8:
-        return A[L-l:, L-l:, :l]
+        return A[L[0]-cut_size[0]:, L[1]-cut_size[1]:, :cut_size[2]]

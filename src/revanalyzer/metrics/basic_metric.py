@@ -21,7 +21,7 @@ class BasicMetric:
         self.metric_type = None
         
        
-    def read(self, inputdir, cut_size, cut_id):
+    def read(self, inputdir, step, cut_id):
         """
         Read the metric data generated for a specific subcube.
         
@@ -39,10 +39,7 @@ class BasicMetric:
         """
         if self.directional:
             directions = ('_x', '_y', '_z')
-            if cut_size == 0:
-                cut_names = ['cut0' + direction + ".txt" for direction in directions]
-            else:
-                cut_names = ["cut" + str(cut_id) + "_" + str(cut_size) + direction + ".txt" for direction in directions]
+            cut_names = ["cut" + str(step) + "_" + str(cut_id) + direction + ".txt" for direction in directions]
             data = []
             for cut_name in cut_names:
                 if inputdir is not None:
@@ -59,10 +56,7 @@ class BasicMetric:
                         data.append(d.item())
             return data
         else:
-            if cut_size == 0:
-                cut_name = "cut0.txt"
-            else:
-                cut_name = "cut" + str(cut_id) + "_" + str(cut_size) + ".txt"
+            cut_name = "cut" + str(step) + "_" + str(cut_id) + ".txt"
             if inputdir is not None:
                 filein = os.path.join(inputdir, cut_name)
             else:

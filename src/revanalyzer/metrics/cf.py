@@ -49,14 +49,16 @@ class BasicCFMetric(BasicMetric):
         """          
         start_time = time.time()
         glob_path = os.getcwd()
-        length = cut.shape[0]
+        dimx = cut.shape[0]
+        dimy = cut.shape[1]
+        dimz = cut.shape[2]
         path0 = imp.find_module('revanalyzer')[1]
         jl_path = os.path.join(path0, 'jl', 'corfunction_xyz.jl')
         output_path = os.path.join(glob_path, outputdir)
         image_path = os.path.join(output_path, cut_name +'.raw')
         _write_array(cut, image_path)
         file_out = os.path.join(output_path, cut_name)
-        code = subprocess.call(['julia', jl_path, image_path, str(length), method, str(self.normalize), file_out])
+        code = subprocess.call(['julia', jl_path, image_path, str(dimx), str(dimy), str(dimz), method, str(self.normalize), file_out])
         if (code != 0):
             raise RuntimeError("Error in julia run occured!")
         os.remove(image_path)           
@@ -65,7 +67,7 @@ class BasicCFMetric(BasicMetric):
             print("--- %s seconds ---" % (time.time() - start_time))
         return cut_name + ".txt"
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize CF for a specific subcube.
         
@@ -89,7 +91,7 @@ class BasicCFMetric(BasicMetric):
         		
         		data[2] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'z' direction.
         """        
-        data = self.read(inputdir, cut_size, cut_id)
+        data = self.read(inputdir, step, cut_id)
         x = np.arange(len(data[0]))
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
@@ -154,7 +156,7 @@ class C2(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'c2')
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the correlation function C2 for a specific subcube.
         
@@ -166,9 +168,9 @@ class C2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + ", step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -213,7 +215,7 @@ class L2(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'l2')
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the correlation function L2 for a specific subcube.
         
@@ -225,9 +227,9 @@ class L2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -272,7 +274,7 @@ class S2(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 's2')
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the correlation function S2 for a specific subcube.
         
@@ -284,9 +286,9 @@ class S2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -331,7 +333,7 @@ class SS(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'ss')
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the correlation function SS for a specific subcube.
         
@@ -343,9 +345,9 @@ class SS(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -390,7 +392,7 @@ class SV(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'sv')
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the correlation function SV for a specific subcube.
         
@@ -402,9 +404,9 @@ class SV(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')
@@ -449,7 +451,7 @@ class ChordLength(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'cl')
 
-    def show(self, inputdir, cut_size, cut_id, nbins):
+    def show(self, inputdir, step, cut_id, nbins):
         """
         Vizualize the correlation function chord-length for a specific subcube.
         
@@ -465,19 +467,19 @@ class ChordLength(BasicCFMetric):
             
             nbins (int): number of bins in histrogram
         """
-        data = self.read(inputdir, cut_size, cut_id)
+        data = self.read(inputdir, step, cut_id)
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(data, bins=nbins, range=range_data, density=True)
-        step = max_value/nbins
-        x = [i*step for i in range(nbins)]
+        step1 = max_value/nbins
+        x = [i*step1 for i in range(nbins)]
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " +  ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " +  "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.bar(x, hist, width=0.5, color='r')
-        ax.set_xlabel('chord-length')
+        ax.set_xlabel('chord length')
         ax.set_ylabel('density')
         plt.show()
 
@@ -516,7 +518,7 @@ class PoreSize(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'ps')
 
-    def show(self, inputdir, cut_size, cut_id, nbins):
+    def show(self, inputdir, step, cut_id, nbins):
         """
         Vizualize the correlation function chord-length for a specific subcube.
         
@@ -532,19 +534,19 @@ class PoreSize(BasicCFMetric):
             
             nbins (int): number of bins in histrogram
         """
-        data = self.read(inputdir, cut_size, cut_id)
+        data = self.read(inputdir, step, cut_id)
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(data, bins=nbins, range=range_data, density=True)
-        step = max_value/nbins
-        x = [i*step for i in range(nbins)]
+        step1 = max_value/nbins
+        x = [i*step1 for i in range(nbins)]
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " +  ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " +  "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.bar(x, hist, width=0.5, color='r')
-        ax.set_xlabel('pore-size')
+        ax.set_xlabel('pore size')
         ax.set_ylabel('density')
         plt.show()
 
@@ -583,7 +585,7 @@ class CrossCorrelation(BasicCFMetric):
         """
         return super().generate(cut, cut_name, outputdir, method = 'cc')
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the correlation function cross-correlation for a specific subcube.
         
@@ -595,9 +597,9 @@ class CrossCorrelation(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, cut_size, cut_id)
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.plot(x, vx, "r-", label='x')
         ax.plot(x, vy, "b-", label='y')

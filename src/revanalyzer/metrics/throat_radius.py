@@ -49,7 +49,7 @@ class ThroatRadius(BasicPNMMetric):
         fileout = os.path.join(outputdir, cut_name_out)
         np.savetxt(fileout, throat_radius, delimiter='\t')
 
-    def show(self, inputdir, cut_size, cut_id, nbins):
+    def show(self, inputdir, step, cut_id, nbins):
         """
         Vizualize throat radius distribution for a specific subcube.
         
@@ -62,10 +62,10 @@ class ThroatRadius(BasicPNMMetric):
         	cut_id (int: 0,..8): cut index;
         	
         	nbins (int): number of bins in histogram. 
-        """        
-        x, hist = super().show(inputdir, cut_size, cut_id, nbins)
+        """       
+        x, hist = super().show(inputdir, step, cut_id, nbins)
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", "  + "cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", "  + "cut size = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
         ax.bar(x, hist, width=0.5, color='r')
         ax.set_xlabel('throat radius')

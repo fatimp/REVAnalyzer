@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module for the generation of PNM characteristics using PNM extractor."""
-
+import numpy as np
 import time
 import os
 import multiprocessing
@@ -10,7 +10,7 @@ import json
 from .utils import _subcube_ids, make_cut, _write_array
 
 
-def generate_PNM(image, cut_step, sREV_max_size, outputdir, exe_path, n_threads = 1, resolution=1., length_unit_type='M', inout_axe='z', show_time=False):
+def generate_PNM(image, size, n_steps, sREV_max_step, outputdir, exe_path, n_threads = 1, resolution=1., length_unit_type='M', inout_axe='z', show_time=False):
     """
     Running PNM extractor for all the selected subcubes.
     
@@ -31,10 +31,12 @@ def generate_PNM(image, cut_step, sREV_max_size, outputdir, exe_path, n_threads 
      	show_time (bool): Added to monitor time cost for large images,  default: False. 
     """
     start_time = time.time()
-    L = image.shape[0]
-    ids = _subcube_ids(L, cut_step, sREV_max_size)
+    cut_step = (np.array(size)/n_steps).astype(int)
+    cut_sizes = [(cut_step*(i+1)).tolist() for i in range(n_steps-1)]
+    cut_sizes.append(size)
+    ids = _subcube_ids(n_steps, sREV_max_step)
     for i in ids:
-        _pnm_for_subcube(exe_path, n_threads, i, image, outputdir, resolution, length_unit_type, inout_axe)
+        _pnm_for_subcube(exe_path, n_threads, i, n_steps, image, cut_sizes, outputdir, resolution, length_unit_type, inout_axe)
     if show_time:
         print("---PNM extractor run time is %s seconds ---" % (time.time() - start_time))
 
@@ -59,8 +61,10 @@ def get_pn_csv(exe_path, n_threads, cut, cut_name, outputdir, resolution, length
     my_env["OMP_NUM_THREADS"] = str(n_threads)
     image_path = os.path.join(output_path, cut_name)
     _write_array(cut, image_path)
-    L = cut.shape[0]
-    config_path = _make_PN_config(cut_name, L, outputdir, resolution, length_unit_type, inout_axe)
+    dimx = cut.shape[2]
+    dimy = cut.shape[1]
+    dimz = cut.shape[0]
+    config_path = _make_PN_config(cut_name, dimx, dimy, dimz, outputdir, resolution, length_unit_type, inout_axe)
     code = subprocess.call([exe_path, config_path], env=my_env)
     if (code != 0):
         raise RuntimeError("Error in PNM extractor run occured!")
@@ -68,18 +72,19 @@ def get_pn_csv(exe_path, n_threads, cut, cut_name, outputdir, resolution, length
     os.remove(config_path)
 
 
-def _pnm_for_subcube(exe_path, n_threads, ids, image, outputdir, resolution, length_unit_type, inout_axe):
+def _pnm_for_subcube(exe_path, n_threads, ids, n_steps, image, cut_sizes, outputdir, resolution, length_unit_type, inout_axe):
     l = ids[0]
     idx = ids[1]
-    if l  == 0 and idx == 0:
-        get_pn_csv(exe_path, n_threads, image, 'cut0', outputdir, resolution, length_unit_type, inout_axe)
+    cut_name = 'cut'+str(l)+'_'+str(idx)
+    size = cut_sizes[-1]
+    if l  == n_steps:
+        get_pn_csv(exe_path, n_threads, image, cut_name, outputdir, resolution, length_unit_type, inout_axe)
     else:
-        L = image.shape[0]
-        cut = make_cut(image, L, l, idx)
-        cut_name = 'cut'+str(idx)+'_'+str(l)
+        cut_size = cut_sizes[l-1]
+        cut = make_cut(image, size, cut_size, idx)
         get_pn_csv(exe_path, n_threads, cut, cut_name, outputdir, resolution, length_unit_type, inout_axe)
 
-def _make_PN_config(name, size, outputdir, resolution=1., length_unit_type='M', inout_axe='z'):
+def _make_PN_config(name, dimx, dimy, dimz, outputdir, resolution=1., length_unit_type='M', inout_axe='z'):
     json_string = """
     {
     "input_data": {
@@ -122,9 +127,9 @@ def _make_PN_config(name, size, outputdir, resolution=1., length_unit_type='M', 
     glob_path = os.getcwd()
     PN_config["input_data"]["filename"] = os.path.join(
         glob_path, outputdir, name)
-    PN_config["input_data"]["size"]["x"] = size
-    PN_config["input_data"]["size"]["y"] = size
-    PN_config["input_data"]["size"]["z"] = size
+    PN_config["input_data"]["size"]["x"] = dimx
+    PN_config["input_data"]["size"]["y"] = dimy
+    PN_config["input_data"]["size"]["z"] = dimz
     PN_config["output_data"]["statoil_prefix"] = os.path.join(
         glob_path, outputdir, name + "_" + inout_axe)
     PN_config["extraction_parameters"]["resolution"] = resolution

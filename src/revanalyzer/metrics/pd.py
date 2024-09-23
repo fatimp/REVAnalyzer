@@ -50,7 +50,9 @@ class BasicPDMetric(BasicMetric):
         my_env["OMP_NUM_THREADS"] = str(self.n_threads)
         output_path = os.path.join(glob_path, outputdir)
         image_path = os.path.join(output_path, cut_name) 
-        length = cut.shape[0]
+        dimx = cut.shape[2]
+        dimy = cut.shape[1]
+        dimz = cut.shape[0]
         pd0 = os.path.join(output_path, 'PD0', 'cuts_values')
         pd1 = os.path.join(output_path, 'PD1', 'cuts_values')
         pd2 = os.path.join(output_path, 'PD2', 'cuts_values')
@@ -58,7 +60,7 @@ class BasicPDMetric(BasicMetric):
         os.makedirs(pd1, exist_ok=True)
         os.makedirs(pd2, exist_ok=True)
         _write_array(cut, image_path)
-        code = subprocess.call([self.exe_path, str(length), output_path, cut_name, output_path], env=my_env)
+        code = subprocess.call([self.exe_path, str(dimx), str(dimy), str(dimz), output_path, cut_name, output_path], env=my_env)
         if (code != 0):
             raise RuntimeError("Error in PD generator occured!")
         os.remove(image_path)
@@ -68,7 +70,7 @@ class BasicPDMetric(BasicMetric):
         return cut_name + ".txt"
         
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Transforms generated PD data to the convenient fomat to the following visualization in subclasses.
         
@@ -84,7 +86,7 @@ class BasicPDMetric(BasicMetric):
         
         	(list(dtype = float), list(dtype = float)) -  a tuple, in which the first and the second elements are the vectors of birth and death values, respectively.
         """          
-        data = self.read(inputdir, cut_size, cut_id)
+        data = self.read(inputdir, step, cut_id)
         b = [elem[0] for elem in data]
         d = [elem[1] for elem in data]
         plt.rcParams.update({'font.size': 16})
@@ -137,7 +139,7 @@ class PD0(BasicPDMetric):
         """
         return super().generate(cut, cut_name, outputdir)
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize the PD of rank 0 for a specific subcube.
         
@@ -149,8 +151,8 @@ class PD0(BasicPDMetric):
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, cut_size, cut_id)
-        title = 'PD0' + ",  cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        b, d = super().show(inputdir, step, cut_id)
+        title = 'PD0' + ",  step = " + str(step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
 
 
@@ -183,9 +185,9 @@ class PD1(BasicPDMetric):
         """
         return super().generate(cut, cut_name, outputdir)
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
-        Vizualize the PD of rank 1 for a specific subcube.
+        Vizualize the PD of rank 0 for a specific subcube.
         
         **Input:**
         
@@ -195,10 +197,9 @@ class PD1(BasicPDMetric):
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, cut_size, cut_id)
-        title = 'PD1' + ",  cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        b, d = super().show(inputdir, step, cut_id)
+        title = 'PD1' + ",  step = " + str(step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
-
 
 class PD2(BasicPDMetric):
     """
@@ -229,9 +230,9 @@ class PD2(BasicPDMetric):
         """
         return super().generate(cut, cut_name, outputdir)
 
-    def show(self, inputdir, cut_size, cut_id):
+    def show(self, inputdir, step, cut_id):
         """
-        Vizualize the PD of rank 2 for a specific subcube.
+        Vizualize the PD of rank 0 for a specific subcube.
         
         **Input:**
         
@@ -241,8 +242,8 @@ class PD2(BasicPDMetric):
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, cut_size, cut_id)
-        title = 'PD2' + ",  cut size = " + str(cut_size) + ", id = " + str(cut_id)
+        b, d = super().show(inputdir, step, cut_id)
+        title = 'PD2' + ",  step = " + str(step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
 
 

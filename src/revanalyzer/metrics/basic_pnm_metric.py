@@ -44,15 +44,18 @@ class BasicPNMMetric(BasicMetric):
         	
         	gendatadir (str): folder with generated fdmss data output.    
         """
-        L = cut.shape[0]
+        dimx = cut.shape[0]
+        dimy = cut.shape[1]
+        dimz = cut.shape[2]
+        volume = dimx*dimy*dimz
         filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_node1.dat'
         with open(filein, "r") as f:
             str_0 = f.readline().split()
-            pore_number = (int(str_0[0])-1)/L**3
+            pore_number = (int(str_0[0])-1)/volume
         return pore_number 
         
         
-    def show(self, inputdir, cut_size, cut_id, nbins):
+    def show(self, inputdir, step, cut_id, nbins):
         """
         Vizualize the vector metric for a specific subcube.
         
@@ -70,14 +73,14 @@ class BasicPNMMetric(BasicMetric):
         
         	(list(dtype = int), list(dtype = float)) : 'x' and 'y' coordinate values for a plot.
         """
-        data = self.read(inputdir, cut_size, cut_id)
+        data = self.read(inputdir, step, cut_id)
         data = data/self.resolution 
         max_value = max(data)
         range_data = [0, max_value]
         hist, bin_edges = np.histogram(
             data, bins=nbins, range=range_data, density=True)
-        step = max_value/nbins
-        x = [i*step for i in range(nbins)]
+        step1 = max_value/nbins
+        x = [i*step1 for i in range(nbins)]
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         return x, hist

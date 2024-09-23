@@ -26,8 +26,7 @@ class Porosity(BasicMetric):
         	
         	outputdir (str): output folder.
         """
-        dim = cut.shape[0]
-        porosity = 1 - np.count_nonzero(cut)/(dim**3)
+        porosity = 1 - np.count_nonzero(cut)/(cut.shape[0]*cut.shape[1]*cut.shape[2])
         cut_name_out = cut_name + ".txt"
         fileout = os.path.join(outputdir, cut_name_out)
         with open(fileout, "w") as f:
