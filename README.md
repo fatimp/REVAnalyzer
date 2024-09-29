@@ -7,7 +7,7 @@ functions and persistence diagrams can be analyzed, determenistic and statistica
 
 Actual branch
 =============
-parallel
+non_cubic
 
 Installation
 ============
@@ -16,7 +16,7 @@ $pip install .
 
 Prerequisites
 =============
-Python 3.x and Julia 1.x with packages StatsBase.jl, CorrelationFunctions.jl (version=0.11.0)
+Python 3.x and Julia 1.x with packages StatsBase.jl, LinearAlgebra.jl, CorrelationFunctions.jl (version=0.11.0)
 and EulerCharacteristic.jl should be installed.
 
 

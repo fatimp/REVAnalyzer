@@ -18,6 +18,8 @@ class EulerDensityI(BasicMetric):
         """
         **Input:**
         
+        n_threads (int): number of threads used for data generation, default: 1;
+        
         	show_time (bool): flag to monitor time cost for large images, default: False.
         """
         super().__init__(vectorizer=None, n_threads = n_threads)
@@ -26,13 +28,13 @@ class EulerDensityI(BasicMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates Euler density for a specific subcube.
+        Generates Euler density for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """        

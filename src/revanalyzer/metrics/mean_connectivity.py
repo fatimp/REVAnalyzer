@@ -15,9 +15,16 @@ class MeanConnectivity(BasicPNMMetric):
     def __init__(self, exe_path, n_threads = 1, resolution = 1., length_unit_type = 'M', direction = 'z', show_time = False):
         """
         **Input:**
-            n_threads (int): number of CPU cores used for data generation, default: 1;
+            
+            exe_path (str): path to PNM extractor exe-file;
         
-            resolution (float): resolution of studied sample (micrometers), default: 1;
+            n_threads (int): number of threads used for data generation, default: 1;
+        
+            resolution (float): resolution of studied sample, default: 1;
+            
+            length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
+            
+            direction (str): 'x', 'y' or 'z', default: 'z';
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
@@ -26,17 +33,17 @@ class MeanConnectivity(BasicPNMMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir):
         """
-        Generates mean connectivity for a specific subcube.
+        Generates mean connectivity for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+            cut (numpy.ndarray): 3D array representing a subsample;
+        
+            cut_name (str): name of subsample;
+            
+            outputdir (str): output folder;
         	
-        	cut_name (str): name of subcube;
-        	
-        	outputdir (str): output folder;
-        	
-        	gendatadir (str): folder with generated fdmss data output.    
+        	gendatadir (str): folder with generated PNM data.    
         """
         pore_number = super().generate(cut, cut_name, gendatadir)
         if pore_number > 0:

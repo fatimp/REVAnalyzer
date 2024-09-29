@@ -16,9 +16,18 @@ class Connectivity(BasicPNMMetric):
     def __init__(self, vectorizer, exe_path, n_threads = 1, resolution = 1., length_unit_type = 'M', direction = 'z', show_time = False):
         """
         **Input:**
-            n_threads (int): number of CPU cores used for data generation, default: 1;
         
-            resolution (float): resolution of studied sample (micrometers), default: 1;
+            vectorizer (HistVectorizer object): vectorizer to be used for a vector metric;
+            
+            exe_path (str): path to PNM extractor exe-file;
+        
+            n_threads (int): number of threads used for data generation, default: 1;
+        
+            resolution (float): resolution of studied sample, default: 1;
+            
+            length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
+            
+            direction (str): 'x', 'y' or 'z', default: 'z';
             
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
@@ -27,17 +36,17 @@ class Connectivity(BasicPNMMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir):
         """
-        Generates connectivity distribution for a specific subcube.
+        Generates connectivity distribution for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder;
         	
-        	gendatadir (str): folder with generated fdmss data output.    
+        	gendatadir (str): folder with generated PNM data.    
         """
         pore_number = super().generate(cut, cut_name, gendatadir)
         if pore_number > 0:
@@ -51,13 +60,13 @@ class Connectivity(BasicPNMMetric):
 
     def show(self, inputdir, step, cut_id, nbins):
         """
-        Vizualize the connectivity distribution for a specific subcube.
+        Vizualize the connectivity distribution for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
         	 
-        	cut_size (int): size of subcube;
+        	step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index;
         	

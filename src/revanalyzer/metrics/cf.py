@@ -3,7 +3,7 @@
 
 from .basic_metric import BasicMetric
 from ..generators import _write_array
-from ..vectorizers  import CFVectorizer, HistVectorizer
+from ..vectorizers  import CFVectorizer, DirectVectorizer
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -21,10 +21,12 @@ class BasicCFMetric(BasicMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation;
         	
         	show_time (bool): flag to monitor time cost for large images;
         	
-        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
+        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. 
         """        
         super().__init__(vectorizer, n_threads = n_threads)
         self.show_time = show_time
@@ -35,13 +37,13 @@ class BasicCFMetric(BasicMetric):
 
     def generate(self, cut, cut_name, outputdir, method, gendatadir = None):
         """
-        Generates CF metric for a specific subcube.
+        Generates CF metric for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder;
         	    
@@ -69,13 +71,13 @@ class BasicCFMetric(BasicMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize CF for a specific subcube.
+        Vizualize CF for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
         	
-        	cut_size (int): size of subcube;
+        	step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index.
         
@@ -99,13 +101,13 @@ class BasicCFMetric(BasicMetric):
 
     def vectorize(self, v1, v2):
         """
-        Vectorize the vector metric values for a given pair of subcubes. 
+        Vectorize the vector metric values for a given pair of subsamples. 
         
         **Input:**
         
-        	v1 (list(dtype = float)): data for the first cubcube;
+        	v1 (list(dtype = float)): data for the first subsample;
         	
-        	v2 (list(dtype = float)): data for the second cubcube;
+        	v2 (list(dtype = float)): data for the second subsample;
         
         **Output:**
         
@@ -113,11 +115,11 @@ class BasicCFMetric(BasicMetric):
         
         	If mode = 'all':
         
-        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
         
         	If mode = 'max:
         
- 			(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of normalized distances between these vectors.        
+ 			(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subsamples, and the last one is a list of normalized distances between these vectors.        
         """
         return self.vectorizer.vectorize(v1, v2)
 
@@ -131,6 +133,8 @@ class C2(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -144,13 +148,13 @@ class C2(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function C2 for a specific subcube.
+        Generates the correlation function C2 for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
@@ -158,13 +162,13 @@ class C2(BasicCFMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function C2 for a specific subcube.
+        Vizualize the correlation function C2 for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	       
-        	cut_size (int): size of subcube;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
+        	
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index.
         """
@@ -190,11 +194,13 @@ class L2(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """ 
+        """
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
         super().__init__(vectorizer, n_threads, show_time, normalize)
@@ -203,13 +209,13 @@ class L2(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function L2 for a specific subcube.
+        Generates the correlation function L2 for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
@@ -217,13 +223,13 @@ class L2(BasicCFMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function L2 for a specific subcube.
+        Vizualize the correlation function L2 for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	       
-        	cut_size (int): size of subcube;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
+        	
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index.
         """
@@ -249,11 +255,13 @@ class S2(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """ 
+        """
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
         super().__init__(vectorizer, n_threads, show_time, normalize)
@@ -262,13 +270,13 @@ class S2(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function S2 for a specific subcube.
+        Generates the correlation function S2 for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
@@ -276,13 +284,13 @@ class S2(BasicCFMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function S2 for a specific subcube.
+        Vizualize the correlation function S2 for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	       
-        	cut_size (int): size of subcube;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
+        	
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index.
         """
@@ -308,11 +316,13 @@ class SS(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """ 
+        """
         if not isinstance(vectorizer, CFVectorizer):
             raise TypeError("Vectorizer should be an object of CFVectorizer class")
         super().__init__(vectorizer, n_threads, show_time, normalize)
@@ -321,13 +331,13 @@ class SS(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function SS for a specific subcube.
+        Generates the correlation function SS for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
@@ -335,13 +345,13 @@ class SS(BasicCFMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function SS for a specific subcube.
+        Vizualize the correlation function SS for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	       
-        	cut_size (int): size of subcube;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
+        	
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index.
         """
@@ -367,6 +377,8 @@ class SV(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -380,13 +392,13 @@ class SV(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function SV for a specific subcube.
+        Generates the correlation function SV for a specific subsample.
         
                **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
@@ -394,13 +406,13 @@ class SV(BasicCFMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function SV for a specific subcube.
+        Vizualize the correlation function SV for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	       
-        	cut_size (int): size of subcube;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
+        	
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index.
         """
@@ -426,12 +438,14 @@ class ChordLength(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """
-        if not isinstance(vectorizer, HistVectorizer):
+        if not isinstance(vectorizer, DirectVectorizer):
             raise TypeError("Vectorizer should be an object of HistVectorizer class")
         super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = False
@@ -439,50 +453,41 @@ class ChordLength(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function chord-length for a specific subcube.
+        Generates the correlation function chord-length for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
         return super().generate(cut, cut_name, outputdir, method = 'cl')
 
-    def show(self, inputdir, step, cut_id, nbins):
+    def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function chord-length for a specific subcube.
+        Vizualize the correlation function chord-length for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
         	
-        	name (str): name of binary ('uint8') file representing the image;
+        	step (int): subsamples selection step;
         
-        	cut_size (int): size of subcube;
-        
-        	cut_id (int: 0,..8): cut index,
-            
-            nbins (int): number of bins in histrogram
+        	cut_id (int: 0,..8): cut index.
         """
         data = self.read(inputdir, step, cut_id)
-        max_value = max(data)
-        range_data = [0, max_value]
-        hist, bin_edges = np.histogram(data, bins=nbins, range=range_data, density=True)
-        step1 = max_value/nbins
-        x = [i*step1 for i in range(nbins)]
+        x = np.arange(len(data))
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " +  "step = " + str(step) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
-        ax.bar(x, hist, width=0.5, color='r')
+        ax.plot(x, data, "r-")
         ax.set_xlabel('chord length')
         ax.set_ylabel('density')
         plt.show()
-
 
 class PoreSize(BasicCFMetric):
     """
@@ -493,12 +498,14 @@ class PoreSize(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
         	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
         """
-        if not isinstance(vectorizer, HistVectorizer):
+        if not isinstance(vectorizer, DirectVectorizer):
             raise TypeError("Vectorizer should be an object of HistVectorizer class")
         super().__init__(vectorizer, n_threads, show_time, normalize)
         self.directional = False
@@ -506,46 +513,38 @@ class PoreSize(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function pore-size for a specific subcube.
+        Generates the correlation function pore-size for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
         return super().generate(cut, cut_name, outputdir, method = 'ps')
 
-    def show(self, inputdir, step, cut_id, nbins):
+    def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function chord-length for a specific subcube.
+        Vizualize the correlation function chord-length for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
         	
-        	name (str): name of binary ('uint8') file representing the image;
+        	step (int): subsamples selection step;
         
-        	cut_size (int): size of subcube;
-        
-        	cut_id (int: 0,..8): cut index,
-            
-            nbins (int): number of bins in histrogram
+        	cut_id (int: 0,..8): cut index.
         """
         data = self.read(inputdir, step, cut_id)
-        max_value = max(data)
-        range_data = [0, max_value]
-        hist, bin_edges = np.histogram(data, bins=nbins, range=range_data, density=True)
-        step1 = max_value/nbins
-        x = [i*step1 for i in range(nbins)]
+        x = np.arange(len(data))
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
         fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " +  "step = " + str(step) + ", id = " + str(cut_id)
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
         ax.set_title(title)
-        ax.bar(x, hist, width=0.5, color='r')
+        ax.plot(x, data, "r-")
         ax.set_xlabel('pore size')
         ax.set_ylabel('density')
         plt.show()
@@ -560,6 +559,8 @@ class CrossCorrelation(BasicCFMetric):
         **Input:**
         
         	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images, default: False;
         	
@@ -573,13 +574,13 @@ class CrossCorrelation(BasicCFMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the correlation function cross-correlation for a specific subcube.
+        Generates the correlation function cross-correlation for a specific subsample.
         
-               **Input:**
+        **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """
@@ -587,13 +588,13 @@ class CrossCorrelation(BasicCFMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the correlation function cross-correlation for a specific subcube.
+        Vizualize the correlation function cross-correlation for a specific subsample.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
-        	       
-        	cut_size (int): size of subcube;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
+        	
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index.
         """

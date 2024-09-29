@@ -1,6 +1,6 @@
 using CorrelationFunctions.Directional
 using CorrelationFunctions.Utilities
-using StatsBase
+using StatsBase, LinearAlgebra
 using DelimitedFiles
 
 filename = ARGS[1]
@@ -11,7 +11,7 @@ volume = dimx*dimy*dimz
 data = Array{UInt8, 3}(undef, dimx, dimy, dimz)
 open(filename) do io read!(io, data) end
 method = ARGS[5]
-normalize = parse(Int64, ARGS[6])
+normalize_ = parse(Int64, ARGS[6])
 fpath = ARGS[7]
 
 if (method == "c2")
@@ -21,7 +21,7 @@ if (method == "c2")
         return res
     end
     v = c2(data, 0)
-    if (normalize == 1)            
+    if (normalize_ == 1)            
         p = n/volume
         vx1 = [(elem - p*p)/p/(1-p) for elem in v[DirX()]]
         vy1 = [(elem - p*p)/p/(1-p) for elem in v[DirY()]]
@@ -32,7 +32,7 @@ if (method == "c2")
     end        
 elseif (method == "s2")
     v = s2(data, 0)
-    if (normalize == 1)
+    if (normalize_ == 1)
         n = count(i->(i== 0), data)
         p = n/volume
         vx1 = [(elem - p*p)/p/(1-p) for elem in v[DirX()]]
@@ -44,32 +44,40 @@ elseif (method == "s2")
     end
 elseif (method == "l2")
     v = l2(data, 0)
-    if (normalize == 1)
+    if (normalize_ == 1)
         res = [v[DirX()]/v[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
     else
         res = [v[DirX()], v[DirY()], v[DirZ()]]
     end
 elseif (method == "ss")
     v = surf2(data, 0)
-    if (normalize == 1)
+    if (normalize_ == 1)
         res = [v[DirX()]/v[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
     else
         res = [v[DirX()], v[DirY()], v[DirZ()]]
     end
 elseif (method == "sv")
     v = surfvoid(data, 0)
-    if (normalize == 1)
+    if (normalize_ == 1)
         res = [v[DirX()]/v[DirX()][1], v[DirY()]/v[DirY()][1], v[DirZ()]/v[DirZ()][1]]
     else
         res = [v[DirX()], v[DirY()], v[DirZ()]]
     end
 elseif (method == "cl")
-    res = chord_length(data, 0)
+    res0 = chord_length(data, 0)
+    n = maximum(res0)
+    h = fit(Histogram, res0, nbins=n)
+    h1 = normalize(h, mode=:probability)
+    res = h1.weights
 elseif (method == "ps")
-    res = pore_size(data, 0)
+    res0 = pore_size(data, 0)
+    n = Int.(ceil(maximum(res0)))
+    h = fit(Histogram, res0, nbins=n)
+    h1 = normalize(h, mode=:probability)
+    res = h1.weights
 elseif (method == "cc")
     v = cross_correlation(data, 0, 1)
-    if (normalize == 1)
+    if (normalize_ == 1)
         n = count(i->(i== 0), data)
         p = n/volume
         vx1 = [elem/p/(1-p) for elem in v[DirX()]]

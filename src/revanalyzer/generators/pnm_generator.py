@@ -18,15 +18,23 @@ def generate_PNM(image, size, n_steps, sREV_max_step, outputdir, exe_path, n_thr
 
      	image (numpy.ndarray): 3D array representing the image;
      	
-     	cut_step (int): increment step of subcube size;
+        size (tuple (int, int, int)): linear image sizes in x, y and z directions;
+        
+     	n_steps (int): number of subsamples selection steps;
      	
-     	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
+     	sREV_max_step (int): maximal step for which sREV and stationarity analysis can be performed;
      	
      	outputdir (str): path to the output folder containing generated data;
+        
+        exe_path (str): path to PNM extractor exe-file;
      	
-        n_threads (int): number of CPU cores used for data generation, default: 1;
+        n_threads (int): number of threads used for data generation, default: 1;
         
      	resolution (float): resolution of studied sample, default: 1;
+        
+        length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M';
+        
+        inout_axe (str): 'x', 'y' or 'z'. Default 'z';
         
      	show_time (bool): Added to monitor time cost for large images,  default: False. 
     """
@@ -46,14 +54,21 @@ def get_pn_csv(exe_path, n_threads, cut, cut_name, outputdir, resolution, length
     Calculation of PNM statistics for a given subcube and writing the result to csv file.
     
     **Input:**
+        exe_path (str): path to PNM extractor exe-file;
+        
+        n_threads (int): number of threads used for data generation;
 
-     	cut (numpy.ndarray): 3D array representing a subcube;
+     	cut (numpy.ndarray): 3D array representing a subsample;
      	
      	cut_name (str): name of output file;
      	
      	outputdir (str): path to the output folder containing generated data;
         
-     	resolution (float): resolution of studied sample, default: 1;
+     	resolution (float): resolution of studied subsample;
+        
+        length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M';
+        
+        inout_axe (str): 'x', 'y' or 'z'.
     """
     glob_path = os.getcwd()
     output_path = os.path.join(glob_path, outputdir)

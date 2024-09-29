@@ -23,13 +23,13 @@ class CFVectorizer(BasicVectorizer):
 
     def vectorize(self, v1, v2):
         """
-        Vectorize the vector metric values for a given pair of subcubes. 
+        Vectorize the vector metric values for a given pair of subsamples. 
         
         **Input:**
         
-        	v1 (list(dtype = float)): data for the first cubcube;
+        	v1 (list(dtype = float)): data for the first cubsample;
         	
-        	v2 (list(dtype = float)): data for the second cubcube;
+        	v2 (list(dtype = float)): data for the second cubsample.
         
         **Output:**
         
@@ -37,7 +37,7 @@ class CFVectorizer(BasicVectorizer):
         
         	If mode = 'all':
         
-        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
         
         	If mode = 'max:
         
@@ -51,8 +51,8 @@ class CFVectorizer(BasicVectorizer):
             v_res2 = []
             deltas = []
             for i in range(3):
-                v_norm1 = np.linalg.norm(v1[i], ord=self.norm)
-                v_norm2 = np.linalg.norm(v2[i], ord=self.norm)
+                v_norm1 = np.linalg.norm(v1[i][:n], ord=self.norm)
+                v_norm2 = np.linalg.norm(v2[i][:n], ord=self.norm)
                 d = np.linalg.norm(np.array(v1[i][:n]) -
                                    np.array(v2[i][:n]), ord=self.norm)
                 deltas.append(2 * d/(v_norm1 + v_norm2))
@@ -68,4 +68,6 @@ class CFVectorizer(BasicVectorizer):
             deltas = 2 * \
                 np.linalg.norm(np.array(v_res1) - np.array(v_res2),
                                ord=self.norm)/(v_norm1 + v_norm2)
+            v_res1 = (v_res1/v_norm1).tolist()
+            v_res2 = (v_res2/v_norm2).tolist()
         return v_res1, v_res2, deltas

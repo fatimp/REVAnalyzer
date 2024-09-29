@@ -13,7 +13,9 @@ class BasicMetric:
         """
         **Input:**
         
-        	vectorizer (subclass of BasicVectorizer): vectorizer to be used for a vector metric.
+        	vectorizer (subclass of BasicVectorizer): vectorizer to be used for a vector metric;
+            
+            n_threads (int): number of threads used for data generation.
         """
         self.vectorizer = vectorizer
         self.n_threads = n_threads
@@ -23,13 +25,13 @@ class BasicMetric:
        
     def read(self, inputdir, step, cut_id):
         """
-        Read the metric data generated for a specific subcube.
+        Read the metric data generated for a specific subsample.
         
         **Input:**
         
         	inputdir (str): path to the folder containing image;
         	
-        	cut_size (int): size of subcube;
+        	step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index.  
         

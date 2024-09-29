@@ -26,12 +26,14 @@ class REVAnalyzer:
         	metric (subclass of BasicMetric): metric to be analyzed;
         
         	image (str or numpy.ndarray): name of binary ('uint8') file or numpy.ndarray representing the image;
+            
+            size (tuple (int, int, int)): linear image sizes in x, y and z directions;
                 
-        	cut_step (int): increment step of subcube size;
+        	n_steps (int): number of subsamples selection steps;
         
-        	sREV_max_size (int): maximal subcube size for which sREV analysis is performed;
+        	sREV_max_step (int): maximal step for which sREV and stationarity analysis can be performed;
         
-        	datadir (str): path to the folder containing image, default: 'data';
+        	datadir (str): path to the folder containing image, default: None;
         
         	outputdir (str): path to the output folder containing generated data, default: 'output'.
         """
@@ -76,6 +78,7 @@ class REVAnalyzer:
         self.metric_normed_std_2 = {}
         self.dREV_threshold = None
         self.sREV_threshold = None
+        self.stationarity_threshold = None
         self.sREV_size_1 = None
         self.sREV_size_2 = None
         self.dREV_size_1 = None
@@ -110,7 +113,7 @@ class REVAnalyzer:
 
     def generate(self):
         """
-        Generator of metric values for all selected subcubes.
+        Generator of metric values for all selected subsamples.
         """
         if isinstance(self.metric, Permeability) and not self.is_fdmss_data:
             os.makedirs(self.gendatadir, exist_ok=True)
@@ -146,7 +149,7 @@ class REVAnalyzer:
         else:
             n_threads = self.metric.n_threads
         pool = multiprocessing.Pool(processes=n_threads) 
-        results = pool.map(partial(self._metric_for_subcube, image=image), ids)
+        results = pool.map(partial(self._metric_for_subsample, image=image), ids)
         pool.close()
         pool.join()
         #for i in ids:
@@ -155,11 +158,11 @@ class REVAnalyzer:
 
     def read(self, step, cut_id=0): 
         """
-        Read the generated metric value for a given subcube. analyzer.read(0) returns the metric value for the uncut image.
+        Read the generated metric value for a given subsample.
         
         **Input:**
         
-        	cut_size (int): size of subcube;
+        	step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index .   
         
@@ -172,11 +175,11 @@ class REVAnalyzer:
     
     def show(self, step, cut_id = 0, nbins = None):
         """
-        Vizualize the vector metric for a specific subcube.
+        Vizualize the vector metric for a specific subsample.
         
         **Input:**
          
-        	cut_size (int): size of subcube;
+        	step (int): subsamples selection step;
         
         	cut_id (int: 0,..8): cut index;
         	
@@ -184,7 +187,7 @@ class REVAnalyzer:
         """
         if not self.metric.metric_type == 'v':
             raise TypeError("Metric type should be vector")
-        if issubclass(self.metric.__class__, BasicPNMMetric) or isinstance(self.metric, ChordLength) or isinstance(self.metric, PoreSize):
+        if issubclass(self.metric.__class__, BasicPNMMetric):
             if nbins is None:
                 raise ValueError("Number of bins in histogram should be defined for the visualization of this metric")
             self.metric.show(self._outputdir_cut_values, step, cut_id, nbins)
@@ -200,12 +203,39 @@ class REVAnalyzer:
             raise TypeError("Metric type should be vector")
         #for step in range(1, self.n_steps):
         #    self._vectorize_for_step(step)
+        """
         os.makedirs(self._outputdir_vectorized_cut_values, exist_ok=True)
         steps = np.arange(1, self.n_steps)
         pool = multiprocessing.Pool(processes=self.metric.n_threads)
         results = pool.map(self._vectorize_for_step, steps)
         pool.close()
         pool.join()
+        """
+        x = np.arange(9)
+        y = [0]
+        for step in range(1, self.n_steps):
+            d = {}
+            if step > self.sREV_max_step:
+                ids = [0, 0]
+                results = [self._vectorize_subsample(ids, step)]
+            else:
+                if step < self.sREV_max_step:
+                    ids = itertools.product(x, repeat=2)
+                if step == self.sREV_max_step:
+                    ids = itertools.product(x, y)
+                pool = multiprocessing.Pool(processes=self.metric.n_threads) 
+                results = pool.map(partial(self._vectorize_subsample, step=step), ids)
+                pool.close()
+                pool.join()
+            if np.nan in results:
+                print("Metric is not defined at step = ", step)
+                break
+            for elem in results:
+                d[elem[0]] = elem[1]
+            jsonname = 'cut_' + str(step)
+            with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
+                json.dump(d, f, indent=4)
+            
 
     def analyze(self, dREV_threshold, sREV_threshold):
         """
@@ -287,13 +317,40 @@ class REVAnalyzer:
             self.sREV_size_2 = self._sizes_dict[get_sREV_size(
                 self.metric_normed_std_2, self.sREV_threshold)]
 
-    def show_results(self):
+    def analyze_stationarity(self, stationarity_threshold):
         """
-        Visualization of REV analysis results.
+        Perform the analysis of stationarity.
         
         **Input:**
         
-        	figdir (str): path to the folder for saving figures.
+        	stationarity_threshold (float, <1): threshold to analyze stationarity.
+        	
+        **Output**
+        
+        	 True or False: is image stationary.
+        """
+        if not self.metric.metric_type == 'v':
+            raise TypeError("Metric type should be vector")
+        self.stationarity_threshold = stationarity_threshold
+        x = np.arange(9)
+        for step in range(1, self.sREV_max_step):
+            ids = itertools.combinations_with_replacement(x, 2)
+            pool = multiprocessing.Pool(processes=self.metric.n_threads) 
+            results = pool.map(partial(self._distance_for_subsamples, step=step), ids)
+            pool.close()
+            pool.join()
+            dmax = max(results)
+            print("at step ", step, " maximal distance between subsamples is ", dmax)
+            if dmax > self.stationarity_threshold:
+                print("Image is nonstationary.")
+                return False
+        print("Image is stationary.")
+        return True
+            
+    
+    def show_results(self):
+        """
+        Visualization of REV analysis results.
         """
         plt.rcParams.update({'font.size': 16})
         plt.rcParams['figure.dpi'] = 300
@@ -375,7 +432,7 @@ class REVAnalyzer:
         plt.legend()
         plt.show()
     
-    def _metric_for_subcube(self, ids, image):
+    def _metric_for_subsample(self, ids, image):
         if issubclass(self.metric.__class__, BasicPDMetric):
             if isinstance(self.image, str):
                 outputdir = os.path.join(self.outputdir, self.image)
@@ -393,6 +450,21 @@ class REVAnalyzer:
             cut = make_cut(image, self.size, cut_size, idx)
             self.metric.generate(cut, cut_name, outputdir, self.gendatadir)
             
+    def _vectorize_subsample(self, ids, step):
+        v1 = self.read(step, ids[0])
+        if self.metric.directional:
+            v0 = v1[0]
+        else:
+            v0 = v1
+        if len(v0) == 0:
+            return np.nan
+        v2 = self.read(step + 1, ids[1])
+        str_elem = str(ids[0]) + ', ' + str(ids[1])
+        result = self.metric.vectorize(v1, v2)
+        if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
+            return np,nan
+        return (str_elem, result)
+    
     def _vectorize_for_step(self, step):
         d = {}
         x = np.arange(9)
@@ -423,3 +495,17 @@ class REVAnalyzer:
         jsonname = 'cut_' + str(step)
         with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
             json.dump(d, f, indent=4)
+      
+    def _distance_for_subsamples(self, ids, step):
+        v1 = self.read(step, ids[0])
+        if ids[0] == ids[1]:
+            v2 = self.read(step + 1, ids[0])
+        else:
+            v2 = self.read(step, ids[1])
+        result = self.metric.vectorize(v1, v2)
+        delta = result[2]
+        if (type(delta) is list):
+            return max(delta)
+        else:
+            return delta
+        

@@ -9,7 +9,7 @@ from ..generators import _read_array, make_cut
 
 class Permeability(BasicMetric):
     """
-    Class describing porosity metric.
+    Class describing permeability metric.
     """
     def __init__(self, direction='all', n_threads=1, resolution=1., show_time = False):
         """
@@ -33,13 +33,13 @@ class Permeability(BasicMetric):
             
     def generate(self, cut, cut_name, outputdir, gendatadir):
         """
-        Generates permeability for a specific subcube.
+        Generates permeability for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder;
         	

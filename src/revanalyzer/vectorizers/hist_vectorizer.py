@@ -22,17 +22,17 @@ class HistVectorizer(BasicVectorizer):
 
     def vectorize(self, v1, v2):
         """
-        Vectorize the vector metric values for a given pair of subcubes. 
+        Vectorize the vector metric values for a given pair of subsamples. 
         
         **Input:**
         
-        	v1 (list(dtype = float)): data for the first cubcube;
+        	v1 (list(dtype = float)): data for the first subsample;
         	
-        	v2 (list(dtype = float)): data for the second cubcube.
+        	v2 (list(dtype = float)): data for the second subsample.
         
         **Output:**
         
-        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
         """
         rmax1 = np.ceil(max(v1))
         r1 = [0, rmax1]

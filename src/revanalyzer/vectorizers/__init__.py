@@ -3,6 +3,7 @@
 
 from .basic_vectorizer import BasicVectorizer
 from .hist_vectorizer import HistVectorizer
+from .direct_vectorizer import DirectVectorizer
 from .cf_vectorizer import CFVectorizer
 from .simple_binning_vectorizer import SimpleBinningVectorizer
 from .persistence_image_vectorizer import PersistenceImageVectorizer

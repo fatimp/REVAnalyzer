@@ -20,6 +20,10 @@ class BasicPDMetric(BasicMetric):
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+            
+            exe_path (str): path to PD generator exe-file;
+            
+            n_threads (int): number of threads used for data generation;
         	
         	show_time (bool): flag to monitor time cost for large images.
         """
@@ -32,17 +36,15 @@ class BasicPDMetric(BasicMetric):
         
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates PD metric for a specific subcube.
+        Generates PD metric for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder;
-        	    
-        	i (0,1,2): rank of generated PD.
         """ 
         start_time = time.time()
         glob_path = os.getcwd()
@@ -72,13 +74,13 @@ class BasicPDMetric(BasicMetric):
 
     def show(self, inputdir, step, cut_id):
         """
-        Transforms generated PD data to the convenient fomat to the following visualization in subclasses.
+        Transforms generated PD data to the convenient fomat for the following visualization in subclasses.
         
         **Input:**
         
-        	inputdir (str): path to the folder containing generated metric data for subcubes;
+        	inputdir (str): path to the folder containing generated metric data for subsamples;
                 	
-        	cut_size (int): size of subcube;
+        	step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index.
         
@@ -95,17 +97,17 @@ class BasicPDMetric(BasicMetric):
 
     def vectorize(self, v1, v2):
         """
-        Vectorize the vector metric values for a given pair of subcubes using the method of vectorizer. 
+        Vectorize the vector metric values for a given pair of subsamples using the method of vectorizer. 
         
         **Input:**
         
-        	v1 (list(dtype = float)): data for the first cubcube;
+        	v1 (list(dtype = float)): data for the first subsample;
         	
-        	v2 (list(dtype = float)): data for the second cubcube.
+        	v2 (list(dtype = float)): data for the second subsample.
         
         **Output:**
         
-        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subcubes, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
         """
         return self.vectorizer.vectorize(v1, v2)
 
@@ -119,6 +121,10 @@ class PD0(BasicPDMetric):
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+            
+            exe_path (str): path to PNM extractor exe-file;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
@@ -127,21 +133,21 @@ class PD0(BasicPDMetric):
         
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the PD of rank 0 for a specific subcube.
+        Generates the PD of rank 0 for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
-        	outputdir (str): output folder.
+        	outputdir (str): output folder;
         """
         return super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the PD of rank 0 for a specific subcube.
+        Vizualize the PD of rank 0 for a specific subsample.
         
         **Input:**
         
@@ -165,6 +171,10 @@ class PD1(BasicPDMetric):
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+            
+            exe_path (str): path to PNM extractor exe-file;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
@@ -173,21 +183,21 @@ class PD1(BasicPDMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the PD of rank 1 for a specific subcube.
+        Generates the PD of rank 1 for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
-        	outputdir (str): output folder.
+        	outputdir (str): output folder;
         """
         return super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the PD of rank 0 for a specific subcube.
+        Vizualize the PD of rank 1 for a specific subsample.
         
         **Input:**
         
@@ -196,7 +206,7 @@ class PD1(BasicPDMetric):
         	cut_size (int): size of subcube;
         	
         	cut_id (int: 0,..8): cut index.
-        """  
+        """   
         b, d = super().show(inputdir, step, cut_id)
         title = 'PD1' + ",  step = " + str(step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
@@ -210,6 +220,10 @@ class PD2(BasicPDMetric):
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+            
+            exe_path (str): path to PNM extractor exe-file;
+            
+            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
@@ -218,21 +232,21 @@ class PD2(BasicPDMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the PD of rank 2 for a specific subcube.
+        Generates the PD of rank 2 for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
-        	outputdir (str): output folder.
+        	outputdir (str): output folder;
         """
         return super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, step, cut_id):
         """
-        Vizualize the PD of rank 0 for a specific subcube.
+        Vizualize the PD of rank 2 for a specific subsample.
         
         **Input:**
         
@@ -241,7 +255,7 @@ class PD2(BasicPDMetric):
         	cut_size (int): size of subcube;
         	
         	cut_id (int: 0,..8): cut index.
-        """  
+        """   
         b, d = super().show(inputdir, step, cut_id)
         title = 'PD2' + ",  step = " + str(step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)

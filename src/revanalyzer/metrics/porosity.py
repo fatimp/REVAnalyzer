@@ -16,13 +16,13 @@ class Porosity(BasicMetric):
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates porosity for a specific subcube.
+        Generates porosity for a specific subsample.
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
-        	cut_name (str): name of subcube;
+        	cut_name (str): name of subsample;
         	
         	outputdir (str): output folder.
         """

@@ -26,7 +26,7 @@ def run_fdmss(image, direction, datadir, outputdir, n_threads=1, resolution=1., 
      	
      	outputdir (str): path to the output folder containing generated data;
         
-     	n_threads (int): number of CPU cores used by FDMSS, default: 1;
+     	n_threads (int): number of threads used by FDMSS, default: 1;
      	
      	resolution (float): resolution of studied sample (micrometers), default: 1;
      	
