@@ -107,7 +107,7 @@ class REVAnalyzer:
             if os.path.isfile(pn_input):
                 with open(pn_input) as f:
                     lines = [line.rstrip('\n') for line in f]
-                if lines[0] == str(self.n_steps) and lines[1] == str(self.sREV_max_step) and lines[2] == str(self.metric.resolution) and lines[3] == self.metric.length_unit_type and lines[4] == self.metric.direction:
+                if lines[0] == str(self.n_steps) and lines[1] == str(self.sREV_max_step) and lines[2] == str(self.metric.resolution): 
                     self.is_pnm_data = True
                     
 
@@ -138,10 +138,10 @@ class REVAnalyzer:
             image = self.image
         if issubclass(self.metric.__class__, BasicPNMMetric) and not self.is_pnm_data:
             os.makedirs(self.gendatadir, exist_ok=True)
-            generate_PNM(image, self.size, self.n_steps, self.sREV_max_step, self.gendatadir, self.metric.exe_path, self.metric.n_threads, self.metric.resolution, self.metric.length_unit_type, self.metric.direction, self.metric.show_time)    
+            generate_PNM(image, self.size, self.n_steps, self.sREV_max_step, self.gendatadir, self.metric.n_threads, self.metric.resolution, self.metric.show_time)     
             pn_input = os.path.join(self.gendatadir, 'pn_input.txt')            
             with open(pn_input, 'w') as f:
-                lines = [str(self.n_steps), str(self.sREV_max_step), str(self.metric.resolution), self.metric.length_unit_type, self.metric.direction]
+                lines = [str(self.n_steps), str(self.sREV_max_step), str(self.metric.resolution)]
                 f.write('\n'.join(lines))
         ids = _subcube_ids(self.n_steps, self.sREV_max_step)
         if issubclass(self.metric.__class__, BasicPDMetric):
@@ -151,10 +151,7 @@ class REVAnalyzer:
         pool = multiprocessing.Pool(processes=n_threads) 
         results = pool.map(partial(self._metric_for_subsample, image=image), ids)
         pool.close()
-        pool.join()
-        #for i in ids:
-        #    self._metric_for_subcube(i, image)
-            
+        pool.join()           
 
     def read(self, step, cut_id=0): 
         """
@@ -201,8 +198,7 @@ class REVAnalyzer:
         """
         if not self.metric.metric_type == 'v':
             raise TypeError("Metric type should be vector")
-        #for step in range(1, self.n_steps):
-        #    self._vectorize_for_step(step)
+        os.makedirs(self._outputdir_vectorized_cut_values, exist_ok=True)
         x = np.arange(9)
         y = [0]
         for step in range(1, self.n_steps):

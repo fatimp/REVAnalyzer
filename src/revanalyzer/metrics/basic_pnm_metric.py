@@ -13,40 +13,29 @@ class BasicPNMMetric(BasicMetric):
     """
     Base class of PNM-based metrics. (Don't use it directly but derive from it).
     """  
-    def __init__(self, vectorizer, exe_path, n_threads, resolution, length_unit_type, direction, show_time):
+    def __init__(self, vectorizer, n_threads, resolution, show_time):
         """
         **Input:**
         
         	vectorizer (PNMVectorizer object): vectorizer to be used for a vector metric.
-            
-            exe_path (str): path to PNM extractor exe-file;
-            
+                        
             n_threads (int): number threads used for data generation;
                     
             resolution (float): resolution of studied sample;
             
-            length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M';
-            
-            direction (str): 'x', 'y' or 'z';
-            
-            show_time (bool): Added to monitor time cost for large images. 
+            show_time (bool): Added to monitor time cost for large images.
         """
         if not (isinstance(vectorizer, HistVectorizer) or (vectorizer is None)):
             raise TypeError("Vectorizer should be None or an object of HistVectorizer class.")
         super().__init__(vectorizer, n_threads = n_threads)
         self.resolution = resolution
-        self.length_unit_type = length_unit_type
-        self.direction = direction
         self.show_time = show_time
-        self.exe_path = exe_path
 
-    def generate(self, cut, cut_name, gendatadir):
+    def generate(self, cut_name, gendatadir):
         """
         Generates PNM metric for a specific subsample.
         
         **Input:**
-        
-            cut (numpy.ndarray): 3D array representing a subsample;
         
             cut_name (str): name of subsample;
         	
@@ -54,17 +43,11 @@ class BasicPNMMetric(BasicMetric):
             
             **Output:**
         
-        	pore number (int): computed here to proceed exclusions.
+        	df (pandas.DataFrame): data frame with pnm statistics.
         """
-        dimx = cut.shape[0]
-        dimy = cut.shape[1]
-        dimz = cut.shape[2]
-        volume = dimx*dimy*dimz
-        filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_node1.dat'
-        with open(filein, "r") as f:
-            str_0 = f.readline().split()
-            pore_number = (int(str_0[0])-1)/volume
-        return pore_number 
+        cut_name = os.path.join(gendatadir, cut_name + '.csv')
+        df =  pd.read_csv(cut_name)
+        return df
         
         
     def show(self, inputdir, step, cut_id, nbins):

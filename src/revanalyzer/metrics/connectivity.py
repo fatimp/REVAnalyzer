@@ -13,25 +13,19 @@ class Connectivity(BasicPNMMetric):
     """
     Class describing connectivity metric.
     """     
-    def __init__(self, vectorizer, exe_path, n_threads = 1, resolution = 1., length_unit_type = 'M', direction = 'z', show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, resolution = 1., show_time = False):
         """
         **Input:**
         
             vectorizer (HistVectorizer object): vectorizer to be used for a vector metric;
-            
-            exe_path (str): path to PNM extractor exe-file;
         
             n_threads (int): number of threads used for data generation, default: 1;
         
             resolution (float): resolution of studied sample, default: 1;
             
-            length_unit_type (str): units of resolution. Can be 'NM', 'UM', 'MM' and 'M', default: 'M'.
-            
-            direction (str): 'x', 'y' or 'z', default: 'z';
-            
             show_time (bool): Added to monitor time cost for large images,  default: False. 
         """
-        super().__init__(vectorizer, exe_path = exe_path, n_threads = n_threads, resolution = resolution, length_unit_type = length_unit_type, direction = direction, show_time = show_time)
+        super().__init__(vectorizer, n_threads = n_threads, resolution = resolution, show_time = show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir):
@@ -48,12 +42,14 @@ class Connectivity(BasicPNMMetric):
         	
         	gendatadir (str): folder with generated PNM data.    
         """
-        pore_number = super().generate(cut, cut_name, gendatadir)
-        if pore_number > 0:
-            filein = os.path.join(gendatadir, cut_name) + "_" + self.direction + '_link2.dat'
-            connectivity = _read_connectivity(filein)
-        else:
-            connectivity = []
+        df = super().generate(cut_name, gendatadir)
+        pore_number = df.shape[0] - df['pore.phase'].isna().sum()
+        con1 = df['throat.conns[0]'].dropna().tolist()
+        con2 = df['throat.conns[1]'].dropna().tolist()
+        con = con1 +con2
+        (unique, counts) = np.unique(con, return_counts=True)
+        counts0 = [0 for i in range(pore_number) if i not in unique]
+        connectivity = counts.tolist() + counts0
         cut_name_out = cut_name + ".txt"
         fileout = os.path.join(outputdir, cut_name_out)
         np.savetxt(fileout, connectivity, delimiter='\t')
@@ -80,20 +76,3 @@ class Connectivity(BasicPNMMetric):
         ax.set_xlabel('connectivity')
         ax.set_ylabel('density')
         plt.show()
-
-def _read_connectivity(filein):
-    with open(filein, mode='r') as f:
-        link = pd.read_table(filepath_or_buffer=f,
-                             header=None,
-                             sep='\s+',
-                             skipinitialspace=True,
-                             index_col=0)
-    link.columns = ['throat.pore1', 'throat.pore2',
-                    'throat.pore1_length', 'throat.pore2_length',
-                    'throat.length', 'throat.volume',
-                    'throat.clay_volume']
-    con = np.vstack((link['throat.pore1']-1,
-                     link['throat.pore2']-1)).T
-    con1 = con.reshape(-1)
-    (unique, counts) = np.unique(con1, return_counts=True)
-    return np.array(counts)
