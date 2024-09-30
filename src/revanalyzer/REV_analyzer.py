@@ -203,14 +203,6 @@ class REVAnalyzer:
             raise TypeError("Metric type should be vector")
         #for step in range(1, self.n_steps):
         #    self._vectorize_for_step(step)
-        """
-        os.makedirs(self._outputdir_vectorized_cut_values, exist_ok=True)
-        steps = np.arange(1, self.n_steps)
-        pool = multiprocessing.Pool(processes=self.metric.n_threads)
-        results = pool.map(self._vectorize_for_step, steps)
-        pool.close()
-        pool.join()
-        """
         x = np.arange(9)
         y = [0]
         for step in range(1, self.n_steps):
@@ -465,37 +457,7 @@ class REVAnalyzer:
             return np,nan
         return (str_elem, result)
     
-    def _vectorize_for_step(self, step):
-        d = {}
-        x = np.arange(9)
-        y = [0]
-        if step < self.sREV_max_step:
-            idx = itertools.product(x, repeat=2)
-        elif step == self.sREV_max_step:
-            idx = itertools.product(x, y)
-        else:
-            idx = itertools.product(y, repeat=2)
-        for elem in idx:
-            v1 = self.read(step, elem[0])
-            if self.metric.directional:
-                v0 = v1[0]
-            else:
-                v0 = v1
-            if len(v0) == 0:
-                print("Metric is not defined at step = ", step, " for cut = ", elem[0])
-                break
-            v2 = self.read(step + 1, elem[1])
-            str_elem = str(elem[0]) + ', ' + str(elem[1])
-            result = self.metric.vectorize(v1, v2)
-            if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
-                print("Metric is not defined at step = ", step, " for cut = ", elem[0])
-                break
-            d[str_elem] = result
-
-        jsonname = 'cut_' + str(step)
-        with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
-            json.dump(d, f, indent=4)
-      
+     
     def _distance_for_subsamples(self, ids, step):
         v1 = self.read(step, ids[0])
         if ids[0] == ids[1]:
