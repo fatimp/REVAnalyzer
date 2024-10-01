@@ -6,8 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import os
-import subprocess
-from ..generators import _write_array
+import pyperspairdiamorse as pppdm
 from ..vectorizers import SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer, SilhouetteVectorizer
 
 
@@ -15,13 +14,11 @@ class BasicPDMetric(BasicMetric):
     """
     Base class of PD-based metrics. (Don't use it directly but derive from it).
     """ 
-    def __init__(self, vectorizer, exe_path, n_threads, show_time):
+    def __init__(self, vectorizer, n_threads, show_time):
         """
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
-            
-            exe_path (str): path to PD generator exe-file;
             
             n_threads (int): number of threads used for data generation;
         	
@@ -31,10 +28,9 @@ class BasicPDMetric(BasicMetric):
             vectorizer, LandscapeVectorizer) or isinstance(vectorizer, SilhouetteVectorizer)):
             raise TypeError('Vectorizer should be an object of SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer class')
         super().__init__(vectorizer, n_threads = n_threads)
-        self.exe_path = exe_path
         self.show_time = show_time
         
-    def generate(self, cut, cut_name, outputdir, gendatadir = None):
+    def generate(self, cut, cut_name, outputdir, i, gendatadir = None):
         """
         Generates PD metric for a specific subsample.
         
@@ -47,25 +43,11 @@ class BasicPDMetric(BasicMetric):
         	outputdir (str): output folder;
         """ 
         start_time = time.time()
-        glob_path = os.getcwd()
-        my_env = os.environ.copy()
-        my_env["OMP_NUM_THREADS"] = str(self.n_threads)
-        output_path = os.path.join(glob_path, outputdir)
-        image_path = os.path.join(output_path, cut_name) 
-        dimx = cut.shape[2]
-        dimy = cut.shape[1]
-        dimz = cut.shape[0]
-        pd0 = os.path.join(output_path, 'PD0', 'cuts_values')
-        pd1 = os.path.join(output_path, 'PD1', 'cuts_values')
-        pd2 = os.path.join(output_path, 'PD2', 'cuts_values')
-        os.makedirs(pd0, exist_ok=True)
-        os.makedirs(pd1, exist_ok=True)
-        os.makedirs(pd2, exist_ok=True)
-        _write_array(cut, image_path)
-        code = subprocess.call([self.exe_path, str(dimx), str(dimy), str(dimz), output_path, cut_name, output_path], env=my_env)
-        if (code != 0):
-            raise RuntimeError("Error in PD generator occured!")
-        os.remove(image_path)
+        cut = cut.astype(bool)
+        pds = pppdm.extract(cut)
+        cut_name_out = cut_name + ".txt"
+        fileout = os.path.join(outputdir, cut_name_out)
+        np.savetxt(fileout, pds[i])        
         if self.show_time:
             print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))
@@ -116,49 +98,45 @@ class PD0(BasicPDMetric):
     """
     Class describing metric PD of rank 0.
     """    
-    def __init__(self, vectorizer, exe_path, n_threads = 1, show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, show_time = False):
         """
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
-            
-            exe_path (str): path to PNM extractor exe-file;
-            
-            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, exe_path, n_threads, show_time)
+        super().__init__(vectorizer, n_threads, show_time)
         self.metric_type = 'v'
         
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the PD of rank 0 for a specific subsample.
+        Generates the PD of rank 0 for a specific subcube.
         
         **Input:**
         
-        	cut (numpy.ndarray): 3D array representing a subsample;
+        	cut (numpy.ndarray): subcube;
         	
-        	cut_name (str): name of subsample;
+        	cut_name (str): name of subcube;
         	
-        	outputdir (str): output folder;
+        	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir)
+        return super().generate(cut, cut_name, outputdir, i = 0)
 
-    def show(self, inputdir, step, cut_id):
+    def show(self, inputdir, cut_step, cut_id):
         """
-        Vizualize the PD of rank 0 for a specific subsample.
+        Vizualize the PD of rank 0 for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
         	 
-        	cut_size (int): size of subcube;
+        	cut_step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, step, cut_id)
-        title = 'PD0' + ",  step = " + str(step) + ", id = " + str(cut_id)
+        b, d = super().show(inputdir, cut_step, cut_id)
+        title = 'PD0' + ",  step = " + str(cut_step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
 
 
@@ -166,98 +144,91 @@ class PD1(BasicPDMetric):
     """
     Class describing metric PD of rank 1.
     """ 
-    def __init__(self, vectorizer, exe_path, n_threads = 1, show_time = False):
+    def __init__(self, vectorizer, show_time = False):
         """
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
-            
-            exe_path (str): path to PNM extractor exe-file;
-            
-            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, exe_path, n_threads, show_time)
+        super().__init__(vectorizer, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the PD of rank 1 for a specific subsample.
+        Generates the PD of rank 1 for a specific subcube.
         
         **Input:**
         
-        	cut (numpy.ndarray): 3D array representing a subsample;
+        	cut (numpy.ndarray): subcube;
         	
-        	cut_name (str): name of subsample;
+        	cut_name (str): name of subcube;
         	
-        	outputdir (str): output folder;
+        	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir)
+        return super().generate(cut, cut_name, outputdir, i = 1)
 
-    def show(self, inputdir, step, cut_id):
+    def show(self, inputdir, cut_step, cut_id):
         """
-        Vizualize the PD of rank 1 for a specific subsample.
+        Vizualize the PD of rank 0 for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
         	 
-        	cut_size (int): size of subcube;
+        	cut_step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index.
-        """   
-        b, d = super().show(inputdir, step, cut_id)
-        title = 'PD1' + ",  step = " + str(step) + ", id = " + str(cut_id)
+        """  
+        b, d = super().show(inputdir, cut_step, cut_id)
+        title = 'PD1' + ",  step = " + str(cut_step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
+
 
 class PD2(BasicPDMetric):
     """
     Class describing metric PD of rank 2.
     """ 
-    def __init__(self, vectorizer, exe_path, n_threads = 1, show_time = False):
+    def __init__(self, vectorizer, show_time = False):
         """
         **Input:**
         
         	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
-            
-            exe_path (str): path to PNM extractor exe-file;
-            
-            n_threads (int): number of threads used for data generation, default: 1;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, exe_path, n_threads, show_time)
+        super().__init__(vectorizer, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
-        Generates the PD of rank 2 for a specific subsample.
+        Generates the PD of rank 2 for a specific subcube.
         
         **Input:**
         
-        	cut (numpy.ndarray): 3D array representing a subsample;
+        	cut (numpy.ndarray): subcube;
         	
-        	cut_name (str): name of subsample;
+        	cut_name (str): name of subcube;
         	
-        	outputdir (str): output folder;
+        	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir)
+        return super().generate(cut, cut_name, outputdir, i = 2)
 
-    def show(self, inputdir, step, cut_id):
+    def show(self, inputdir, cut_step, cut_id):
         """
-        Vizualize the PD of rank 2 for a specific subsample.
+        Vizualize the PD of rank 0 for a specific subcube.
         
         **Input:**
         
         	inputdir (str): path to the folder containing generated metric data for subcubes;
         	 
-        	cut_size (int): size of subcube;
+        	cut_step (int): subsamples selection step;
         	
         	cut_id (int: 0,..8): cut index.
-        """   
-        b, d = super().show(inputdir, step, cut_id)
-        title = 'PD2' + ",  step = " + str(step) + ", id = " + str(cut_id)
+        """  
+        b, d = super().show(inputdir, cut_step, cut_id)
+        title = 'PD2' + ",  step = " + str(cut_step) + ", id = " + str(cut_id)
         _show_pd(b, d, title)
 
 

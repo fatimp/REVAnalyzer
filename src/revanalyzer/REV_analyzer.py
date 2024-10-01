@@ -144,11 +144,7 @@ class REVAnalyzer:
                 lines = [str(self.n_steps), str(self.sREV_max_step), str(self.metric.resolution)]
                 f.write('\n'.join(lines))
         ids = _subcube_ids(self.n_steps, self.sREV_max_step)
-        if issubclass(self.metric.__class__, BasicPDMetric):
-            n_threads = 1
-        else:
-            n_threads = self.metric.n_threads
-        pool = multiprocessing.Pool(processes=n_threads) 
+        pool = multiprocessing.Pool(processes=self.metric.n_threads) 
         results = pool.map(partial(self._metric_for_subsample, image=image), ids)
         pool.close()
         pool.join()           
@@ -421,13 +417,7 @@ class REVAnalyzer:
         plt.show()
     
     def _metric_for_subsample(self, ids, image):
-        if issubclass(self.metric.__class__, BasicPDMetric):
-            if isinstance(self.image, str):
-                outputdir = os.path.join(self.outputdir, self.image)
-            else:
-                outputdir = self.outputdir
-        else:
-            outputdir = self._outputdir_cut_values
+        outputdir = self._outputdir_cut_values
         l = ids[0]
         idx = ids[1]
         cut_name = 'cut'+str(l)+'_'+str(idx)
