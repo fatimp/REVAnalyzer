@@ -102,7 +102,9 @@ class PD0(BasicPDMetric):
         """
         **Input:**
         
-        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric;
+            
+            n_threads (int): number of threads used for data generation;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
@@ -115,7 +117,7 @@ class PD0(BasicPDMetric):
         
         **Input:**
         
-        	cut (numpy.ndarray): subcube;
+        	cut (numpy.ndarray): subsample;
         	
         	cut_name (str): name of subcube;
         	
@@ -144,15 +146,17 @@ class PD1(BasicPDMetric):
     """
     Class describing metric PD of rank 1.
     """ 
-    def __init__(self, vectorizer, show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, show_time = False):
         """
         **Input:**
         
-        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric;
+            
+            n_threads (int): number of threads used for data generation;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, show_time)
+        super().__init__(vectorizer, n_threads, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):
@@ -190,15 +194,17 @@ class PD2(BasicPDMetric):
     """
     Class describing metric PD of rank 2.
     """ 
-    def __init__(self, vectorizer, show_time = False):
+    def __init__(self, vectorizer, n_threads = 1, show_time = False):
         """
         **Input:**
         
-        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric.
+        	vectorizer (SimpleBinningVectorizer, PersistenceImageVectorizer, LandscapeVectorizer or SilhouetteVectorizer object): vectorizer to be used for PD metric;
+            
+            n_threads (int): number of threads used for data generation;
         	
         	show_time (bool): flag to monitor time cost for large images.        
         """
-        super().__init__(vectorizer, show_time)
+        super().__init__(vectorizer, n_threads, show_time)
         self.metric_type = 'v'
 
     def generate(self, cut, cut_name, outputdir, gendatadir = None):

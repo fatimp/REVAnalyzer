@@ -13,7 +13,7 @@ class CFVectorizer(BasicVectorizer):
         """
         **Input:**
         
-        	mode (str): can be 'all' or 'max'. If mode = 'all', CF calculated for 'x', 'y' and 'z' directions are concatenate into one vector during vectorization. If mode = 'max', CF calculared for different directions are vectorizes  independently. 
+        	mode (str): can be 'all' or 'max'. If mode = 'all', CF calculated for 'x', 'y' and 'z' directions are concatenated into one vector during vectorization. If mode = 'max', CF calculared for different directions are vectorizes  independently. 
         	Then at the analisys step, maximal differences and deviations over 3 directions are taking for REV sizes calculation. Default: 'max';
         	
         	norm (int): Norm of vectors used in REV analysis. The same, as parameter 'ord' in numpy.linalg.norm function, default: 2.
