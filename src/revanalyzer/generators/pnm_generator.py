@@ -6,6 +6,7 @@ import os
 import porespy as ps
 import openpnm as op
 import multiprocessing
+from functools import partial
 from .utils import _subcube_ids, make_cut
 
 
@@ -36,9 +37,20 @@ def generate_PNM(image, size, n_steps, sREV_max_step, outputdir, n_threads = 1, 
     cut_sizes = [(cut_step*(i+1)).tolist() for i in range(n_steps-1)]
     cut_sizes.append(size)
     ids = _subcube_ids(n_steps, sREV_max_step)
-    pool = multiprocessing.Pool(processes=n_threads)
+    cuts = []
     for elem in ids:
-        pool.apply_async(_pnm_for_subcube, args = (elem, n_steps, image, cut_sizes, outputdir, resolution, show_time))
+        l = elem[0]
+        idx = elem[1]
+        if l  == n_steps:
+            cuts.append(image)
+        else:
+            cut_size = cut_sizes[l-1]
+            cuts.append(make_cut(image, size, cut_size, idx))
+    data = zip(ids, cuts)
+    pool = multiprocessing.Pool(processes=n_threads)
+    results = pool.map(partial(_pnm_for_subcube, n_steps=n_steps, cut_sizes = cut_sizes, outputdir = outputdir, resolution = resolution, show_time = show_time), data)
+    #for elem in ids:
+    #    pool.apply_async(_pnm_for_subcube, args = (elem, n_steps, image, cut_sizes, outputdir, resolution, show_time))
     pool.close()
     pool.join()
     if show_time:
@@ -90,14 +102,10 @@ def _pnm_for_subcube(n_threads, ids, n_steps, image, cut_sizes, outputdir, resol
         get_pn_csv(n_threads, cut, cut_name, outputdir, resolution, show_time)
 """
 
-def _pnm_for_subcube(ids, n_steps, image, cut_sizes, outputdir, resolution, show_time):
-    l = ids[0]
-    idx = ids[1]
+def _pnm_for_subcube(data, n_steps, cut_sizes, outputdir, resolution, show_time):
+    l = data[0][0]
+    idx = data[0][1]
+    cut = data[1]
     cut_name = 'cut'+str(l)+'_'+str(idx)
     size = cut_sizes[-1]
-    if l  == n_steps:
-        get_pn_csv(image, cut_name, outputdir, resolution, show_time)
-    else:
-        cut_size = cut_sizes[l-1]
-        cut = make_cut(image, size, cut_size, idx)
-        get_pn_csv(cut, cut_name, outputdir, resolution, show_time)
+    get_pn_csv(cut, cut_name, outputdir, resolution, show_time)

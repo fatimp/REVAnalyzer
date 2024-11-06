@@ -30,7 +30,7 @@ class BasicPDMetric(BasicMetric):
         super().__init__(vectorizer, n_threads = n_threads)
         self.show_time = show_time
         
-    def generate(self, cut, cut_name, outputdir, i, gendatadir = None):
+    def generate(self, cut, cut_name, outputdir, gendatadir = None):
         """
         Generates PD metric for a specific subsample.
         
@@ -46,13 +46,12 @@ class BasicPDMetric(BasicMetric):
         cut = cut.astype(bool)
         pds = pppdm.extract(cut)
         cut_name_out = cut_name + ".txt"
-        fileout = os.path.join(outputdir, cut_name_out)
-        np.savetxt(fileout, pds[i])        
+        for i, elem in enumerate(outputdir):
+            fileout = os.path.join(elem, cut_name_out)
+            np.savetxt(fileout, pds[i])
         if self.show_time:
             print("cut ", cut_name, ", run time: ")
-            print("--- %s seconds ---" % (time.time() - start_time))
-        return cut_name + ".txt"
-        
+            print("--- %s seconds ---" % (time.time() - start_time))        
 
     def show(self, inputdir, step, cut_id):
         """
@@ -123,7 +122,7 @@ class PD0(BasicPDMetric):
         	
         	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir, i = 0)
+        super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, cut_step, cut_id):
         """
@@ -171,7 +170,7 @@ class PD1(BasicPDMetric):
         	
         	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir, i = 1)
+        super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, cut_step, cut_id):
         """
@@ -219,7 +218,7 @@ class PD2(BasicPDMetric):
         	
         	outputdir (str): output folder.
         """
-        return super().generate(cut, cut_name, outputdir, i = 2)
+        super().generate(cut, cut_name, outputdir)
 
     def show(self, inputdir, cut_step, cut_id):
         """

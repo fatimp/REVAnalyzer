@@ -11,7 +11,7 @@ import multiprocessing
 from functools import partial
 from statistics import geometric_mean
 from .generators import run_fdmss, _read_array, _write_array, _subcube_ids, make_cut, generate_PNM
-from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability, ChordLength, PoreSize
+from .metrics import BasicMetric, BasicPNMMetric, BasicPDMetric, Permeability
 from .REV_formulas import _delta, get_sREV_size, get_dREV_size_1_scalar, get_dREV_size_2_scalar, get_dREV_size_1_vector, get_dREV_size_1_scalar_dimensional, get_dREV_size_2_scalar_dimensional
 
 
@@ -41,10 +41,21 @@ class REVAnalyzer:
             raise TypeError("Metric should be an object of a class derived from BasicMetric.")
         self.metric = metric
         self.size = size
+        self._outputdirs_cut_values = []            
         if isinstance(image, str):
             self._outputdir_cut_values = os.path.join(outputdir, image, self.metric.__class__.__name__, 'cuts_values')
+            if issubclass(self.metric.__class__, BasicPDMetric):
+                for i in range(3):
+                    outputdir_cut_values = os.path.join(outputdir, image, 'PD'+str(i), 'cuts_values')
+                    self._outputdirs_cut_values.append(outputdir_cut_values)
+                    os.makedirs(outputdir_cut_values, exist_ok=True)
         elif isinstance(image, np.ndarray):
             self._outputdir_cut_values = os.path.join(outputdir, self.metric.__class__.__name__, 'cuts_values')
+            if issubclass(self.metric.__class__, BasicPDMetric):
+                for i in range(3):
+                    outputdir_cut_values = os.path.join(outputdir, 'PD'+str(i), 'cuts_values')
+                    self._outputdirs_cut_values.append(outputdir_cut_values)
+                    os.makedirs(outputdir_cut_values, exist_ok=True)
         else:
             raise TypeError("Image type should be str or numpy.ndarray")
         self.image = image
@@ -144,8 +155,21 @@ class REVAnalyzer:
                 lines = [str(self.n_steps), str(self.sREV_max_step), str(self.metric.resolution)]
                 f.write('\n'.join(lines))
         ids = _subcube_ids(self.n_steps, self.sREV_max_step)
+        cuts = []
+        for elem in ids:
+            l = elem[0]
+            idx = elem[1]
+            if l  == self.n_steps:
+                cuts.append(image)
+            else:
+                cut_size = self.cut_sizes[l-1]
+                cuts.append(make_cut(image, self.size, cut_size, idx))
+        data = zip(ids, cuts)
         pool = multiprocessing.Pool(processes=self.metric.n_threads) 
-        results = pool.map(partial(self._metric_for_subsample, image=image), ids)
+        #for elem in ids:
+        #    pool.apply_async(self._metric_for_subsample, args = (elem, image))
+        #results = pool.map(partial(self._metric_for_subsample, image=image), ids)
+        results = pool.map(self._metric_for_subsample, data)
         pool.close()
         pool.join()           
 
@@ -197,6 +221,30 @@ class REVAnalyzer:
         os.makedirs(self._outputdir_vectorized_cut_values, exist_ok=True)
         x = np.arange(9)
         y = [0]
+        steps = [i for i in range(1, self.n_steps)]
+        data1 = []
+        data2 = []
+        data3 = []
+        for step in steps:
+            if step > self.sREV_max_step:
+                data1 = data1 + [tup for tup in itertools.product([step], y, y)]
+            elif step == self.sREV_max_step:
+                data2 = data2 + [tup for tup in itertools.product([step], x, y)]
+            else:
+                data3 = data3 + [tup for tup in itertools.product([step], x, x)]
+        data = data1 + data2 + data3
+        pool = multiprocessing.Pool(processes=self.metric.n_threads) 
+        results = pool.map(self._vectorize_subsample, data)
+        pool.close()
+        pool.join() 
+        ds = [{} for i in range(1, self.n_steps)]
+        for elem in results:
+            ds[elem[0]-1][elem[1]] = elem[2]      
+        for step in steps:     
+            jsonname = 'cut_' + str(step)
+            with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
+                json.dump(ds[step-1], f, indent=4)     
+        """
         for step in range(1, self.n_steps):
             d = {}
             if step > self.sREV_max_step:
@@ -219,6 +267,7 @@ class REVAnalyzer:
             jsonname = 'cut_' + str(step)
             with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'w') as f:
                 json.dump(d, f, indent=4)
+         """
             
 
     def analyze(self, dREV_threshold, sREV_threshold):
@@ -271,7 +320,7 @@ class REVAnalyzer:
                 jsonname = 'cut_' + str(l)
                 with open(os.path.join(self._outputdir_vectorized_cut_values, jsonname), 'r') as f:
                     d = json.load(f)
-                deltas = [elem[2] for elem in d.values()]
+                deltas = [elem for elem in d.values()]
                 n = deltas[0]
                 if (type(n) is list):
                     self.metric_mean[l] = max(
@@ -416,18 +465,33 @@ class REVAnalyzer:
         plt.legend()
         plt.show()
     
+    """
     def _metric_for_subsample(self, ids, image):
         outputdir = self._outputdir_cut_values
         l = ids[0]
         idx = ids[1]
         cut_name = 'cut'+str(l)+'_'+str(idx)
         if l  == self.n_steps:
-            self.metric.generate(image, cut_name, outputdir, self.gendatadir)
+            result = self.metric.generate(image, cut_name, outputdir, self.gendatadir)
         else:
             cut_size = self.cut_sizes[l-1]
             cut = make_cut(image, self.size, cut_size, idx)
-            self.metric.generate(cut, cut_name, outputdir, self.gendatadir)
-            
+            result = self.metric.generate(cut, cut_name, outputdir, self.gendatadir)
+        #return (l, idx, result)
+    """
+    
+    def _metric_for_subsample(self, data):
+        if issubclass(self.metric.__class__, BasicPDMetric):
+            outputdir = self._outputdirs_cut_values
+        else:
+            outputdir = self._outputdir_cut_values
+        l = data[0][0]
+        idx = data[0][1]
+        cut = data[1]
+        cut_name = 'cut'+str(l)+'_'+str(idx)
+        result = self.metric.generate(cut, cut_name, outputdir, self.gendatadir)
+    
+    """
     def _vectorize_subsample(self, ids, step):
         v1 = self.read(step, ids[0])
         if self.metric.directional:
@@ -441,8 +505,23 @@ class REVAnalyzer:
         result = self.metric.vectorize(v1, v2)
         if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
             return np,nan
-        return (str_elem, result)
-    
+        return (str_elem, result[2])
+    """
+    def _vectorize_subsample(self, data):
+        step = data[0]
+        v1 = self.read(step, data[1])
+        if self.metric.directional:
+            v0 = v1[0]
+        else:
+            v0 = v1
+        if len(v0) == 0:
+            return np.nan
+        v2 = self.read(step + 1, data[2])
+        str_elem = str(data[1]) + ', ' + str(data[2])
+        result = self.metric.vectorize(v1, v2)
+        if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
+            return np,nan
+        return (step, str_elem, result[2])
      
     def _distance_for_subsamples(self, ids, step):
         v1 = self.read(step, ids[0])
