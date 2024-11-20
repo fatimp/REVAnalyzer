@@ -4,3 +4,7 @@ matplotlib
 scikit-learn
 gudhi
 pyfdmss
+porespy
+openpnm
+pyperspairdiamorse
+

@@ -65,11 +65,11 @@ class BasicCFMetric(BasicMetric):
             raise RuntimeError("Error in julia run occured!")
         os.remove(image_path)           
         if self.show_time:
-            print("cut ", cut_name, ", run time: ")
+            print(cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))
         return cut_name + ".txt"
 
-    def show(self, inputdir, step, cut_id):
+    def show(self, inputdir, step, cut_id, title, cf_type):
         """
         Vizualize CF for a specific subsample.
         
@@ -79,25 +79,14 @@ class BasicCFMetric(BasicMetric):
         	
         	step (int): subsamples selection step;
         	
-        	cut_id (int: 0,..8): cut index.
+        	cut_id (int: 0,..8): cut index;
         
-        **Output:**
-        
-        	(x, data) - a tuple, in which
-        	
-        		x (list(dtype = int)): 'x' coordinate values for a plot;
-        		
-        		data[0] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'x' direction;
-        		
-        		data[1] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'y' direction;
-        		
-        		data[2] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'z' direction.
+            title (str): image title;
+            
+            cf_type (str): type of CF (directional or probability density).
         """        
         data = self.read(inputdir, step, cut_id)
-        x = np.arange(len(data[0]))
-        plt.rcParams.update({'font.size': 16})
-        plt.rcParams['figure.dpi'] = 300
-        return x, data[0], data[1], data[2]
+        _show_cf(data, title, cf_type)
 
     def vectorize(self, v1, v2):
         """
@@ -172,17 +161,8 @@ class C2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, step, cut_id)
-        fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + ", step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, vx, "r-", label='x')
-        ax.plot(x, vy, "b-", label='y')
-        ax.plot(x, vz, "g-", label='z')
-        ax.legend()
-        ax.set_xlabel("voxels")
-        ax.set_ylabel("CF value")
-        plt.show()
+        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
+        super().show(inputdir, step, cut_id, title, 'directional')
 
 
 class L2(BasicCFMetric):
@@ -233,17 +213,8 @@ class L2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, step, cut_id)
-        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, vx, "r-", label='x')
-        ax.plot(x, vy, "b-", label='y')
-        ax.plot(x, vz, "g-", label='z')
-        ax.legend()
-        ax.set_xlabel("voxels")
-        ax.set_ylabel("CF value")
-        plt.show()
+        super().show(inputdir, step, cut_id, title, 'directional')
 
 
 class S2(BasicCFMetric): 
@@ -294,17 +265,8 @@ class S2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, step, cut_id)
-        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, vx, "r-", label='x')
-        ax.plot(x, vy, "b-", label='y')
-        ax.plot(x, vz, "g-", label='z')
-        ax.legend()
-        ax.set_xlabel("voxels")
-        ax.set_ylabel("CF value")
-        plt.show()
+        super().show(inputdir, step, cut_id, title, 'directional')
 
 
 class SS(BasicCFMetric):
@@ -355,17 +317,8 @@ class SS(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, step, cut_id)
-        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, vx, "r-", label='x')
-        ax.plot(x, vy, "b-", label='y')
-        ax.plot(x, vz, "g-", label='z')
-        ax.legend()
-        ax.set_xlabel("voxels")
-        ax.set_ylabel("CF value")
-        plt.show()
+        super().show(inputdir, step, cut_id, title, 'directional')
 
 
 class SV(BasicCFMetric):
@@ -416,22 +369,13 @@ class SV(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        x, vx, vy, vz = super().show(inputdir, step, cut_id)
-        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, vx, "r-", label='x')
-        ax.plot(x, vy, "b-", label='y')
-        ax.plot(x, vz, "g-", label='z')
-        ax.legend()
-        ax.set_xlabel("voxels")
-        ax.set_ylabel("CF value")
-        plt.show()
+        super().show(inputdir, step, cut_id, title, 'directional')
 
 
 class ChordLength(BasicCFMetric):
     """
-    Class describing metric chord-length. 
+    Class describing metric chord length. 
     """
     def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
@@ -477,21 +421,12 @@ class ChordLength(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        data = self.read(inputdir, step, cut_id)
-        x = np.arange(len(data))
-        plt.rcParams.update({'font.size': 16})
-        plt.rcParams['figure.dpi'] = 300
-        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, data, "r-")
-        ax.set_xlabel('chord length')
-        ax.set_ylabel('density')
-        plt.show()
+        super().show(inputdir, step, cut_id, title, 'density')
 
 class PoreSize(BasicCFMetric):
     """
-    Class describing metric pore-size. 
+    Class describing metric pore size. 
     """
     def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
@@ -537,75 +472,5 @@ class PoreSize(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        data = self.read(inputdir, step, cut_id)
-        x = np.arange(len(data))
-        plt.rcParams.update({'font.size': 16})
-        plt.rcParams['figure.dpi'] = 300
-        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, data, "r-")
-        ax.set_xlabel('pore size')
-        ax.set_ylabel('density')
-        plt.show()
-
-
-class CrossCorrelation(BasicCFMetric):
-    """
-    Class describing metric cross-correlation. 
-    """ 
-    def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
-        """
-        **Input:**
-        
-        	vectorizer (CFVectorizer): vectorizer to be used for CF metric;
-            
-            n_threads (int): number of threads used for data generation, default: 1;
-        	
-        	show_time (bool): flag to monitor time cost for large images, default: False;
-        	
-        	normalize (bool): flag to control normalization of CF. If True, CF are normalized to satisfy the condition CF(0) = 1. See the details in Karsanina et al. (2021). Compressing soil structural information into parameterized correlation functions. European Journal of Soil Science, 72(2), 561-577. Default: True.
-        """ 
-        if not isinstance(vectorizer, CFVectorizer):
-            raise TypeError("Vectorizer should be an object of CFVectorizer class")
-        super().__init__(vectorizer, n_threads, show_time, normalize)
-        self.directional = True
-        self.metric_type = 'v'
-
-    def generate(self, cut, cut_name, outputdir, gendatadir = None):
-        """
-        Generates the correlation function cross-correlation for a specific subsample.
-        
-        **Input:**
-        
-        	cut (numpy.ndarray): 3D array representing a subsample;
-        	
-        	cut_name (str): name of subsample;
-        	
-        	outputdir (str): output folder.
-        """
-        return super().generate(cut, cut_name, outputdir, method = 'cc')
-
-    def show(self, inputdir, step, cut_id):
-        """
-        Vizualize the correlation function cross-correlation for a specific subsample.
-        
-        **Input:**
-        
-        	inputdir (str): path to the folder containing generated metric data for subsamples;
-        	
-        	step (int): subsamples selection step;
-        
-        	cut_id (int: 0,..8): cut index.
-        """
-        x, vx, vy, vz = super().show(inputdir, step, cut_id)
-        fig, ax = plt.subplots(figsize=(10, 8))
-        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        ax.set_title(title)
-        ax.plot(x, vx, "r-", label='x')
-        ax.plot(x, vy, "b-", label='y')
-        ax.plot(x, vz, "g-", label='z')
-        ax.legend()
-        ax.set_xlabel("voxels")
-        ax.set_ylabel("CF value")
-        plt.show()
+        super().show(inputdir, step, cut_id, title, 'density')

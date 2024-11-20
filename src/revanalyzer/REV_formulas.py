@@ -16,24 +16,24 @@ def get_sREV_size(sigmas_n, threshold):
     
     **Input:**
          
-    	sigmas_n (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a normailzed std for this subcube;
+    	sigmas_n (dict, int[float]): dictionary, in which a key is a subsamples selection step, and a value is a normailzed standard deviation for this step;
     
     	threshold (float, <1): threshold to estimate sREV size.
     
     **Output:**
     
-    	sREV size (int): sREV size.
+    	sREV step (int): subsamples selection step, corresponding to sREV size.
     """
     sigmas_n = {key: val for key, val in sigmas_n.items() if val != 0.0}
-    sizes = list(sigmas_n.keys())
-    sizes.sort(reverse=True)
-    for i, l in enumerate(sizes):
+    steps = list(sigmas_n.keys())
+    steps.sort(reverse=True)
+    for i, l in enumerate(steps):
         if sigmas_n[l] > threshold:
             if i == 0:
                 return None
             else:
-                return sizes[i-1]
-    return sizes[-1]
+                return steps[i-1]
+    return steps[-1]
 
 
 def get_dREV_size_1_scalar(values, threshold):
@@ -42,51 +42,51 @@ def get_dREV_size_1_scalar(values, threshold):
     
     **Input:**
     
-    	values (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a difference of metric values this and neighbour subcuces;
+    	values (dict, int[float]): dictionary, in which a key is a subsamples selection step, and a value is a difference of metric mean values for a current and next steps;
       
-    	threshold (float, <1): threshold to estimate sREV size.
+    	threshold (float, <1): threshold to estimate dREV size.
     
     **Output:**
     
-    	dREV size (int): dREV size.
+    	dREV step (int): subsamples selection step, corresponding to dREV size.
     """
-    sizes = list(values.keys())
-    sizes.sort(reverse=True)
-    for i in range(len(sizes)-1):
-        if _delta(values[sizes[i]], values[sizes[i+1]]) > threshold:
+    steps = list(values.keys())
+    steps.sort(reverse=True)
+    for i in range(len(steps)-1):
+        if _delta(values[steps[i]], values[steps[i+1]]) > threshold:
             if i == 0:
                 return None
             else:
-                return sizes[i]
-    return sizes[-1]
+                return steps[i]
+    return steps[-1]
 
 
 def get_dREV_size_1_scalar_dimensional(values, threshold):
     """
     dREV size calculation for scalar metric defined i 'x', 'y' an 'z' directions using formula (dREV_size_1).
-    Returns maximal sREV size over all the directions.
+    Returns subsamples selection step, corresponding to maximal dREV size over all the directions.
     
     **Input:**
     
-    	values (dict, int[list(dtype=float)]): dictionary, in which a key is a subcube linear size, and a value are the differences of metric values for this and neighbour subcuces computed in all directions;
+    	values (dict, int[list(dtype=float)]): dictionary, in which a key is a a subsamples selection step, and a value is a list of the differences of metric mean values for a current and next steps computed in all directions;
     	  
-    	threshold (float, <1): threshold to estimate sREV size.
+    	threshold (float, <1): threshold to estimate dREV size.
     
     **Output:**
     
-    	dREV size (int): dREV size.
+    	dREV step(int): subsamples selection step, corresponding to dREV size.
     """
-    sizes = list(values.keys())
-    sizes.sort(reverse=True)
+    steps = list(values.keys())
+    steps.sort(reverse=True)
     result = []
     for k in range(3):
         label = 0
-        for i in range(len(sizes)-1):
-            if _delta(values[sizes[i]][k], values[sizes[i+1]][k]) > threshold:
+        for i in range(len(steps)-1):
+            if _delta(values[steps[i]][k], values[steps[i+1]][k]) > threshold:
                 if i == 0:
                     return None
                 else:
-                    result.append(sizes[i])
+                    result.append(steps[i])
                     label = 1
         if (label == 0):
             result.append(sizes[-1])
@@ -99,56 +99,56 @@ def get_dREV_size_2_scalar(values, threshold):
     
     **Input:**
     
-    	values (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a difference of metric values for this and neighbour subcuces.;
+    	values (dict, int[float]): dictionary, in which a key is a subsamples selection step, and a value is a difference of metric mean values for a current and next steps;
      
     	threshold (float, <1): threshold to estimate dREV size.
     
     **Output:**
     
-    	dREV size (int): dREV size.
+    	dREV step (int): subsamples selection step, corresponding to dREV size.
     """
-    sizes = list(values.keys())
-    sizes.sort(reverse=True)
-    value0 = values[sizes[0]]
-    for i in range(1, len(sizes)):
-        if _delta(values[sizes[i]], value0) > threshold:
+    steps = list(values.keys())
+    steps.sort(reverse=True)
+    value0 = values[steps[0]]
+    for i in range(1, len(steps)):
+        if _delta(values[steps[i]], value0) > threshold:
             if i == 1:
                 return None
             else:
-                return sizes[i-1]
-    return sizes[-1]
+                return steps[i-1]
+    return steps[-1]
 
 
 def get_dREV_size_2_scalar_dimensional(values, threshold):
     """
     dREV size calculation for scalar metric defined i 'x', 'y' an 'z' directions using formula (dREV_size_2).
-    Returns maximal sREV size over all the directions.
+    Returns subsamples selection step, corresponding to maximal dREV size over all the directions.
     
     **Input:**
     
-    	values (dict, int[list(dtype=float)]): dictionary, in which a key is a subcube linear size, and a value are the differences of metric values for this and neighbour subcuces computed in all directions;
+    	values (dict, int[list(dtype=float)]): dictionary, in which a key is a subsamples selection step, and a value is a list of the differences of metric mean values for a current and next steps computed in all directions;
     	  
     	threshold (float, <1): threshold to estimate dREV size.
     
     **Output:**
     
-    	dREV size (int): dREV size.
+    	dREV step (int): subsamples selection step, corresponding to dREV size.
     """
-    sizes = list(values.keys())
-    sizes.sort(reverse=True)
+    steps = list(values.keys())
+    steps.sort(reverse=True)
     result = []
     for k in range(3):
-        value0 = values[sizes[0]][k]
+        value0 = values[steps[0]][k]
         label = 0
-        for i in range(len(sizes)-1):
-            if _delta(values[sizes[i]][k], value0) > threshold:
+        for i in range(len(steps)-1):
+            if _delta(values[steps[i]][k], value0) > threshold:
                 if i == 0:
                     return None
                 else:
-                    result.append(sizes[i])
+                    result.append(steps[i])
                     label = 1
         if label == 0:
-            result.append(sizes[-1])
+            result.append(steps[-1])
     return max(result)
 
 
@@ -158,20 +158,20 @@ def get_dREV_size_1_vector(values, threshold):
     
     **Input:**
     
-    	values (dict, int[float]): dictionary, in which a key is a subcube linear size, and a value is a difference distances between vectors describing this and neighbour subcuces;
+    	values (dict, int[float]): dictionary, in which a key is a subsamples selection step, and a value is a mean distance between vectors at a current and next steps;
     	  
     	threshold (float, <1): threshold to estimate dREV size.
     
     **Output:**
     
-    	dREV size (int): dREV size.
+    	dREV size (int): subsamples selection step, corresponding to dREV size.
     """
-    sizes = list(values.keys())
-    sizes.sort(reverse=True)
-    for i in range(len(sizes)):
-        if values[sizes[i]] > threshold:
+    steps = list(values.keys())
+    steps.sort(reverse=True)
+    for i in range(len(steps)):
+        if values[steps[i]] > threshold:
             if i == 0:
                 return None
             else:
-                return sizes[i-1]
-    return sizes[-1]
+                return steps[i-1]
+    return steps[-1]

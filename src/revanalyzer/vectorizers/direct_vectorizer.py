@@ -23,9 +23,9 @@ class DirectVectorizer(BasicVectorizer):
         
         **Input:**
         
-        	v1 (list(dtype = float)): data for the first cubsample;
+        	v1 (list(dtype = float)): data for the first subsample;
         	
-        	v2 (list(dtype = float)): data for the second cubcube.
+        	v2 (list(dtype = float)): data for the second subsample.
         
         **Output:**
         

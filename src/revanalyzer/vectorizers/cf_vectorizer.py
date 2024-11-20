@@ -27,9 +27,9 @@ class CFVectorizer(BasicVectorizer):
         
         **Input:**
         
-        	v1 (list(dtype = float)): data for the first cubsample;
+        	v1 (list(dtype = float)): data for the first subsample;
         	
-        	v2 (list(dtype = float)): data for the second cubsample.
+        	v2 (list(dtype = float)): data for the second subsample.
         
         **Output:**
         
@@ -41,7 +41,7 @@ class CFVectorizer(BasicVectorizer):
         
         	If mode = 'max:
         
-        		(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subcubes, and the last one is a list of normalized distances between these vectors.        
+        		(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subsamples, and the last one is a list of normalized distances between these vectors.        
         """
         if not (self.mode == 'max' or self.mode == 'all'):
             raise ValueError("Mode should be 'max' or 'all'.")

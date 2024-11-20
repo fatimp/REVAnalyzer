@@ -32,7 +32,7 @@ class EulerDensityI(BasicMetric):
         
         **Input:**
         
-        	cut (numpy.ndarray): subsample;
+        	cut (numpy.ndarray): 3D array representing a subsample;
         	
         	cut_name (str): name of subsample;
         	

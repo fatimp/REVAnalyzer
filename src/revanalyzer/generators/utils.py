@@ -26,7 +26,7 @@ def _subcube_ids(n_steps, sREV_max_step):
 
 def make_cut(A, L, cut_size, idx):
     """
-    Making subcube cut for a given 3D array. 
+    Making subsample cut for a given 3D array. 
     
     **Input:**
      
@@ -34,9 +34,9 @@ def make_cut(A, L, cut_size, idx):
      
      	L (tuple (int, int, int)): linear image sizes in x, y and z directions;
      	 
-     	cut_size (list [int, int, int]): linear image sizes of subsamle;
+     	cut_size (list [int, int, int]): linear image sizes of subsample;
      	
-     	idx (int): index of subcube (0,1,..8). idx = 0 corresponds to the center subcube, idx = 1,..8 corrspond to the corner subcubes.
+     	idx (int): index of subcube (0,1,..8). idx = 0 corresponds to the center subsample, idx = 1,..8 corrspond to the corner subsamples.
     """
     if not len(A.shape) == 3:
         raise ValueError("Initial array should have 3 dimensions.")

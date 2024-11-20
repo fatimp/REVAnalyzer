@@ -53,7 +53,7 @@ class BasicPDMetric(BasicMetric):
             print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))        
 
-    def show(self, inputdir, step, cut_id):
+    def show(self, inputdir, step, cut_id, title):
         """
         Transforms generated PD data to the convenient fomat for the following visualization in subclasses.
         
@@ -63,18 +63,12 @@ class BasicPDMetric(BasicMetric):
                 	
         	step (int): subsamples selection step;
         	
-        	cut_id (int: 0,..8): cut index.
-        
-        **Output:**
-        
-        	(list(dtype = float), list(dtype = float)) -  a tuple, in which the first and the second elements are the vectors of birth and death values, respectively.
+        	cut_id (int: 0,..8): cut index;
+            
+            title (str): image title.
         """          
         data = self.read(inputdir, step, cut_id)
-        b = [elem[0] for elem in data]
-        d = [elem[1] for elem in data]
-        plt.rcParams.update({'font.size': 16})
-        plt.rcParams['figure.dpi'] = 300
-        return b, d
+        _show_pd(data, title)
 
     def vectorize(self, v1, v2):
         """
@@ -136,10 +130,8 @@ class PD0(BasicPDMetric):
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, cut_step, cut_id)
         title = 'PD0' + ",  step = " + str(cut_step) + ", id = " + str(cut_id)
-        _show_pd(b, d, title)
-
+        super().show(inputdir, cut_step, cut_id, title)
 
 class PD1(BasicPDMetric):
     """
@@ -184,9 +176,8 @@ class PD1(BasicPDMetric):
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, cut_step, cut_id)
         title = 'PD1' + ",  step = " + str(cut_step) + ", id = " + str(cut_id)
-        _show_pd(b, d, title)
+        super().show(inputdir, cut_step, cut_id, title)
 
 
 class PD2(BasicPDMetric):
@@ -232,12 +223,15 @@ class PD2(BasicPDMetric):
         	
         	cut_id (int: 0,..8): cut index.
         """  
-        b, d = super().show(inputdir, cut_step, cut_id)
         title = 'PD2' + ",  step = " + str(cut_step) + ", id = " + str(cut_id)
-        _show_pd(b, d, title)
+        super().show(inputdir, cut_step, cut_id, title)
 
 
-def _show_pd(b, d, title):
+def _show_pd(data, title):
+    b = [elem[0] for elem in data]
+    d = [elem[1] for elem in data]
+    plt.rcParams.update({'font.size': 16})
+    plt.rcParams['figure.dpi'] = 300
     fig, ax = plt.subplots()
     plt.title(title)
     plt.plot(b, d, "ro")

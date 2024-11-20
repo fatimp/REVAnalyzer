@@ -12,7 +12,7 @@ from .utils import _subcube_ids, make_cut
 
 def generate_PNM(image, size, n_steps, sREV_max_step, outputdir, n_threads = 1, resolution=1., show_time=False):
     """
-    Running PNM extractor for all the selected subcubes.
+    Running PNM extractor for all the selected subsamples.
     
     **Input:**
 
@@ -48,18 +48,15 @@ def generate_PNM(image, size, n_steps, sREV_max_step, outputdir, n_threads = 1, 
             cuts.append(make_cut(image, size, cut_size, idx))
     data = zip(ids, cuts)
     pool = multiprocessing.Pool(processes=n_threads)
-    results = pool.map(partial(_pnm_for_subcube, n_steps=n_steps, cut_sizes = cut_sizes, outputdir = outputdir, resolution = resolution, show_time = show_time), data)
-    #for elem in ids:
-    #    pool.apply_async(_pnm_for_subcube, args = (elem, n_steps, image, cut_sizes, outputdir, resolution, show_time))
+    results = pool.map(partial(_pnm_for_subsample, outputdir = outputdir, resolution = resolution, show_time = show_time), data)
     pool.close()
     pool.join()
     if show_time:
         print("---total PN data generation time is %s seconds ---" % (time.time() - start_time))
 
-#def get_pn_csv(n_threads, cut, cut_name, outputdir, resolution, show_time):
 def get_pn_csv(cut, cut_name, outputdir, resolution, show_time):
     """
-    Calculation of PNM statistics for a given subcube and writing the result to csv file.
+    Calculation of PNM statistics for a given subsample and writing the result to csv file.
     
     **Input:**
     
@@ -78,7 +75,6 @@ def get_pn_csv(cut, cut_name, outputdir, resolution, show_time):
     start_time = time.time()
     cut = cut.astype(bool)
     cut = ~cut
-    #parallelization = {'cores':n_threads}
     parallelization = {'cores':1}
     snow_output = ps.networks.snow2(cut, voxel_size = resolution, parallelization = parallelization)
     pn = op.io.network_from_porespy(snow_output.network)
@@ -88,24 +84,9 @@ def get_pn_csv(cut, cut_name, outputdir, resolution, show_time):
         print(cut_name)
         print("---PNM extractor run time is %s seconds ---" % (time.time() - start_time))
 
-"""
-def _pnm_for_subcube(n_threads, ids, n_steps, image, cut_sizes, outputdir, resolution, show_time):
-    l = ids[0]
-    idx = ids[1]
-    cut_name = 'cut'+str(l)+'_'+str(idx)
-    size = cut_sizes[-1]
-    if l  == n_steps:
-        get_pn_csv(n_threads, image, cut_name, outputdir, resolution, show_time)
-    else:
-        cut_size = cut_sizes[l-1]
-        cut = make_cut(image, size, cut_size, idx)
-        get_pn_csv(n_threads, cut, cut_name, outputdir, resolution, show_time)
-"""
-
-def _pnm_for_subcube(data, n_steps, cut_sizes, outputdir, resolution, show_time):
+def _pnm_for_subsample(data, outputdir, resolution, show_time):
     l = data[0][0]
     idx = data[0][1]
     cut = data[1]
     cut_name = 'cut'+str(l)+'_'+str(idx)
-    size = cut_sizes[-1]
     get_pn_csv(cut, cut_name, outputdir, resolution, show_time)
