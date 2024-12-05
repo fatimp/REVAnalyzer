@@ -16,6 +16,7 @@ revanalyzer.metrics.permeability.Permeability
    .. autosummary::
       :nosignatures:
    
+      ~Permeability.generate
       ~Permeability.read
    
    

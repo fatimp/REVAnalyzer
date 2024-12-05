@@ -16,6 +16,7 @@ revanalyzer.generators.pnm\_generator
       :nosignatures:
    
       generate_PNM
+      get_pn_csv
    
    
 

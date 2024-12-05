@@ -16,6 +16,7 @@ revanalyzer.metrics.pd.BasicPDMetric
    .. autosummary::
       :nosignatures:
    
+      ~BasicPDMetric.generate
       ~BasicPDMetric.read
       ~BasicPDMetric.show
       ~BasicPDMetric.vectorize

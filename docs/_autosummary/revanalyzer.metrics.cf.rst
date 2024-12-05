@@ -22,9 +22,12 @@ revanalyzer.metrics.cf
    
       BasicCFMetric
       C2
+      ChordLength
       L2
+      PoreSize
       S2
-      SS2
+      SS
+      SV
    
    
 

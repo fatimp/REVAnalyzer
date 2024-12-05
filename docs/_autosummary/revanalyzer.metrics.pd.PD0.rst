@@ -16,6 +16,7 @@ revanalyzer.metrics.pd.PD0
    .. autosummary::
       :nosignatures:
    
+      ~PD0.generate
       ~PD0.read
       ~PD0.show
       ~PD0.vectorize

@@ -1,7 +1,0 @@
-REV_analyzer
-===========
-
-.. automodule:: revanalyzer.REV_analyzer
-   :members:
-
-

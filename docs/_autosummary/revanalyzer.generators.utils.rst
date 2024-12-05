@@ -15,7 +15,7 @@ revanalyzer.generators.utils
       :toctree:
       :nosignatures:
    
-      make_cuts
+      make_cut
    
    
 

@@ -5,14 +5,9 @@ Structure and pipeline
 
 The pipeline of REVAnalyzer is schematically presented at the figure below:
 
-.. image:: images/pipeline.png
+.. image:: images/fig_framework_doc.png
     :align: center
     
-One can perform REV analysis for 19 different metrics. The summary of their properties is presented at the table below:
+Pipeline of REV analysis for scalar metric :math:`S` (a) and vectorized metric :math:`D` (b).
 
-.. image:: images/metrics.png
-    :align: center
-    
-More detailed description of metrics which can be used in REV analysis is presented in the section :doc:`Metrics. <../metrics>`
-
-
+Legend for notations and formulas is available in section :doc:`Theoretical background <../theory>`. 

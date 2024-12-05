@@ -17,6 +17,7 @@ revanalyzer.REV\_analyzer.REVAnalyzer
       :nosignatures:
    
       ~REVAnalyzer.analyze
+      ~REVAnalyzer.analyze_stationarity
       ~REVAnalyzer.generate
       ~REVAnalyzer.read
       ~REVAnalyzer.show
