@@ -1,4 +1,4 @@
-REVAnalyzer is an open source package for representativity analysis of binary images. It aims at representativity analysis for porosity, permeability, Euler density, pore-network characteristics, correlation functions and persistence diagrams. Both scalar and vector metrics can be considered. Using REVAnalyzer library one can estimate determenistic and statistical representative elementary volumes (dREV and sREV) for these metrics. Stationarity analysis and comparison of different images using vector metrics are also possible.
+REVAnalyzer is an open source package for representativity analysis of binary images. It aims at representativity analysis for porosity, permeability, Euler density, pore-network characteristics, correlation functions and persistence diagrams. Both scalar and vector metrics can be considered. Using REVAnalyzer library, one can estimate determenistic and statistical representative elementary volumes (dREV and sREV) for these metrics. Stationarity analysis and comparison of different images using vector metrics are also possible.
 
 =================================================================================
 
@@ -13,7 +13,6 @@ and EulerCharacteristic.jl should be installed.
 
 Documentation
 =============
-To see the documentation open /docs/html/index.html
 To build the documentation read /docs/README.md
 
 Authors
