@@ -5,19 +5,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Metrics &mdash; REVAnalyzer 0.1.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
+    <script src="static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+        <script src="static/doctools.js"></script>
+        <script src="static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="_static/js/theme.js"></script>
+    <script src="static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Code Documentation" href="REVAnalyzer.html" />
@@ -87,22 +87,22 @@
 <div class="toctree-wrapper compound">
 </div>
 <p>One can perform REV analysis for 22 metrics, implemented using corresponding classes. The summary of their properties is presented at the table below:</p>
-<img alt="_images/fig_classes.png" class="align-center" src="_images/fig_classes.png" />
+<img alt="images/fig_classes.png" class="align-center" src="images/fig_classes.png" />
 <p>Let us briefly desribe these metrics.</p>
 <section id="porosity">
 <h2>Porosity<a class="headerlink" href="#porosity" title="Permalink to this heading"></a></h2>
 <p>Porosity, the scalar metric, is computed internally by counting the number of pore voxels with subsequent normalization over the total number of voxels in the considered volume.</p>
-<p>This metric is implemented using <a class="reference internal" href="_autosummary/revanalyzer.metrics.porosity.Porosity.html"><span class="doc">class Porosity.</span></a></p>
+<p>This metric is implemented using <a class="reference internal" href="autosummary/revanalyzer.metrics.porosity.Porosity.html"><span class="doc">class Porosity.</span></a></p>
 </section>
 <section id="permeability">
 <h2>Permeability<a class="headerlink" href="#permeability" title="Permalink to this heading"></a></h2>
-<p>In order to compute permeability (<a class="reference internal" href="_autosummary/revanalyzer.metrics.permeability.Permeability.html"><span class="doc">class Permeability</span></a>), we use the Python wrapper of C++ FDMSS solver,
+<p>In order to compute permeability (<a class="reference internal" href="autosummary/revanalyzer.metrics.permeability.Permeability.html"><span class="doc">class Permeability</span></a>), we use the Python wrapper of C++ FDMSS solver,
 the external solver of Stokes’s equation with 4th order spatial accuracy scheme (Gerke, K. M., Vasilyev, R. V., Khirevich, S., Collins, D., Karsanina, M. V., Sizonenko, T. O., … &amp; Mallants, D. (2018). Finite-difference method Stokes solver (FDMSS) for 3D pore geometries: Software development, validation and case studies. Computers &amp; geosciences, 114, 41-58).</p>
 </section>
 <section id="euler-density">
 <h2>Euler density<a class="headerlink" href="#euler-density" title="Permalink to this heading"></a></h2>
 <p>Euler density, the scalar metric, describing the topological properties of 3D image, is computed by the normalization of Euler number <span class="math notranslate nohighlight">\(\chi\)</span>  over the total number of voxels in the considered volume.
-One can use its correct (<a class="reference internal" href="_autosummary/revanalyzer.metrics.euler_density_i.EulerDensityI.html"><span class="doc">class EulerDensityI</span></a>) and approximate (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.EulerDensityII.html"><span class="doc">class EulerDensityII</span></a>) values.</p>
+One can use its correct (<a class="reference internal" href="autosummary/revanalyzer.metrics.euler_density_i.EulerDensityI.html"><span class="doc">class EulerDensityI</span></a>) and approximate (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.EulerDensityII.html"><span class="doc">class EulerDensityII</span></a>) values.</p>
 <p>The correct Euler number for a given voxel domain can be calculated using the following expression (Vogel, H. J., Weller, U., &amp; Schlüter, S. (2010). Quantification of soil structure based on Minkowski functions. Computers &amp; Geosciences, 36(10), 1236-1245):</p>
 <div class="math notranslate nohighlight">
 \[\chi = \# vertices - \# edges + \# faces - \# volumes,\]</div>
@@ -119,35 +119,35 @@ Coonectivity (also called coordination number) for a single pore is defined as t
 <p>Here, we consider 6 scalar PNM-based metrics:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>pore number (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.PoreNumber.html"><span class="doc">class PoreNumber</span></a>),</p></li>
-<li><p>throat number (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.ThroatNumber.html"><span class="doc">class ThroatNumber</span></a>),</p></li>
-<li><p>mean pore radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.MeanPoreRadius.html"><span class="doc">class MeanPoreRadius</span></a>),</p></li>
-<li><p>mean throat radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.MeanThroatRadius.html"><span class="doc">class MeanThroatRadius</span></a>),</p></li>
-<li><p>mean connectivity (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.MeanConnectivity.html"><span class="doc">class MeanConnectivity</span></a>),</p></li>
-<li><p>approximate Euler density (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.EulerDensityII.html"><span class="doc">class EulerDensityII</span></a>, also see the previous subsection).</p></li>
+<li><p>pore number (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.PoreNumber.html"><span class="doc">class PoreNumber</span></a>),</p></li>
+<li><p>throat number (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.ThroatNumber.html"><span class="doc">class ThroatNumber</span></a>),</p></li>
+<li><p>mean pore radius (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.MeanPoreRadius.html"><span class="doc">class MeanPoreRadius</span></a>),</p></li>
+<li><p>mean throat radius (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.MeanThroatRadius.html"><span class="doc">class MeanThroatRadius</span></a>),</p></li>
+<li><p>mean connectivity (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.MeanConnectivity.html"><span class="doc">class MeanConnectivity</span></a>),</p></li>
+<li><p>approximate Euler density (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.EulerDensityII.html"><span class="doc">class EulerDensityII</span></a>, also see the previous subsection).</p></li>
 </ul>
 </div></blockquote>
 <p>We also consider 3 vector PNM-based metrics:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>pore radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.PoreRadius.html"><span class="doc">class PoreRadius</span></a>),</p></li>
-<li><p>throat radius (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.ThroatRadius.html"><span class="doc">class ThroatRadius</span></a>),</p></li>
-<li><p>connectivity (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pnm.Connectivity.html"><span class="doc">class Connectivity</span></a>).</p></li>
+<li><p>pore radius (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.PoreRadius.html"><span class="doc">class PoreRadius</span></a>),</p></li>
+<li><p>throat radius (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.ThroatRadius.html"><span class="doc">class ThroatRadius</span></a>),</p></li>
+<li><p>connectivity (<a class="reference internal" href="autosummary/revanalyzer.metrics.pnm.Connectivity.html"><span class="doc">class Connectivity</span></a>).</p></li>
 </ul>
 </div></blockquote>
-<p>Pore, throat radii and connectivities can be presented as 1d histograms (see the figure below). These histograms can be vectorized using histogram vectorizer (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.hist_vectorizer.HistVectorizer.html"><span class="doc">class HistVectorizer</span></a>).</p>
-<img alt="_images/fig_pnm.png" class="align-center" src="_images/fig_pnm.png" />
+<p>Pore, throat radii and connectivities can be presented as 1d histograms (see the figure below). These histograms can be vectorized using histogram vectorizer (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.hist_vectorizer.HistVectorizer.html"><span class="doc">class HistVectorizer</span></a>).</p>
+<img alt="images/fig_pnm.png" class="align-center" src="images/fig_pnm.png" />
 </section>
 <section id="correlation-functions">
 <h2>Correlation functions<a class="headerlink" href="#correlation-functions" title="Permalink to this heading"></a></h2>
 <p>We consider 5 types of directional correlation functions (CFs):</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>two-point probability function <span class="math notranslate nohighlight">\(S_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.S2.html"><span class="doc">class S2</span></a>),</p></li>
-<li><p>lineal function <span class="math notranslate nohighlight">\(L_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.L2.html"><span class="doc">class L2</span></a>),</p></li>
-<li><p>cluster function <span class="math notranslate nohighlight">\(C_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.C2.html"><span class="doc">class C2</span></a>),</p></li>
-<li><p>surface-surface function <span class="math notranslate nohighlight">\(F_{SS}(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.SS.html"><span class="doc">class SS</span></a>),</p></li>
-<li><p>surface-void function <span class="math notranslate nohighlight">\(F_{SV}(\boldsymbol{r})\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.SV.html"><span class="doc">class SV</span></a>).</p></li>
+<li><p>two-point probability function <span class="math notranslate nohighlight">\(S_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.S2.html"><span class="doc">class S2</span></a>),</p></li>
+<li><p>lineal function <span class="math notranslate nohighlight">\(L_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.L2.html"><span class="doc">class L2</span></a>),</p></li>
+<li><p>cluster function <span class="math notranslate nohighlight">\(C_2(\boldsymbol{r})\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.C2.html"><span class="doc">class C2</span></a>),</p></li>
+<li><p>surface-surface function <span class="math notranslate nohighlight">\(F_{SS}(\boldsymbol{r})\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.SS.html"><span class="doc">class SS</span></a>),</p></li>
+<li><p>surface-void function <span class="math notranslate nohighlight">\(F_{SV}(\boldsymbol{r})\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.SV.html"><span class="doc">class SV</span></a>).</p></li>
 </ul>
 </div></blockquote>
 <p>Each correlation function measures a probability of some event for a given correlation length <span class="math notranslate nohighlight">\(\boldsymbol{r}\)</span>. Specifically, <span class="math notranslate nohighlight">\(S_2(\boldsymbol{r})\)</span> measures the probability that both ends of the <span class="math notranslate nohighlight">\(\boldsymbol{r}\)</span> line segment lie within pore phase,
@@ -157,16 +157,16 @@ These CFs ara computed along three major orthogonal directions <span class="math
 <p>We also consider two types of probability density CFs:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>chord length function <span class="math notranslate nohighlight">\(p(r)\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.ChordLength.html"><span class="doc">class ChordLength</span></a>),</p></li>
-<li><p>pore size function <span class="math notranslate nohighlight">\(P(r)\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.cf.PoreSize.html"><span class="doc">class PoreSize</span></a>),</p></li>
+<li><p>chord length function <span class="math notranslate nohighlight">\(p(r)\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.ChordLength.html"><span class="doc">class ChordLength</span></a>),</p></li>
+<li><p>pore size function <span class="math notranslate nohighlight">\(P(r)\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.cf.PoreSize.html"><span class="doc">class PoreSize</span></a>),</p></li>
 </ul>
 </div></blockquote>
 <p>CF <span class="math notranslate nohighlight">\(p(r)\)</span> measures the probability of finding a chord of length between <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(r+dr\)</span> in pore phase. Chord is a line segment which lies entirely in the same phase and touches the interface with its ends. CF <span class="math notranslate nohighlight">\(P(r)\)</span> measures the probability that a randomly chosen point in a set of points belonging to the void phase lies at a distance between <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(r+dr\)</span> from the nearest point on the pore-solid interface.</p>
 <p>Any additional details on different CFs can be found in comprehensive Torquato’s book (Torquato S. (2002) Random Heterogeneous Materials: Microstructure and Macroscopic Properties (SpringerVerlag, New York).</p>
 <p>Graphical explanation in addition to definitions above is presented in the figure below.</p>
-<img alt="_images/fig_cf1.png" class="align-center" src="_images/fig_cf1.png" />
+<img alt="images/fig_cf1.png" class="align-center" src="images/fig_cf1.png" />
 <p>All CFs are computed using julia library CorrelationFunctions.jl (Postnicov, V., Samarin, A., Karsanina, M. V., Gravey, M., Khlyupin, A., &amp; Gerke, K. M. (2024). Evaluation of classical correlation functions from 2/3D images on CPU and GPU architectures: Introducing CorrelationFunctions. jl. Computer Physics Communications, 299, 109134).</p>
-<p>The directional and probability density CFs are vectorized using CF vectorizer (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.cf_vectorizer.CFVectorizer.html"><span class="doc">class CFVectorizer</span></a>) and Direct Vectorizer (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.direct_vectorizer.DirectVectorizer.html"><span class="doc">class DirectVectorizer</span></a>), respectively.</p>
+<p>The directional and probability density CFs are vectorized using CF vectorizer (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.cf_vectorizer.CFVectorizer.html"><span class="doc">class CFVectorizer</span></a>) and Direct Vectorizer (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.direct_vectorizer.DirectVectorizer.html"><span class="doc">class DirectVectorizer</span></a>), respectively.</p>
 </section>
 <section id="persistence-diagrams">
 <h2>Persistence diagrams<a class="headerlink" href="#persistence-diagrams" title="Permalink to this heading"></a></h2>
@@ -174,22 +174,22 @@ These CFs ara computed along three major orthogonal directions <span class="math
 The total set of persistent pairs located in 2D coordinate plane form a persistence diagram <span class="math notranslate nohighlight">\(\mathrm{PD}_k\)</span>. We condider 3 PD-based vector metrics:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_0\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pd.PD0.html"><span class="doc">class PD0</span></a>),</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_1\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pd.PD1.html"><span class="doc">class PD1</span></a>),</p></li>
-<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_2\)</span> (<a class="reference internal" href="_autosummary/revanalyzer.metrics.pd.PD2.html"><span class="doc">class PD2</span></a>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_0\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.pd.PD0.html"><span class="doc">class PD0</span></a>),</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_1\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.pd.PD1.html"><span class="doc">class PD1</span></a>),</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathrm{PD}_2\)</span> (<a class="reference internal" href="autosummary/revanalyzer.metrics.pd.PD2.html"><span class="doc">class PD2</span></a>).</p></li>
 </ul>
 </div></blockquote>
 <p><span class="math notranslate nohighlight">\(\mathrm{PD}_0\)</span> represents the births and deaths of connected components, <span class="math notranslate nohighlight">\(\mathrm{PD}_1\)</span> — the births and deaths of 1-cycles (rings), and <span class="math notranslate nohighlight">\(\mathrm{PD}_2\)</span> — the births and deaths of 2-cycles (cavities).
 The example of computed PDs are presented at the figure below.</p>
-<img alt="_images/fig_pd.png" class="align-center" src="_images/fig_pd.png" />
+<img alt="images/fig_pd.png" class="align-center" src="images/fig_pd.png" />
 <p>In our library PDs are generated using the python wrapper of C++ library Diamorse (<a class="reference external" href="https://github.com/AppliedMathematicsANU/diamorse">https://github.com/AppliedMathematicsANU/diamorse</a>).</p>
 <p>The generated PD data can be vectorized using 4 different vectorization methods (vectorizers):</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>simple binning (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.simple_binning_vectorizer.SimpleBinningVectorizer.html"><span class="doc">class SimpleBinningVectorizer</span></a>),</p></li>
-<li><p>persistence image (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.persistence_image_vectorizer.PersistenceImageVectorizer.html"><span class="doc">class PersistenceImageVectorizer</span></a>),</p></li>
-<li><p>landscape (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.landscape_vectorizer.html"><span class="doc">class LandscapeVectorizer</span></a>),</p></li>
-<li><p>silhouette (<a class="reference internal" href="_autosummary/revanalyzer.vectorizers.silhouette_vectorizer.SilhouetteVectorizer.html"><span class="doc">class SilhouetteVectorizer</span></a>).</p></li>
+<li><p>simple binning (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.simple_binning_vectorizer.SimpleBinningVectorizer.html"><span class="doc">class SimpleBinningVectorizer</span></a>),</p></li>
+<li><p>persistence image (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.persistence_image_vectorizer.PersistenceImageVectorizer.html"><span class="doc">class PersistenceImageVectorizer</span></a>),</p></li>
+<li><p>landscape (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.landscape_vectorizer.html"><span class="doc">class LandscapeVectorizer</span></a>),</p></li>
+<li><p>silhouette (<a class="reference internal" href="autosummary/revanalyzer.vectorizers.silhouette_vectorizer.SilhouetteVectorizer.html"><span class="doc">class SilhouetteVectorizer</span></a>).</p></li>
 </ul>
 </div></blockquote>
 <p>For the details of these vectorization methods see Supplementary Materials in (Zubov, A. S., Khlyupin, A. N., Karsanina, M. V., &amp; Gerke, K. M. (2024). In search for representative elementary volume (REV) within heterogeneous materials: A survey of scalar and vector metrics using porous media as an example. Advances in Water Resources, 192, 104762).</p>

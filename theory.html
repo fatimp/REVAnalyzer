@@ -5,19 +5,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Theoretical background &mdash; REVAnalyzer 0.1.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
+    <script src="static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="static/jquery.js"></script>
+        <script src="static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+        <script src="static/doctools.js"></script>
+        <script src="static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="_static/js/theme.js"></script>
+    <script src="static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Structure and pipeline" href="structure.html" />
@@ -112,7 +112,7 @@ Two criteria can be applied for the estimation of such a convergence:</p>
 </section>
 <section id="subsamples-selection">
 <h2>Subsamples selection.<a class="headerlink" href="#subsamples-selection" title="Permalink to this heading"></a></h2>
-<img alt="_images/fig_subsamples.png" class="align-center" src="_images/fig_subsamples.png" />
+<img alt="images/fig_subsamples.png" class="align-center" src="images/fig_subsamples.png" />
 <p>At <em>i</em>-th selection step subsamples for REV analysis SC <span class="math notranslate nohighlight">\(_k(i)\)</span> are taken as it is shawn in the figure above. Total number of selection steps <span class="math notranslate nohighlight">\(N\)</span> is input parameter for computations.</p>
 <p>The reliable sREV analysis is possible only if subsamples do not overlap or their overlap is limited. Therefore, we introduce the <span class="math notranslate nohighlight">\(N_{sREV}\)</span> parameter. For <span class="math notranslate nohighlight">\(i \le N_{sREV}\)</span>, we cut from the considered sample all 9 subsamples SC <span class="math notranslate nohighlight">\(_k(i)\)</span>. For <span class="math notranslate nohighlight">\(i &gt; N_{sREV}\)</span>, only the center subsamples SC <span class="math notranslate nohighlight">\(_0(i)\)</span> are cut.</p>
 </section>
@@ -137,7 +137,7 @@ The values, obtained using Eqs. (2) and (3), are assigned, respectively, to the 
 <p>One can apply the methods for REV size estimation for scalar metric <span class="math notranslate nohighlight">\(S\)</span> described above to the vector metric <span class="math notranslate nohighlight">\(\boldsymbol{V}\)</span>, using some adjustments.
 Let some descriptor <span class="math notranslate nohighlight">\(D_i\)</span> defined at <span class="math notranslate nohighlight">\(i\)</span>-th subcube is vectorized into the vector <span class="math notranslate nohighlight">\(\boldsymbol{V_i}(N_{\textrm{bins}}(i), s(i), r(i))\)</span>,  where number of bins <span class="math notranslate nohighlight">\(N_{\textrm{bins}}(i)\)</span>, bin size <span class="math notranslate nohighlight">\(s(i)\)</span> and range <span class="math notranslate nohighlight">\(r(i)\)</span> are vectorization parameters. We fix bin size equal for all the subcubes: <span class="math notranslate nohighlight">\(s(i)\)</span> = const, and require that vector <span class="math notranslate nohighlight">\(\boldsymbol{V_{i+1}}\)</span> obtained from <span class="math notranslate nohighlight">\(D\)</span> at the next increment step should have the same dimension (equal to number of bins) and range, as <span class="math notranslate nohighlight">\(\boldsymbol{V_i}\)</span>.
 If ranges <span class="math notranslate nohighlight">\(r(i)\)</span> and <span class="math notranslate nohighlight">\(r(i+1)\)</span> coincide, this condition is satisfied automatically, in opposite case, vector <span class="math notranslate nohighlight">\(\boldsymbol{V_{i+1}}\)</span> is modified to the vector <span class="math notranslate nohighlight">\(\boldsymbol{V*_{i+1}}\)</span> as the following: bins, present in <span class="math notranslate nohighlight">\(r(i)\)</span>  but absent in <span class="math notranslate nohighlight">\(r(i+1)\)</span> are added to <span class="math notranslate nohighlight">\(\boldsymbol{V_{i+1}}\)</span> and filled by zeroes, bins absent in <span class="math notranslate nohighlight">\(r(i)\)</span>  but present in <span class="math notranslate nohighlight">\(r(i+1)\)</span> are removed from <span class="math notranslate nohighlight">\(\boldsymbol{V_{i+1}}\)</span> (see figure below).</p>
-<img alt="_images/fig_scheme.png" class="align-center" src="_images/fig_scheme.png" />
+<img alt="images/fig_scheme.png" class="align-center" src="images/fig_scheme.png" />
 <p>At each selection step <span class="math notranslate nohighlight">\(i\)</span> we take subsamples SC <span class="math notranslate nohighlight">\(_k(i)\)</span> and SC <span class="math notranslate nohighlight">\(_l(i+1)\)</span> and compute the normalized distance between the vectors <span class="math notranslate nohighlight">\(\boldsymbol{V_{l(i+1)}}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{V_{ki}}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\delta(i,k,l) = 2 \frac{||\boldsymbol{V^*_{l(i+1)}} - \boldsymbol{V_{ki}||}}{||\boldsymbol{V^*_{l(i+1)}}||+||\boldsymbol{V_{ki}}||}. \quad (4)\]</div>
