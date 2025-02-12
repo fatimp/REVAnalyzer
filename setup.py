@@ -18,11 +18,11 @@ requirements = [r.strip() for r in requirements]
 setup(
     name='revanalyzer',
     version='0.1.0',
-    description='Package for representativity analysis of binary images',
+    description='Package for representativity analysis of 3D binary images',
     long_description=readme,
     author='Andrey Zubov',
     author_email='zubov.an.se@gmail.com',
-    #url='https://github.com/kennethreitz/samplemod',
+    url='https://github.com/fatimp/REVAnalyzer',
     license=license,
     install_requires=requirements,
     packages=find_packages(where='src'),
