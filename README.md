@@ -1,8 +1,8 @@
-# REVAnalyzer
+# PARSE: Physical Attribute Representativity and Stationarity Evaluator
 
 ## General information
 
-REVAnalyzer is an open source package for representativity analysis of 3D binary images. It aims at representativity analysis for different scalar and vector metrics. Using REVAnalyzer library, one can estimate determenistic and statistical representative elementary volumes (dREV and sREV) for these metrics. Stationarity analysis and comparison of different images using vector metrics are also possible.
+PARSE is an open source package for representativity analysis of 3D binary images. It aims at representativity analysis for different scalar and vector metrics. Using PARSE library, one can estimate determenistic and statistical representative elementary volumes (dREV and sREV) for these metrics. Stationarity analysis and comparison of different images using vector metrics are also possible.
 
 Currently, we provide the following metrics for REV analysis:
 - Porosity.
@@ -26,7 +26,7 @@ To install the latest PyPI release as a library run
 python3 -m pip install revanalyzer
 ```
 
-or you can clone this repository and run from REVAnalyzer folder
+or you can clone this repository and run from local folder
 
 ```
 python3 -m pip install .
@@ -41,7 +41,7 @@ To build the documentation locally clone this repository, then read /docs/README
 
 ## Tutorials
 
-Numerous Jupiter notebooks with examples which show the functionality of REVAnalyzer library are available here:
+Numerous Jupiter notebooks with examples which show the functionality of PARSE library are available here:
 -  [REV analysis for porosity](https://github.com/fatimp/REVAnalyzer/blob/main/examples/REV_porosity.ipynb)
 -  [REV analysis for permeability](https://github.com/fatimp/REVAnalyzer/blob/main/examples/REV_permeability.ipynb)
 -  [REV analysis for Euler density](https://github.com/fatimp/REVAnalyzer/blob/main/examples/REV_Euler.ipynb)

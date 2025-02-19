@@ -3,7 +3,7 @@
 Structure and pipeline
 ======================
 
-The pipeline of REVAnalyzer is schematically presented at the figure below:
+The pipeline of PARSE is schematically presented at the figure below:
 
 .. image:: images/fig_framework_doc.png
     :align: center

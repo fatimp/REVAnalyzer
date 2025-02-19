@@ -21,4 +21,4 @@ and EulerCharacteristic.jl should be installed.
 OS compatibility
 ----------------
 
-REVAnalyzer is devepoled for Linux, we do not guarantee the correct operating of this library in other OS.
+PARSE is devepoled for Linux, we do not guarantee the correct operating of this library in other OS.

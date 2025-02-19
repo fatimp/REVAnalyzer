@@ -48,7 +48,7 @@ For the estimation of sREV size for scalar metric :math:`S`, we first calculate 
 
     m: \forall i \ge m, \quad \sigma_{norm}(i) = \sigma_i/ \bar{S_i} < \varepsilon_{sREV},  \quad  (1)
 
-where :math:`\varepsilon_{sREV}` is sREV threshold. The value, obtained using Eq. (1), is assigned to the attribute sREV_size_1 of an REVAnalyzer object in the case of scalar metric REV analysis.
+where :math:`\varepsilon_{sREV}` is sREV threshold. The value, obtained using Eq. (1), is assigned to the attribute sREV_size_1 of an PARSE object in the case of scalar metric REV analysis.
 
 For the estimation of dREV size we use two different formulas:
 
@@ -63,7 +63,7 @@ and
     m: \forall i \ge m,  \quad \delta_2(i) = |2(\bar{S_i} - S_0)/(\bar{S_i} + S_0)| < \varepsilon_{dREV}, \quad (3)
 
 where :math:`S_0` is the metirc value for the uncut analyzed image and :math:`\varepsilon_{dREV}` is dREV threshold.
-The values, obtained using Eqs. (2) and (3), are assigned, respectively, to the attributes dREV_size_1 and dREV_size_2 of an REVAnalyzer object in the case of scalar metric REV analysis. 
+The values, obtained using Eqs. (2) and (3), are assigned, respectively, to the attributes dREV_size_1 and dREV_size_2 of an PARSE object in the case of scalar metric REV analysis. 
 
 REV size estimation. Vector metric. 
 -----------------------------------
@@ -81,7 +81,7 @@ At each selection step :math:`i` we take subsamples SC :math:`_k(i)` and SC :mat
 
     \delta(i,k,l) = 2 \frac{||\boldsymbol{V^*_{l(i+1)}} - \boldsymbol{V_{ki}||}}{||\boldsymbol{V^*_{l(i+1)}}||+||\boldsymbol{V_{ki}}||}. \quad (4)
 
-Order of the vector norm :math:`||\boldsymbol{V}||` is the input parameter of any vectorizer used in REVAnalyzer library.
+Order of the vector norm :math:`||\boldsymbol{V}||` is the input parameter of any vectorizer used in PARSE library.
 
 For the estimation of dREV and sREV sizes for vector metric, fist we calculate mean values :math:`\bar{\delta}(i)` over all pairs of indices (:math:`k`, :math:`l`), its standard deviation :math:`\sigma_i` and normalized standard deviation  :math:`\sigma_{norm}(i) = \sigma_i/ \bar{\delta}(i)`.
 
@@ -91,7 +91,7 @@ Then for the estimation of dREV size we use the following formula:
 
     m: \forall i \ge m, \quad \bar{\delta}(i) < \varepsilon_{dREV}, \quad (5)
     
-where :math:`\varepsilon_{dREV}` is dREV threshold. The value, obtained using Eq. (5), is assigned to the attribute dREV_size_1 of an REVAnalyzer object in the case of vector metric REV analysis.
+where :math:`\varepsilon_{dREV}` is dREV threshold. The value, obtained using Eq. (5), is assigned to the attribute dREV_size_1 of an PARSE object in the case of vector metric REV analysis.
 
 For the estimation of sREV size we use two following formulas:
 
@@ -106,7 +106,7 @@ and
     m: \forall i \ge m,  \quad  \sigma_{norm2}(i) = \sigma_i/ D(i) < \varepsilon_{sREV}, \quad  (7)
 
 where :math:`D(i) = \varepsilon_{dREV}`, if :math:`\bar{\delta}(i) < \varepsilon_{dREV}` and :math:`D(i) = \bar{\delta}(i)` if
-:math:`\bar{\delta}(i) \ge \varepsilon_{dREV}`; :math:`\varepsilon_{sREV}` is sREV threshold. The values, obtained using Eqs. (6) and (7), are assigned, respectively, to the attributes sREV_size_1 and sREV_size_2 of an REVAnalyzer object in the case of scalar metric REV analysis. 
+:math:`\bar{\delta}(i) \ge \varepsilon_{dREV}`; :math:`\varepsilon_{sREV}` is sREV threshold. The values, obtained using Eqs. (6) and (7), are assigned, respectively, to the attributes sREV_size_1 and sREV_size_2 of an PARSE object in the case of scalar metric REV analysis. 
 
 Image comparison. 
 -----------------
