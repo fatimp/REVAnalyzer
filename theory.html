@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Theoretical background &mdash; REVAnalyzer 0.1.0 documentation</title>
+  <title>Theoretical background &mdash; PARSE 0.1.1 documentation</title>
       <link rel="stylesheet" href="static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            REVAnalyzer
+            PARSE
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -65,7 +65,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">REVAnalyzer</a>
+          <a href="index.html">PARSE</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -141,7 +141,7 @@ If ranges <span class="math notranslate nohighlight">\(r(i)\)</span> and <span c
 <p>At each selection step <span class="math notranslate nohighlight">\(i\)</span> we take subsamples SC <span class="math notranslate nohighlight">\(_k(i)\)</span> and SC <span class="math notranslate nohighlight">\(_l(i+1)\)</span> and compute the normalized distance between the vectors <span class="math notranslate nohighlight">\(\boldsymbol{V_{l(i+1)}}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{V_{ki}}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\delta(i,k,l) = 2 \frac{||\boldsymbol{V^*_{l(i+1)}} - \boldsymbol{V_{ki}||}}{||\boldsymbol{V^*_{l(i+1)}}||+||\boldsymbol{V_{ki}}||}. \quad (4)\]</div>
-<p>Order of the vector norm <span class="math notranslate nohighlight">\(||\boldsymbol{V}||\)</span> is the input parameter of any vectorizer used in REVAnalyzer library.</p>
+<p>Order of the vector norm <span class="math notranslate nohighlight">\(||\boldsymbol{V}||\)</span> is the input parameter of any vectorizer used in PARSE library.</p>
 <p>For the estimation of dREV and sREV sizes for vector metric, fist we calculate mean values <span class="math notranslate nohighlight">\(\bar{\delta}(i)\)</span> over all pairs of indices (<span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(l\)</span>), its standard deviation <span class="math notranslate nohighlight">\(\sigma_i\)</span> and normalized standard deviation  <span class="math notranslate nohighlight">\(\sigma_{norm}(i) = \sigma_i/ \bar{\delta}(i)\)</span>.</p>
 <p>Then for the estimation of dREV size we use the following formula:</p>
 <div class="math notranslate nohighlight">
