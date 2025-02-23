@@ -60,4 +60,4 @@ porous image data:
 
 ## Authors
 
-Andrey S. Zubov, Digital Core group, MIPT.
+Andrey S. Zubov, Center for Computational Physics, Landau School for Physics and Research, Moscow Institute of Physics and Technology.
