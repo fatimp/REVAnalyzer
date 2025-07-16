@@ -462,7 +462,7 @@ class REVAnalyzer:
         str_elem = str(data[1]) + ', ' + str(data[2])
         result = self.metric.vectorize(v1, v2)
         if (type(result[2]) is list and (np.nan in result[2])) or (type(result[2]) is not list and np.isnan(result[2])):
-            return np,nan
+            return np.nan
         return (step, str_elem, result[2])
      
     def _distance_for_subsamples(self, ids, step):
@@ -477,4 +477,4 @@ class REVAnalyzer:
             return max(delta)
         else:
             return delta
-        
+

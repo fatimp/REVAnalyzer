@@ -32,15 +32,12 @@ class HistVectorizer(BasicVectorizer):
         
         **Output:**
         
-        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them. 
         """
         rmax1 = np.ceil(max(v1))
         r1 = [0, rmax1]
         bins = int(self.factor*rmax1)
         hist1, bin_edges1 = np.histogram(v1, bins=bins, range=r1, density=True)
         hist2, bin_edges2 = np.histogram(v2, bins=bins, range=r1, density=True)
-        n1 = np.linalg.norm(np.array(hist1), ord=self.norm)
-        n2 = np.linalg.norm(np.array(hist2), ord=self.norm)
-        delta = 2*np.linalg.norm(np.array(hist1) -
-                                 np.array(hist2), ord=self.norm)/(n1 + n2)
-        return hist1.tolist(), hist2.tolist(), delta
+        delta, cos_sim = super()._compare_vectors(hist1, hist2)
+        return hist1.tolist(), hist2.tolist(), delta, cos_sim

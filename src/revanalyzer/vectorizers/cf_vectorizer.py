@@ -37,11 +37,11 @@ class CFVectorizer(BasicVectorizer):
         
         	If mode = 'all':
         
-        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
+        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them. 
         
         	If mode = 'max:
         
-        		(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subsamples, and the last one is a list of normalized distances between these vectors.        
+        		(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subsamples, the third one is the list of normalized distances between these vectors and the last one is the list of cosine similarity values for them..        
         """
         if not (self.mode == 'max' or self.mode == 'all'):
             raise ValueError("Mode should be 'max' or 'all'.")
@@ -50,24 +50,17 @@ class CFVectorizer(BasicVectorizer):
             v_res1 = []
             v_res2 = []
             deltas = []
+            cos_sims = []
             for i in range(3):
-                v_norm1 = np.linalg.norm(v1[i][:n], ord=self.norm)
-                v_norm2 = np.linalg.norm(v2[i][:n], ord=self.norm)
-                d = np.linalg.norm(np.array(v1[i][:n]) -
-                                   np.array(v2[i][:n]), ord=self.norm)
-                deltas.append(2 * d/(v_norm1 + v_norm2))
-                vi1 = np.array(v1[i][:n])/v_norm1
-                vi2 = np.array(v2[i][:n])/v_norm2
-                v_res1.append(vi1.tolist())
-                v_res2.append(vi2.tolist())
+                v1 = v1[i][:n]
+                v2 = v2[i][:n]
+                delta, cos_sim = super()._compare_vectors(v1, v2)
+                v_res1.append(v1.tolist())
+                v_res2.append(v2.tolist())
+                deltas.append(delta)
+                cos_sims.append(cos_sims)
         if self.mode == 'all':
             v_res1 = np.concatenate([v1[0][:n], v1[1][:n], v1[2][:n]]).tolist()
             v_res2 = np.concatenate([v2[0][:n], v2[1][:n], v2[2][:n]]).tolist()
-            v_norm1 = np.linalg.norm(np.array(v_res1), ord=self.norm)
-            v_norm2 = np.linalg.norm(np.array(v_res2), ord=self.norm)
-            deltas = 2 * \
-                np.linalg.norm(np.array(v_res1) - np.array(v_res2),
-                               ord=self.norm)/(v_norm1 + v_norm2)
-            v_res1 = (v_res1/v_norm1).tolist()
-            v_res2 = (v_res2/v_norm2).tolist()
-        return v_res1, v_res2, deltas
+            deltas, cos_sims = super()._compare_vectors(v_res1, v_res1)
+        return v_res1, v_res2, deltas, cos_sims

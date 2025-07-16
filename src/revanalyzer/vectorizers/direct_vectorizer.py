@@ -29,12 +29,10 @@ class DirectVectorizer(BasicVectorizer):
         
         **Output:**
         
-       		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors.        
+       		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them.        
         """
         n = min(len(v1), len(v2))
         v1 = v1[:n]
         v2 = v2[:n]
-        v_norm1 = np.linalg.norm(v1, ord=self.norm)
-        v_norm2 = np.linalg.norm(v2, ord=self.norm)
-        deltas = 2 * np.linalg.norm(np.array(v1) - np.array(v2), ord=self.norm)/(v_norm1 + v_norm2)
-        return v1.tolist(), v2.tolist(), deltas
+        delta, cos_sim = super()._compare_vectors(v1, v2)
+        return v1.tolist(), v2.tolist(), delta, cos_sim

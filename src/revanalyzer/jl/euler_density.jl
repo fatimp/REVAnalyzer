@@ -10,6 +10,7 @@ data = Bool.(data)
 data = .!data
 volume = dimx*dimy*dimz
 density = euler_characteristic(data)/volume
+print(density)
 open(fpath, "w") do file
     write(file, string(density))
 end
