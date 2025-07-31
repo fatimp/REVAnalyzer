@@ -161,18 +161,21 @@ If ranges <span class="math notranslate nohighlight">\(r(i)\)</span> and <span c
 <p>To compare image samples <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> using descriptor <span class="math notranslate nohighlight">\(D\)</span> susceptible to vectorization one can make modification as decribed above and calculate the distance value:</p>
 <div class="math notranslate nohighlight">
 \[\delta_{AB} = 2 \frac{||\boldsymbol{V_A} - \boldsymbol{V^*_B}||}{||\boldsymbol{V_A}||+||\boldsymbol{V^*_B}||}. \quad (8)\]</div>
+<p>If Euclidean norm is selected, one can also use cosine similarity to compare samples <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{Sc}_{AB} = \frac{(\boldsymbol{V_A}  \cdot \boldsymbol{V^*_B})}{||\boldsymbol{V_A}||||\boldsymbol{V^*_B}||}. \quad (9)\]</div>
 </section>
 <section id="stationarity-analysis">
 <h2>Stationarity analysis.<a class="headerlink" href="#stationarity-analysis" title="Permalink to this heading"></a></h2>
 <p>We propose the following empirical stationarity criterion in our library. For all <span class="math notranslate nohighlight">\(i = 1, ..\le N_{sREV}-1\)</span> and <span class="math notranslate nohighlight">\(k,l = 0,..8\)</span> we compute the values</p>
 <div class="math notranslate nohighlight">
-\[\delta^{st}_1(i,k,l) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V_{il}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V_{il}}||} \quad (9)\]</div>
+\[\delta^{st}_1(i,k,l) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V_{il}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V_{il}}||} \quad (10)\]</div>
 <p>and</p>
 <div class="math notranslate nohighlight">
-\[\delta^{st}_2(i,k) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V^*_{(i+1)k}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V^*_{(i+1)k}}||}. \quad (10)\]</div>
+\[\delta^{st}_2(i,k) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V^*_{(i+1)k}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V^*_{(i+1)k}}||}. \quad (11)\]</div>
 <p>Then we check out the satisfaction of following condition:</p>
 <div class="math notranslate nohighlight">
-\[\forall i \ge N_{sREV}-1, \quad  \max_{(k,l)} \delta^{st}_1(i,k,l) &lt; \varepsilon_{st} \quad \textrm{and} \quad  \max_{k} \delta^{st}_2(i,k) &lt;   \varepsilon_{st}. \quad (11)\]</div>
+\[\forall i \ge N_{sREV}-1, \quad  \max_{(k,l)} \delta^{st}_1(i,k,l) &lt; \varepsilon_{st} \quad \textrm{and} \quad  \max_{k} \delta^{st}_2(i,k) &lt;   \varepsilon_{st}. \quad (12)\]</div>
 <p>Here, <span class="math notranslate nohighlight">\(\varepsilon_{st}\)</span> is stationarity threshold.</p>
 </section>
 </section>
