@@ -52,15 +52,15 @@ class CFVectorizer(BasicVectorizer):
             deltas = []
             cos_sims = []
             for i in range(3):
-                v1 = v1[i][:n]
-                v2 = v2[i][:n]
-                delta, cos_sim = super()._compare_vectors(v1, v2)
-                v_res1.append(v1.tolist())
-                v_res2.append(v2.tolist())
+                v1i = v1[i][:n]
+                v2i = v2[i][:n]
+                delta, cos_sim = super()._compare_vectors(v1i, v2i)
+                v_res1.append(v1i)
+                v_res2.append(v2i)
                 deltas.append(delta)
                 cos_sims.append(cos_sims)
         if self.mode == 'all':
             v_res1 = np.concatenate([v1[0][:n], v1[1][:n], v1[2][:n]]).tolist()
             v_res2 = np.concatenate([v2[0][:n], v2[1][:n], v2[2][:n]]).tolist()
-            deltas, cos_sims = super()._compare_vectors(v_res1, v_res1)
+            deltas, cos_sims = super()._compare_vectors(v_res1, v_res2)
         return v_res1, v_res2, deltas, cos_sims

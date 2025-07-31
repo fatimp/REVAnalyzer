@@ -65,11 +65,11 @@ class BasicCFMetric(BasicMetric):
             raise RuntimeError("Error in julia run occured!")
         os.remove(image_path)           
         if self.show_time:
-            print(cut_name, ", run time: ")
+            print("cut ", cut_name, ", run time: ")
             print("--- %s seconds ---" % (time.time() - start_time))
         return cut_name + ".txt"
 
-    def show(self, inputdir, step, cut_id, title, cf_type):
+    def show(self, inputdir, step, cut_id):
         """
         Vizualize CF for a specific subsample.
         
@@ -79,14 +79,25 @@ class BasicCFMetric(BasicMetric):
         	
         	step (int): subsamples selection step;
         	
-        	cut_id (int: 0,..8): cut index;
+        	cut_id (int: 0,..8): cut index.
         
-            title (str): image title;
-            
-            cf_type (str): type of CF (directional or probability density).
+        **Output:**
+        
+        	(x, data) - a tuple, in which
+        	
+        		x (list(dtype = int)): 'x' coordinate values for a plot;
+        		
+        		data[0] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'x' direction;
+        		
+        		data[1] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'y' direction;
+        		
+        		data[2] (list(dtype = float)): 'y' coordinate values for a plot, corresponding of CF generated in 'z' direction.
         """        
         data = self.read(inputdir, step, cut_id)
-        _show_cf(data, title, cf_type)
+        x = np.arange(len(data[0]))
+        plt.rcParams.update({'font.size': 16})
+        plt.rcParams['figure.dpi'] = 300
+        return x, data[0], data[1], data[2]
 
     def vectorize(self, v1, v2):
         """
@@ -104,11 +115,11 @@ class BasicCFMetric(BasicMetric):
         
         	If mode = 'all':
         
-        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
+        		(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them. 
         
         	If mode = 'max:
         
- 			(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subsamples, and the last one is a list of normalized distances between these vectors.        
+ 			(list(list(dtype = float)), list(list(dtype = float)), list(float)) - a tuple, in which in which the first two elements are vectorized metric values in 'x', 'y' and 'z' directions for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them.        
         """
         return self.vectorizer.vectorize(v1, v2)
 
@@ -161,8 +172,17 @@ class C2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
-        title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'directional')
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        title = self.__class__.__name__ + ", " + ", step = " + str(step) + ", id = " + str(cut_id)
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
 
 
 class L2(BasicCFMetric):
@@ -213,8 +233,17 @@ class L2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'directional')
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
 
 
 class S2(BasicCFMetric): 
@@ -265,8 +294,17 @@ class S2(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'directional')
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
 
 
 class SS(BasicCFMetric):
@@ -317,8 +355,17 @@ class SS(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'directional')
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
 
 
 class SV(BasicCFMetric):
@@ -369,13 +416,22 @@ class SV(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
+        x, vx, vy, vz = super().show(inputdir, step, cut_id)
+        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'directional')
+        ax.set_title(title)
+        ax.plot(x, vx, "r-", label='x')
+        ax.plot(x, vy, "b-", label='y')
+        ax.plot(x, vz, "g-", label='z')
+        ax.legend()
+        ax.set_xlabel("voxels")
+        ax.set_ylabel("CF value")
+        plt.show()
 
 
 class ChordLength(BasicCFMetric):
     """
-    Class describing metric chord length. 
+    Class describing metric chord-length. 
     """
     def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
@@ -421,12 +477,21 @@ class ChordLength(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
+        data = self.read(inputdir, step, cut_id)
+        x = np.arange(len(data))
+        plt.rcParams.update({'font.size': 16})
+        plt.rcParams['figure.dpi'] = 300
+        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'density')
+        ax.set_title(title)
+        ax.plot(x, data, "r-")
+        ax.set_xlabel('chord length')
+        ax.set_ylabel('density')
+        plt.show()
 
 class PoreSize(BasicCFMetric):
     """
-    Class describing metric pore size. 
+    Class describing metric pore-size. 
     """
     def __init__(self,  vectorizer, n_threads = 1, show_time=False, normalize=True):
         """
@@ -472,5 +537,16 @@ class PoreSize(BasicCFMetric):
         
         	cut_id (int: 0,..8): cut index.
         """
+        data = self.read(inputdir, step, cut_id)
+        x = np.arange(len(data))
+        plt.rcParams.update({'font.size': 16})
+        plt.rcParams['figure.dpi'] = 300
+        fig, ax = plt.subplots(figsize=(10, 8))
         title = self.__class__.__name__ + ", " + "step = " + str(step) + ", id = " + str(cut_id)
-        super().show(inputdir, step, cut_id, title, 'density')
+        ax.set_title(title)
+        ax.plot(x, data, "r-")
+        ax.set_xlabel('pore size')
+        ax.set_ylabel('density')
+        plt.show()
+
+

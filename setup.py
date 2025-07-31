@@ -17,7 +17,7 @@ requirements = [r.strip() for r in requirements]
 
 setup(
     name='revanalyzer',
-    version='0.1.1',
+    version='0.2.0',
     description='Package for representativity analysis of 3D binary images',
     long_description=readme,
     author='Andrey Zubov',

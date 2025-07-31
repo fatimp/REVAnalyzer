@@ -82,7 +82,7 @@ class BasicPDMetric(BasicMetric):
         
         **Output:**
         
-        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float) - a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them. 
         """
         return self.vectorizer.vectorize(v1, v2)
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Definition of basic vectorizer"""
 
+import numpy as np 
+
 class BasicVectorizer:
     """
     Base class for vectorizers. (Don't use it directly but derive from it).

@@ -38,7 +38,7 @@ class PersistenceImageVectorizer(BasicVectorizer):
         
         **Output:**
         
-        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them. 
         """    
         n1 = len(v1)
         n2 = len(v2)
@@ -53,8 +53,5 @@ class PersistenceImageVectorizer(BasicVectorizer):
         C2.fit([v2])
         v2 = C2.transform([v2])
         v2 = v2/n2
-        n1 = np.linalg.norm(v1, ord=self.norm)
-        n2 = np.linalg.norm(v2, ord=self.norm)
-        delta = 2*np.linalg.norm(np.array(v1) -
-                                 np.array(v2), ord=self.norm)/(n1 + n2)
-        return v1.tolist(), v2.tolist(), delta
+        delta, cos_sim = super()._compare_vectors(v1, v2)
+        return v1.tolist(), v2.tolist(), delta, cos_sim

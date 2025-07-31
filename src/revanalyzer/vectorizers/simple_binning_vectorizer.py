@@ -35,7 +35,7 @@ class SimpleBinningVectorizer(BasicVectorizer):
         
         **Output:**
         
-        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, and the last one is the normalized distance between these vectors. 
+        	(list(dtype = float), list(dtype = float), float): a tuple, in which the first two elements are vectorized metric values for a given pair of subsamples, the third one is the normalized distance between these vectors and the last one is the cosine similarity for them. 
         """        
         r1 = _range_pd(v1)
         v1 = _hist_pd(v1, self.bins, r1)
@@ -44,11 +44,8 @@ class SimpleBinningVectorizer(BasicVectorizer):
             v12 = _skip_zeros12(v1, v2)
             v1 = v12[0]
             v2 = v12[1]
-        n1 = np.linalg.norm(v1, ord=self.norm)
-        n2 = np.linalg.norm(v2, ord=self.norm)
-        delta = 2*np.linalg.norm(np.array(v1) -
-                                 np.array(v2), ord=self.norm)/(n1 + n2)
-        return v1, v2, delta
+        delta, cos_sim = super()._compare_vectors(v1, v2)
+        return v1, v2, delta, cos_sim
 
 
 def _hist_pd(v, bins, r):

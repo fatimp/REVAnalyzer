@@ -117,6 +117,13 @@ To compare image samples :math:`A` and :math:`B` using descriptor :math:`D` susc
 
     \delta_{AB} = 2 \frac{||\boldsymbol{V_A} - \boldsymbol{V^*_B}||}{||\boldsymbol{V_A}||+||\boldsymbol{V^*_B}||}. \quad (8) 
     
+
+If Euclidean norm is selected, one can also use cosine similarity to compare samples :math:`A` and :math:`B`:
+
+.. math::
+
+     \mathrm{Sc}_{AB} = \frac{(\boldsymbol{V_A}  \cdot \boldsymbol{V^*_B})}{||\boldsymbol{V_A}||||\boldsymbol{V^*_B}||}. \quad (9)
+
 Stationarity analysis. 
 ----------------------
 
@@ -124,18 +131,18 @@ We propose the following empirical stationarity criterion in our library. For al
 
 .. math::
 
-    \delta^{st}_1(i,k,l) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V_{il}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V_{il}}||} \quad (9)
+    \delta^{st}_1(i,k,l) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V_{il}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V_{il}}||} \quad (10)
 
 and
 
 .. math::
 
-    \delta^{st}_2(i,k) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V^*_{(i+1)k}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V^*_{(i+1)k}}||}. \quad (10) 
+    \delta^{st}_2(i,k) = 2 \frac{||\boldsymbol{V_{ik}} - \boldsymbol{V^*_{(i+1)k}}||}{||\boldsymbol{V_{ik}}||+||\boldsymbol{V^*_{(i+1)k}}||}. \quad (11) 
     
 Then we check out the satisfaction of following condition:
 
 .. math::
 
-    \forall i \ge N_{sREV}-1, \quad  \max_{(k,l)} \delta^{st}_1(i,k,l) < \varepsilon_{st} \quad \textrm{and} \quad  \max_{k} \delta^{st}_2(i,k) <   \varepsilon_{st}. \quad (11) 
+    \forall i \ge N_{sREV}-1, \quad  \max_{(k,l)} \delta^{st}_1(i,k,l) < \varepsilon_{st} \quad \textrm{and} \quad  \max_{k} \delta^{st}_2(i,k) <   \varepsilon_{st}. \quad (12) 
     
 Here, :math:`\varepsilon_{st}` is stationarity threshold.
